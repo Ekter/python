@@ -73,7 +73,6 @@ class Coord(object):
         if (type(other) is int) or (type(other) is float):
             return len(self)>=other
 
-
 def getch():
     """Single char input, only works only on mac/linux/windows OS terminals"""
     try:
