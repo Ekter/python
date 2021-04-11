@@ -1,0 +1,2 @@
+import pygame
+print("hréjkd")

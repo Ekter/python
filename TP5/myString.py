@@ -1,0 +1,2 @@
+from fonctionquirenvoielenombredoccurencesdunmotdansunechainedecaractères import *
+from MaJuScUlIsE import majusculiseprocedure
