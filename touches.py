@@ -1,7 +1,15 @@
 from pynput.keyboard import Key, Controller
 from time import sleep
+import ochinchin
 keyboard = Controller()
 sleep(5)
+for i in range(37):
+    for i in range(250):
+        keyboard.press("d")
+        sleep(1)
+        keyboard.release("d")
+    for i in range(300):
+        print(ochinchin.random_string(100))
 for i in range(50):
     keyboard.press(" ")
     sleep(1)
