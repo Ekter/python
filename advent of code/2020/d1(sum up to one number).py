@@ -1,17 +1,3 @@
-# def de la fonction "affine" non modifiée
-def affine(a, b, x):
-    return a*x+b
-# fin
-
-
-temp = int(input("température: "))
-unite = input("unité: ")
-if unite == "F":
-    print(affine(1/1.8, -32/1.8, temp))
-if unite == "C":
-    print(affine(1.8, 32, temp))
-
-
 l = [1778, 1845, 1813, 1889, 1939, 1635, 1443, 796, 1799, 938, 1488, 1922, 1909, 1258, 1659, 1959,
      1557, 1085, 1379, 1174, 1782, 1482, 1702, 1180, 1992, 1815, 1802, 215, 1649, 782, 1847, 1673,
      1823, 1836, 1447, 1603, 1767, 1891, 1964, 1881, 1637, 1229, 1994, 1901, 1583, 1918, 1415,
@@ -28,11 +14,22 @@ l = [1778, 1845, 1813, 1889, 1939, 1635, 1443, 796, 1799, 938, 1488, 1922, 1909,
 l.sort()
 n = 0
 m = len(l)-1
-while n <= m:
-    if l[n]+l[m] > 2020:
-        m -= 1
-    elif l[n]+l[m] < 2020:
-        n += 1
-    else:
-        print(l[n], l[m], l[n]+l[m], l[n]*l[m])
-        break
+for i in range(len(l)):
+    print(l[i])
+    n = 0
+    m = len(l)-1
+    while n <= m:
+        if l[n]+l[m] > 2020-l[i]:
+            m -= 1
+        elif l[n]+l[m] < 2020-l[i]:
+            n += 1
+        else:
+            print(l[n], l[m], l[i], l[n]+l[m]+l[i], l[n]*l[m]*l[i])
+            break
+"""for i in range(len(l)):
+    for j in range(len(l)):
+        for k in range(len(l)):
+            if l[i]+l[j]+l[k] == 2020:
+                print(l[i], l[j], l[k])
+                print(l[i]*l[j]*l[k])
+                print(i,j,k)"""

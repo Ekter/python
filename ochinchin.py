@@ -8,5 +8,5 @@ def random_string(n=37):
     for loop in range(n):
         strings+=random.choice(random_list)
     return ''.join(strings)
-#while True:
-#    print(random_string(100))
+while True:
+    print(random_string(100))
