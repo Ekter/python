@@ -2236,8 +2236,7 @@ hkgylf
 
 mhqunico
 mchio
-hciwosm
-"""
+hciwosm"""
 
 linput = input.split("\n\n")
 ntot = 0
