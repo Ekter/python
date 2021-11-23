@@ -29,7 +29,8 @@ class Player():
     def add_to_played_cards(self, card):
         self.played_cards.append(card)
         self.hand.remove(card)
-        print(card.__dict__)
+        print(card.__dict__.keys())
+
 
 
     def showHand(self):
