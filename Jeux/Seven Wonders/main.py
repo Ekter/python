@@ -11,14 +11,14 @@ class Interface():
         self.players = [
             Player(input(f"Name of player {i}: ")) for i in range(1,nbjoueurs+1)]
         for i in range(nbjoueurs):
-            self.cards.append(Card("Fonderie", None, {Gold(): 1}, prod_Ore=1))
+            self.cards.append(Card("Fonderie", 3, {Gold(): 1}, ore=1))
             self.cards.append(
-                Card("Bibliothèque", None, {Gold(): 1}, points=5))
-            self.cards.append(Card("Temple", None,{Gold(): 1}, points=2))
-            self.cards.append(Card("Forêt", None, {Gold(): 1},prod_Wood=1))
-            self.cards.append(Card("Carrière", None, {Gold(): 1},prod_Stone=1))
-            self.cards.append(Card("Merveille", None, {Gold(): 1},points=7))
-            self.cards.append(Card("Taverne", None, {Gold(): 1},gold=5, points=1))
+                Card("Bibliothèque", 1, {Gold(): 1}, points=5))
+            self.cards.append(Card("Temple", 1,{Ressources("wood"): 1}, points=2))
+            self.cards.append(Card("Forêt", 3, {},wood=1))
+            self.cards.append(Card("Carrière", 3, {Gold(): 1},stone=1))
+            self.cards.append(Card("Merveille", 1, {Ressources("ore"): 1},points=7))
+            self.cards.append(Card("Taverne", 2, {Ressources("stone"): 1},gold=5, points=1))
 
     def distribute(self) -> None:
         l = self.cards[:]

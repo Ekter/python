@@ -6,7 +6,7 @@ class Player():
         self.name = name
         self.hand = []
         self.played_cards = []
-        self.gold = 37
+        self.gold = 3
 
     def playCard(self, n: int):
         if n <= 0 or n > len(self.hand):
@@ -18,12 +18,17 @@ class Player():
                 if i.name == "gold":
                     self.gold -= card.cost[i]
                 if card in self.hand:
-                    self.played_cards.append(card)
-                    self.hand.remove(card)
+                    self.add_to_played_cards(card)
                     return True
             else:
                 print("Vous n'avez pas assez de ressources pour jouer cette carte")
                 return False
+    
+    def add_to_played_cards(self, card):
+        self.played_cards.append(card)
+        self.hand.remove(card)
+        print(card.__dict__)
+
 
     def showHand(self):
         for i in self.hand:
