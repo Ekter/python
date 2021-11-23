@@ -16,7 +16,7 @@ class Interface():
                 Card("Bibliothèque", 1, {Gold(): 1}, points=5))
             self.cards.append(Card("Temple", 1,{Ressources("wood"): 1}, points=2))
             self.cards.append(Card("Forêt", 3, {},wood=1))
-            self.cards.append(Card("Carrière", 3, {Gold(): 1},stone=1))
+            self.cards.append(Card("Carrière", 3, {Gold(): 5,Ressources("wood"): 1,Ressources("stone"): 3},stone=1))
             self.cards.append(Card("Merveille", 1, {Ressources("ore"): 1},points=7))
             self.cards.append(Card("Taverne", 2, {Ressources("stone"): 1},gold=5, points=1))
 
