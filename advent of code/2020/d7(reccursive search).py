@@ -1,3 +1,6 @@
+from turtle import st
+
+
 inputstring="""vibrant salmon bags contain 1 vibrant gold bag, 2 wavy aqua bags, 1 dotted crimson bag.
 dotted plum bags contain 3 wavy cyan bags.
 muted salmon bags contain 2 pale purple bags, 3 dull orange bags, 2 dotted lime bags, 3 clear crimson bags.
@@ -591,15 +594,21 @@ dotted violet bags contain 3 bright brown bags, 3 pale yellow bags, 4 light gray
 muted black bags contain 2 light violet bags, 5 muted bronze bags.
 mirrored orange bags contain 1 plaid magenta bag, 5 muted red bags, 3 pale lime bags.
 faded magenta bags contain 3 striped cyan bags, 4 muted silver bags.
-clear gray bags contain 4 muted gray bags, 2 wavy turquoise bags, 3 dotted plum bags.
-"""
+clear gray bags contain 4 muted gray bags, 2 wavy turquoise bags, 3 dotted plum bags."""
 
+bagscontainance={}
 for str in inputstring.split("\n"):
+    str=str.replace(".","")
     bag_type, contents = str.split(' contain ')
     bag_type = bag_type.strip()
     bags = []
+    print(bag_type)
     
     for bag in contents.split(', '):
-        bag_name, bag_count = bag.split(' ')
-        bag_count = int(bag_count.replace(' bags', ''))
+        bag_count, bag_name = bag.split(' ',1)
+        bag_count=int(bag_count.replace("no","0"))
+        # bag_count = int(bag_count.replace(' bag', '').replace(" bags",""),)
         bags.append((bag_name, bag_count))
+    print(bags)
+    bagscontainance[bag_type]=bags
+print(bagscontainance)

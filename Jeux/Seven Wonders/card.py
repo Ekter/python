@@ -14,4 +14,5 @@ class Card():
     def __str__(self):
         return f"""{self.name}({self.colordict[self.color]})
 \tCoût : {", ".join([f"{ressource.name}:{value}" for ressource, value in self.cost.items()])}
-\tEffets : {", ".join([f"{effect}:{value}" for effect, value in self.__dict__.items() if not(effect in ["name","color","cost"])])}"""
+\tEffets : {", ".join([f"{effect}:{value}" for effect, value in self.__dict__.items(
+) if not(effect in ["name","color","cost"])])}"""

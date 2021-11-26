@@ -31,9 +31,9 @@ class Interface():
                     cards2.pop(randint(0, len(cards2)-1)))
 
     def turn_hands(self) -> None:
-        handcard=self.players[0].hand
+        handcard=self.players[0].hand.copy()
         for i in range(len(self.players)-1):
-            self.players[i].hand=self.players[i+1].hand
+            self.players[i].hand=self.players[i+1].hand.copy()
         self.players[-1].hand=handcard
     
     def play(self) -> None:
@@ -47,6 +47,9 @@ class Interface():
 
 
 if __name__ == "__main__":
-    nbjoueurs = int(input("Number of players: "))
+    try:
+        nbjoueurs = int(input("Number of players: "))
+    except ValueError:
+        pass
     game = Interface(nbjoueurs)
     game.play()
