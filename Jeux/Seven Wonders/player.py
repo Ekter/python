@@ -38,10 +38,14 @@ class Player():
     def add_to_played_cards(self, card):
         self.played_cards.append(card)
         self.hand.remove(card)
-        print(card.__dict__.keys())
         for effect, value in card.__dict__.items():
             if not(effect in ["name", "color", "cost"]):
                 print(f"{effect},{value}")
+                if effect in self.__dict__:
+                    self.__dict__[effect]+=value
+                else:
+                    self.__dict__[effect]=value
+                    print(effect,value)
 
     def showHand(self):
         for i in self.hand:

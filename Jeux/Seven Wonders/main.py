@@ -6,23 +6,23 @@ from random import randint
 
 
 class Interface():
+    CARDSBYPLAYER = {1: [Card("Fonderie", 3, {}, ore=1),
+                         Card("Bains", 1, {Ressources("stone"): 1}, points=5),
+                         Card("Temple", 1, {Ressources("wood"): 1}, points=2),
+                         Card("Forêt", 3, {}, wood=1),
+                         Card("Carrière", 3, {}, stone=1),
+                         Card("Merveille", 1, {
+                              Ressources("ore"): 1}, points=7),
+                         Card("Taverne", 2, {Ressources(
+                             "stone"): 1}, gold=5, points=1)
+                         ]}
+
     def __init__(self, nbjoueurs: int) -> None:
         self.cards = []
         self.players = [
             Player(input(f"Name of player {i}: ")) for i in range(1, nbjoueurs+1)]
         for i in range(nbjoueurs):
-            self.cards.append(Card("Fonderie", 3, {Gold(): 1}, ore=1))
-            self.cards.append(
-                Card("Bibliothèque", 1, {Gold(): 1}, points=5))
-            self.cards.append(
-                Card("Temple", 1, {Ressources("wood"): 1}, points=2))
-            self.cards.append(Card("Forêt", 3, {}, wood=1))
-            self.cards.append(Card("Carrière", 3, {Gold(): 5, Ressources(
-                "wood"): 1, Ressources("stone"): 3}, stone=1))
-            self.cards.append(
-                Card("Merveille", 1, {Ressources("ore"): 1}, points=7))
-            self.cards.append(
-                Card("Taverne", 2, {Ressources("stone"): 1}, gold=5, points=1))
+            self.cards.extend(Interface.CARDSBYPLAYER[i+1])
 
     def distribute(self) -> None:
         l = self.cards[:]

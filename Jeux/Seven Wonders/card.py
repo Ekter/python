@@ -5,10 +5,17 @@ class Card():
     colordict = {1: "bleu", 2: "vert", 3: "rouge",
                  4: "jaune", 5: "violet", 6: "marron", 7: "gris"}
 
-    def __init__(self, name: str, color: int, cost: dict[Ressources:int], **values: dict,):
+    def __init__(self, name: str, color: int, cost: dict[Ressources:int], **values: dict):
         self.name = name
         self.color = color
         self.cost = cost
+        l=[]
+        for i in values:
+            if i in Ressources.LISTRESSOURCES:
+                self.__dict__[Ressources(i)] = values[i]
+                l.append(i)
+        for i in l:
+            values.pop(i)
         self.__dict__ = {**self.__dict__, **values}
 
     def __str__(self):
