@@ -1,4 +1,3 @@
-from card import Card
 from ressources import Ressources
 from gold import Gold
 

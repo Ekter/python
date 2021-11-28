@@ -2,7 +2,7 @@ from card import Card
 from player import Player
 from ressources import Ressources
 from gold import Gold
-from random import randint, choice
+from random import randint
 
 
 class Interface():
