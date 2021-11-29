@@ -43,7 +43,7 @@ class Interface():
     def play(self) -> None:
         self.distribute()
         self.turn_hands()
-        for i in range(7):
+        for i in range(6):
             for i in range(len(self.players)):
                 print(f"{self.players[i].name}'s turn")
                 self.players[i].play()

@@ -7,11 +7,8 @@ class Player():
         self.name = name
         self.hand = []
         self.played_cards = []
-        ressources = [Ressources("ore"), Ressources("wood"), Ressources("stone"), Ressources(
-            "brick"), Ressources("glass"), Ressources("paper"), Ressources("cloth")]
-        for i in ressources:
-            self.__dict__[i] = 0
-        print(self.__dict__)
+        for i in Ressources.LISTRESSOURCES:
+            self.__dict__[Ressources(i)] = 0
         self.__dict__[Gold()] = 3
 
     def playCard(self, n: int):
