@@ -6,15 +6,23 @@ from random import randint
 
 
 class Interface():
-    CARDSBYPLAYER = {1: [Card("Fonderie", 3, {}, ore=1),
-                         Card("Bains", 1, {Ressources("stone"): 1}, points=5),
-                         Card("Temple", 1, {Ressources("wood"): 1}, points=2),
-                         Card("Forêt", 3, {}, wood=1),
-                         Card("Carrière", 3, {}, stone=1),
-                         Card("Merveille", 1, {
-                              Ressources("ore"): 1}, points=7),
-                         Card("Taverne", 2, {Ressources(
-                             "stone"): 1}, gold=5, points=1)
+    CARDSBYPLAYER = {1: [Card("Fonderie", 6, {}, ore=1),
+                         Card("Forêt", 6, {}, wood=1),
+                         Card("Carrière", 6, {}, stone=1),
+                         Card("Muraille", 3, {
+                              Ressources("stone"): 1}, war_points=1),
+                         Card("Tour de guet", 3, {
+                              Ressources("wood"): 1}, war_points=1),
+                         Card("Taverne", 2, {}, gold=5, points=1),
+                         Card("Temple", 1, {Ressources("wood"): 1}, points=2)
+                         ],
+                     2: [Card("Fonderie", 6, {}, ore=1),
+                         Card("Forêt", 6, {}, wood=1),
+                         Card("Carrière", 6, {}, stone=1),
+                         Card("Papeterie", 7, {}, paper=1),
+                         Card("Metier à tisser", 7, {}, cloth=1),
+                         Card("Verrerie", 7, {}, glass=1),
+                         Card("Bains", 1, {Ressources("stone"): 1}, points=2)
                          ]}
 
     def __init__(self, nbjoueurs: int) -> None:
