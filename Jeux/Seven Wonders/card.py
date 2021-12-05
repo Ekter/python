@@ -11,7 +11,7 @@ class Card():
         self.cost = cost
         l=[]
         for i in values:
-            if i in Ressources.LISTRESSOURCES:
+            if i in Ressources.LISTNAMESRESSOURCES:
                 self.__dict__[Ressources(i)] = values[i]
                 l.append(i)
         for i in l:

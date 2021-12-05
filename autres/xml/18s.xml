@@ -1,0 +1,77 @@
+<base>
+    <sauvetages>
+        <sauvetage>
+            <name>Corvette</name>
+            <desc>Le 1 avril, la corvette des pilotes rencontra en pleine mer un betiment anglais dans le plus mauvais etat et abandonne de son equipage. Quatre bateaux sortirent du port et emmenerent le navire avec deincroyables efforts.</desc>
+            <names>
+            </names>
+            <nbs></nbs>
+            <date_s>01/04/1739</date_s>
+            <station></station>
+        </sauvetage>
+
+        <sauvetage>
+            <name>SAUMON COURONNE</name>
+            <desc>La busche le SAUMON COURONNe, de 440 tonneaux, commandee par le capitaine Cornelis Maertens, etait impossible de gouverner, longea de trop pres la terre et se jeta sur les pierres du cote ouest de la jetee oe il resta e sec e  maree basse.</desc>
+            <names>
+                <entry>capitaine Larmes</entry>
+            </names>
+            <nbs>5 tonneaux perdus sur 115</nbs>
+            <date_s>14/02/1739</date_s>
+            <station></station>
+        </sauvetage>
+
+        <sauvetage>
+            <name>Chaloupe</name>
+            <desc>La petite chaloupe des pilotes côtiers se rend en rade pres de la corvette, entre les deux et trois heures, pour changer l'equipage du dixieme jour, selon l'usage. </desc>
+            <names>
+                <entry>capitaine Suywers</entry>
+            </names>
+            <nbs>4</nbs>
+            <date_s>08/02/2021</date_s>
+            <station></station>
+        </sauvetage>
+
+        <sauvetage>
+            <name>PATRIARCHE JACOB</name>
+            <desc>Le navire hollandais PATRIARCHE JACOB commande par le capitaine Perru mouilla entre les bancs apres avoir perdu son gouvernail.</desc>
+            <names>
+                <entry>Il fut secouru par la corvette des pilotes.</entry>
+            </names>
+            <nbs>q</nbs>
+            <date_s>31/12/1743</date_s>
+            <station></station>
+        </sauvetage>
+
+        <sauvetage>
+            <name>DILLON</name>
+            <desc>La corvette du pilote Andre Versailles a connaissance deun bateau echoue sur le snow. Ceetait le DILLON commande par le capitaine Charles Gauthier et venant de Virginie.</desc>
+            <names>
+                <entry>Andre Versailles</entry>
+            </names>
+            <nbs></nbs>
+            <date_s>17/12/1792</date_s>
+            <station></station>
+        </sauvetage>
+
+        <sauvetage>
+            <name>DAME JEANNE</name>
+            <desc>Le pilote Jacques Lannoye a connaissance deun navire en detresse engage dans les bancs et ayant perdu son gouvernail, le DAME JEANNE, hollandais commande par le capitaine Reynhout. Le bateau etant plein deeau, leequipage mit chaloupe et canot e la mer et rejoignit la corvette du pilotage. Le navire disparut completement.</desc>
+            <names>
+                <entry>Jacques Lannoye</entry>
+            </names>
+            <nbs></nbs>
+            <date_s>07/01/1793</date_s>
+            <station></station>
+        </sauvetage>
+
+        <sauvetage>
+            <name>CHARBONNIER</name>
+            <desc>Le CHARBONNIER prise anglaise de leANACREON toucha les bancs et fit eau. Leequipage compose de 14 hommes et 4 prisonniers anglais fut recueilli par la corvette des pilotes.</desc>
+            <names></names>
+            <nbs></nbs>
+            <date_s>14/04/1799</date_s>
+            <station></station>
+        </sauvetage>
+    </sauvetages>
+</base>

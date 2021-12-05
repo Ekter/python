@@ -1,0 +1,74 @@
+<base>
+    <sauvetages>
+        <sauvetage>
+            <name>ENIGHEDEN</name>
+            <desc>Je soussign�, Jacques Jannekeyn, patron pilote, patron du canot de sauvetage, d�clare qu�inform� par M. Charles Collet, Pr�sident du Comit� local, que l��quipage du brick norv�gien naufrag� ENIGHEDEN, ayant talonn� sur les bancs du Snow, se trouvait � bord du feu flottant SNOW.</desc>
+            <names>
+                <entry>Jean Baptiste Decanter</entry>
+                <entry>Louis Dechesne</entry>
+                <entry>Albert Hedel</entry>
+                <entry>Charles Jacob</entry>
+                <entry>L�on Lacae</entry>
+                <entry> Charles Lauwick</entry>
+                <entry> Joseph Taylor</entry>
+                <entry>ules Admond</entry>
+            </names>
+            <nbs>8</nbs>
+            <date_s>23/03/1900</date_s>
+            <station></station>
+
+        </sauvetage>
+        <sauvetage>
+            <name>PALMA</name>
+            <desc>Le vendredi 28 d�cembre 1900, � deux heures et demie, apr�s midi, huit bateaux de p�che, de Gravelines, pris dans un v�ritable cyclone de vent d�ouest, furent, en cherchant � gagner le port, jet�s � la c�te sur une �tendue de 1500 m�tres environ dans l�est des jet�es, deux heures avant la pleine mer.</desc>
+            <names>
+                <entry>Alfred Brunet</entry>
+                <entry>Pierre-Fran�ois Coubel</entry>
+                <entry>Fran�ois Fournier</entry>
+                <entry>Louis-Jean-Baptiste-Beno�t Gheys</entry>
+                <entry>Louis-Joseph Savoyen</entry>
+            </names>
+            <nbs>5</nbs>
+            <date_s>28/12/1900</date_s>
+            <station></station>
+
+        </sauvetage>
+        <sauvetage>
+            <name>MARIE JEANNE</name>
+            <desc>Le sloop de p�che 923, MARIE-JEANNE, patron Decanter, a talonn� sur l��pave du steamer BUSSUM, � l�Ouest de Dunkerque, et a coul�.</desc>
+            <names>
+                <entry>LESNE</entry>
+            </names>
+            <nbs></nbs>
+            <date_s>20/08/1901</date_s>
+            <station></station>
+
+        </sauvetage>
+        <sauvetage>
+            <name>GUENOWLE</name>
+            <desc>A 4 heures de l�apr�s-midi, le GUENOWLE de Tr�guier, mont� par cinq hommes, s�est �chou� sur un banc de sable, � l�entr�e du chenal.</desc>
+            <names>
+                <entry>Joseph Evrard</entry>
+                <entry>Alfred Joseph Brunet</entry>
+                <entry>Edouard Brunet</entry>
+                <entry>Auguste Daull�</entry>
+                <entry>Joseph-Auguste Lepr�tre</entry>
+            </names>
+            <nbs></nbs>
+            <date_s>12/02/1905</date_s>
+            <station></station>
+
+        </sauvetage>
+        <sauvetage>
+            <name>PRINCESSE MARIE JOSE</name>
+            <desc>Il �tait minuit 30. La malle PRINCESSE MARIE JOSE, venant de Douvres et se rendant � Ostende, o� elle devait arriver � deux heures, passait devant Dunkerque � environ trois milles. A ce moment, un vapeur anglais, le CLAN MAC NEIL, se disposait � entrer au port. Alors qu�il effectuait son mouvement pr�s de la bou�e 12, il aborda par le travers babord, un peu en arri�re de la passerelle, le paquebot sur  le pont duquel se tenaient presque tous les passagers.</desc>
+            <names>
+                <entry>Albert Pund</entry>
+            </names>
+            <nbs>750</nbs>
+            <date_s>08/08/1937</date_s>
+            <station></station>
+
+        </sauvetage>
+    </sauvetages>
+</base>

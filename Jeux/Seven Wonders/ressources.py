@@ -1,6 +1,6 @@
 class Ressources():
-    LISTRESSOURCES = ["ore", "stone", "wood",
-                      "brick", "glass", "paper", "cloth"]
+    LISTNAMESRESSOURCES = ["ore", "stone", "wood",
+                           "brick", "glass", "paper", "cloth"]
 
     def __init__(self, name):
         self.name = name
@@ -14,4 +14,4 @@ class Ressources():
         return hash(self.name)
 
     def __eq__(self, other) -> bool:
-        return type(self)==type(other) and self.name == other.name
+        return type(self) == type(other) and self.name == other.name
