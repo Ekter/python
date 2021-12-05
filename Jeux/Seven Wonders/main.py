@@ -14,16 +14,33 @@ class Interface():
                          Card("Tour de guet", 3, {
                               Ressources("wood"): 1}, war_points=1),
                          Card("Taverne", 2, {}, gold=5, points=1),
-                         Card("Temple", 1, {Ressources("wood"): 1}, points=2)
+                         Card("Temple", 1, {Ressources("wood"): 1}, points=3)
                          ],
                      2: [Card("Fonderie", 6, {}, ore=1),
-                         Card("Forêt", 6, {}, wood=1),
+                         Card("Briquetterie", 6, {}, brick=1),
                          Card("Carrière", 6, {}, stone=1),
                          Card("Papeterie", 7, {}, paper=1),
                          Card("Metier à tisser", 7, {}, cloth=1),
                          Card("Verrerie", 7, {}, glass=1),
                          Card("Bains", 1, {Ressources("stone"): 1}, points=2)
-                         ]}
+                         ],
+                     3: [Card("Fonderie", 6, {}, ore=1),
+                         Card("Briquetterie", 6, {}, wood=1),
+                         Card("Forêt", 6, {}, stone=1),
+                         Card("Papeterie", 7, {}, paper=1),
+                         Card("Metier à tisser", 7, {}, cloth=1),
+                         Card("Verrerie", 7, {}, glass=1),
+                         Card("Bains", 1, {Ressources("stone"): 1}, points=2)
+                         ],
+                     4: [Card("Forêt", 6, {}, ore=1),
+                         Card("Briquetterie", 6, {}, wood=1),
+                         Card("Carrière", 6, {}, stone=1),
+                         Card("Papeterie", 7, {}, paper=1),
+                         Card("Metier à tisser", 7, {}, cloth=1),
+                         Card("Verrerie", 7, {}, glass=1),
+                         Card("Bains", 1, {Ressources("stone"): 1}, points=2)
+                         ]
+                     }
 
     def __init__(self, nbjoueurs: int) -> None:
         self.cards = []
