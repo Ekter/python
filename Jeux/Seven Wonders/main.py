@@ -13,7 +13,7 @@ class Interface():
                               Ressources("stone"): 1}, war_points=1),
                          Card("Tour de guet", 3, {
                               Ressources("wood"): 1}, war_points=1),
-                         Card("Taverne", 2, {}, gold=5, points=1),
+                         Card("Taverne", 4, {}, gold=5, points=1),
                          Card("Temple", 1, {Ressources("wood"): 1}, points=3)
                          ],
                      2: [Card("Fonderie", 6, {}, ore=1),
