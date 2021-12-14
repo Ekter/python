@@ -998,26 +998,32 @@ strinput = """000111111001
 100100110000
 110011001010
 011001110101"""
+
+"""
 li = [0 for _ in range(12)]
 linput = strinput.split('\n')
 lcopy = linput[:]
 for j in range(12):
     n = 0
-    for i in range(1000000):
-        if i < len(lcopy):
-            if lcopy[i][j] == '1':
-                n += 1
-    n = 1 if n >= 500 else 0
-    for i in range(1000):
-        if i < len(lcopy) and lcopy[i][j] != str(n):
-            lcopy.pop(i)
-print(2**12)
-
+    for i in lcopy:
+        if i[j] == '1':
+            n += 1
+    n = 1 if n > len(lcopy)/2 else 0
+    l=0
+    print(j," : ",lcopy,n)
+    while l<len(lcopy):
+        if lcopy[l][j] != str(n):
+            lcopy.pop(l)
+        else:
+            l+=1
 print(lcopy)
-"""
-stroutput=''
-for j in range(12):
-    if li[j]>=500:
+print([int(i,2) for i in lcopy])
+print(int("001000001010",2))
+print(522*3573)
+
+stroutput=''522*3573
+for j in range(12): 001000001010
+    if li[j]>=500:  110111110101
         stroutput+='1'
     else:
         stroutput+='0'
@@ -1028,3 +1034,45 @@ print(a*b)
 
 """
 
+
+def bit_criteria(list_entries: list[str], position: int, type_gaz: str) -> list[str]:
+    n1 = 0
+    n2 = 0
+    listentries = list_entries[:]
+    for i in listentries:
+        if i[position] == type_gaz:
+            n1 += 1
+        else:
+            n2 += 1
+    if type_gaz == "1":
+        if n1 >= n2:
+            most_common = "1"
+        else:
+            most_common = "0"
+    if type_gaz == "0":
+        if n1 > n2:
+            most_common = "1"
+        else:
+            most_common = "0"
+    n = 0
+    while n < len(listentries):
+        if listentries[n][position] != most_common:
+            listentries.pop(n)
+        else:
+            n += 1
+    return listentries
+
+
+def filter_list(input_list: list[str], type_gaz: str) -> int:
+    list_entries = input_list[:]
+    i = 0
+    while len(list_entries) > 1 and i <= 12:
+        list_entries = bit_criteria(list_entries, i, type_gaz)
+        i += 1
+    return list_entries[0]
+
+
+a, b = int(filter_list(strinput.split("\n"), "1"), 2), int(
+    filter_list(strinput.split("\n"), "0"), 2
+)
+print(a, b, a * b)
