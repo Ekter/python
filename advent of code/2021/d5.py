@@ -518,7 +518,7 @@ for i in str_input.split("\n"):
 for i in lout:
     print(*i,sep="")
     for j in i:
-        n+=j
+        n+=j if j>=2 else 0
 
 print(n)
 
