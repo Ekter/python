@@ -28,7 +28,7 @@ RESPONSES=["PLIK37","#Évangile n°1 : Plik a raison",
     "#niounnn",
     "#je suis fatigué",
     "#il fait froid",
-    "Faire tomber une patate, c'est 37 ans de malheur",None,1,[1,"test"]]
+    "Faire tomber une patate, c'est 37 ans de malheur",None,1]
 bot = commands.Bot(command_prefix='rb')
 
 @bot.event
@@ -44,7 +44,9 @@ async def info(ctx:commands.Context,n:int=-1):
         await ctx.message.delete()
         await ctx.send(response)
 
-@bot.command(name="a")
+[print(i) for i in bot.get_all_members()]
+
+@bot.command(name="a",desc="Fait des dégats à un boss")
 async def info(ctx:commands.Context,boss:str="ver",degats:int=-1,team:str="team"):
     df=pd.read_csv("attacks.csv")
     df=df.append({"team":team,"boss":boss,"degats":degats},ignore_index=True)[["team","boss","degats"]]
