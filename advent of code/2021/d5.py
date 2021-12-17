@@ -505,6 +505,20 @@ for i in str_input.split("\n"):
     x1,y1=point1.split(",")
     x2,y2=point2.split(",")
     x1,y1,x2,y2=int(x1),int(y1),int(x2),int(y2)
-    if x1==x2 or y1==y2:
-        n+=1
+    if x1==x2 and y1==y2:
+        n-=1
+    if x1==x2:
+        for y in range(y1,y2+1):
+            lout[x1][y]+=1
+    if y1==y2:
+        for x in range(x1,x2+1):
+            lout[x][y1]+=1
+        lout[x1][y1]+=1
+
+for i in lout:
+    print(*i,sep="")
+    for j in i:
+        n+=j
+
 print(n)
+
