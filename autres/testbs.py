@@ -6,3 +6,4 @@ with urllib.request.urlopen('https://en.wikipedia.org/wiki/Union_between_Sweden_
     soup = BeautifulSoup(webpage, 'html.parser')
     for anchor in soup.find_all('p'):
         print(anchor.get_text())
+
