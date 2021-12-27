@@ -1,14 +1,19 @@
 import os
 import random
 import pandas as pd
-
+import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
+import urllib.request
+
 
 load_dotenv("../../globals.env")
 TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD = os.getenv("DISCORD_GUILD")
-RESPONSES=["PLIK37","#Évangile n°1 : Plik a raison",
+RESPONSES = [
+    "PLIK37",
+    "#Évangile n°1 : Plik a raison",
     "#Évangile n°2 : Plik n'a pas tord",
     "#Évangile n°3 : Plik ne se trompe pas",
     "#Évangile n°4 : Plik est dans le vrai",
@@ -28,48 +33,106 @@ RESPONSES=["PLIK37","#Évangile n°1 : Plik a raison",
     "#niounnn",
     "#je suis fatigué",
     "#il fait froid",
-    "Faire tomber une patate, c'est 37 ans de malheur",None,1]
-bot = commands.Bot(command_prefix='rb')
+    "Faire tomber une patate, c'est 37 ans de malheur",
+    None,
+    1,
+]
+bot = commands.Bot(command_prefix=["§", "rb"])
+
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user.name} has connected to Discord!')
+    print(f"{bot.user.name} has connected to Discord!")
 
-@bot.command(name="!")
-async def info(ctx:commands.Context,n:int=-1):
-        if not n in range(len(RESPONSES)):
-            response = random.choice(RESPONSES)
-        else:
-            response=RESPONSES[n]
-        await ctx.message.delete()
-        await ctx.send(response)
 
-[print(i) for i in bot.get_all_members()]
+@bot.command(name="info", help="Informations tirées du Plikoran",aliases=["infos","i","!"])
+async def info(ctx: commands.Context, n: int = -1):
+    if not n in range(len(RESPONSES)):
+        response = random.choice(RESPONSES)
+    else:
+        response = RESPONSES[n]
+    await ctx.message.delete()
+    await ctx.send(response)
 
-@bot.command(name="a",desc="Fait des dégats à un boss")
-async def info(ctx:commands.Context,boss:str="ver",degats:int=-1,team:str="team"):
-    df=pd.read_csv("attacks.csv")
-    df=df.append({"team":team,"boss":boss,"degats":degats},ignore_index=True)[["team","boss","degats"]]
+
+@bot.command(name="attack", help="Fait des dégats à un boss",aliases=["a","attaque","att","at"])
+async def info(
+    ctx: commands.Context, boss: str = "ver", degats: int = -1, team: str = "team"
+):
+    df = pd.read_csv("attacks.csv")
+    df = df.append({"team": team, "boss": boss, "degats": degats}, ignore_index=True)[
+        ["team", "boss", "degats"]
+    ]
     print(df)
     df.to_csv("attacks.csv")
-    await ctx.send(f"Tu as attaqué le boss {boss} à {degats} dégats avec ta team {team}. Réponse enregistrée!")
+    await ctx.send(
+        f"Tu as attaqué le boss {boss} à {degats} dégats avec ta team {team}. Réponse enregistrée!"
+    )
     try:
-        dfvie=pd.read_csv("vieactboss.csv")
+        dfvie = pd.read_csv("vieactboss.csv")
         print(dfvie)
-        dfvie[boss][0]=dfvie[boss][0]-degats
+        dfvie[boss][0] = dfvie[boss][0] - degats
         print(dfvie)
-        dfvie[["ver","bete","gast","garam"]].to_csv("vieactboss.csv")
+        dfvie[["ver", "bete", "gast", "garam"]].to_csv("vieactboss.csv")
     except ValueError as e:
         await ctx.send(f"boss {boss} non trouvé")
         print(e)
 
+@bot.command(name="vie",help="Affiche la vie actuelle des boss",aliases=["v","vieact","vieactuelle","vieactuel"])
+async def vie(ctx: commands.Context):
+    dfvie = pd.read_csv("vieactboss.csv")
+    await ctx.send(f"{dfvie}")
+
+
+@bot.command(name="ping",help="Ping en masse de la personne voulue(actuellement pas fonctionnel)",aliases=["p","pong"])
+async def info(ctx: commands.Context, n: int = 10, user: discord.Member = "ver"):
+    for i in range(n):
+        try:
+            await ctx.send(f"{user.mention}")
+        except Exception as e:
+            await ctx.send(f"Ping {i} {ctx.author.mention}")
+
+@bot.command(name="wiki",help="Affiche la page wikipédia voulue(sans accent svp)",aliases=["w"])
+async def wiki(ctx: commands.Context, target: str = None):
+    url="https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target==None else "https://fr.wikipedia.org/wiki/"+target
+    url=url.lower()
+    print(url)
+    with urllib.request.urlopen(url) as response:
+        webpage = response.read()
+        soup = BeautifulSoup(webpage, 'html.parser')
+        print(soup)
+        n=0
+        for anchor in soup.get_text().split("\n"):
+            if n>0:
+                try:
+                    await ctx.send(anchor)
+                except Exception as e:
+                    print(f"{e}")
+                    pass
+            n+=1
+
+@bot.command(name="ckoi",help="Affiche une description courte (sans accent svp)",aliases=["c"])
+async def wk(ctx: commands.Context, target: str = None):
+    try:
+        url="https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target==None else "https://fr.wikipedia.org/wiki/"+target
+        with urllib.request.urlopen(url) as response:
+            webpage = response.read()
+            soup = BeautifulSoup(webpage, 'html.parser')
+            num2 = soup.find("div", {"class": "mw-parser-output"})
+            for i in num2:
+                if str(i)[:3]=="<p>":
+                    await ctx.send(i.get_text())
+                    break
+    except Exception as e:
+        await ctx.send(f"Je ne sais pas ce que c'est {target}.")
 
 @bot.event
 async def on_error(event, *args, **kwargs):
-    with open('err.log', 'a') as f:
-        if event == 'on_message':
-            f.write(f'Unhandled message: {args[0]}\n{kwargs}\n')
+    with open("err.log", "a") as f:
+        if event == "on_message":
+            f.write(f"Unhandled message: {args[0]}\n{kwargs}\n")
         else:
             raise
+
 
 bot.run(TOKEN)
