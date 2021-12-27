@@ -522,3 +522,4 @@ for i in lout:
 
 print(n)
 
+print(512/32)
