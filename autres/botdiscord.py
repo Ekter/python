@@ -92,6 +92,13 @@ async def info(ctx: commands.Context, n: int = 10, user: discord.Member = "ver")
         except Exception as e:
             await ctx.send(f"Ping {i} {ctx.author.mention}")
 
+@bot.command(name="id",help="fait un id random")
+async def i_d(ctx: commands.Context, n: int = 24):
+    s="61cd"
+    while len(s)<n:
+        s+=str(random.choice("0 1 2 3 4 5 6 7 8 9 a b c d e f".split(" ")))
+    await ctx.send(s)
+
 @bot.command(name="wiki",help="Affiche la page wikipédia voulue(sans accent svp)",aliases=["w"])
 async def wiki(ctx: commands.Context, target: str = None):
     url="https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target==None else "https://fr.wikipedia.org/wiki/"+target
