@@ -4,6 +4,7 @@ Program to read data from chr files and create Character objects.
 import random
 import sys
 
+
 class Character():
     """
     Class to create Character objects.
@@ -77,3 +78,4 @@ def editsometimesnested(dictionary :dict,target:str,newvalue)-> None:
     for i in listtarget:
         dictionary=dictionary[i]
         #TO#DO à finir
+
