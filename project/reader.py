@@ -2,6 +2,7 @@
 Program to read data from chr files and create Character objects.
 """
 import random
+import sys
 
 class Character():
     """
@@ -15,13 +16,13 @@ class Character():
         self.description = description
         self.__dict__ = {**kwargs,**self.__dict__}
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Return string representation of Character object.
         """
         return f"{self.name} : {self.description}"
 
-    def meet(self, other, *args):
+    def meet(self, other, *args) -> None:
         """
         Prints the meet dialog
         """
@@ -32,7 +33,7 @@ class Character():
                 list_possible_dialogs.append(i.meet_dialog[list_meeters[~i]])
         print(random.choice(list_possible_dialogs))
 
-def read_file(file_name: str):
+def read_file(file_name: str)-> Character:
     """
     Reads a file and returns a Character object.
     """
@@ -68,7 +69,7 @@ testeuh["abc"]=":)"
 print(testeuh)
 print(dicttest)
 
-def editsometimesnested(dictionary :dict,target:str):
+def editsometimesnested(dictionary :dict,target:str,newvalue)-> None:
     """
     Edits a nested dictionary.
     """
