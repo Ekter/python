@@ -12,10 +12,10 @@ nomprogramme = "game.py"
 delaianim = 0.05
 
 
-
 def sign(x: float) -> int:
     "Returns the sign of a float, used to determine the direction of a movement"
-    return 0 if x==0 else-1 if x < 0 else 1
+    return 0 if x == 0 else -1 if x < 0 else 1
+
 
 '''teleport
     def teleport(creature: "Hero"):
@@ -395,7 +395,8 @@ class Creature(Element):
         level=1,
         action=0,
         power=None,
-        special=None):
+        special=None,
+    ):
         Element.__init__(self, name, abbrv, transparent=True)
         self.hp = int(hp * (1.5 ** level))
         self.hpmax = self.hp
@@ -420,11 +421,11 @@ class Creature(Element):
     def description(self) -> str:
         "Description of the Creature"
         return Element.description(self) + f"({self.hp})*{self.level}*"
-    
-    def heal(self,heal_amount=3) -> True:
+
+    def heal(self, heal_amount=3) -> True:
         """Heals a creature \n
         Deprecated, we will prefer using the Status class"""
-        self.hp = min(self.hpmax,self.hp+heal_amount)
+        self.hp = min(self.hpmax, self.hp + heal_amount)
         return True
 
     def meet(self, other) -> bool:
@@ -628,11 +629,11 @@ class Equipment(Element):
 
 
 class Edible(Equipment):
-    def __init__(self, name, abbvr=None, transparent=True, f=False,miam=7):
-        Equipment.__init__(self, name, abbvr, transparent=transparent,f=f)
+    def __init__(self, name, abbvr=None, miam=7, transparent=True, f=False):
+        Equipment.__init__(self, name, abbvr, transparent=transparent, f=f)
         self.miam = miam
 
-    def use(self,creature, miam, name):
+    def use(self, creature, miam, name):
         """Feed the Hero with food elements"""
         creature.satiete += miam
         if name == "HP" and isinstance(creature, Hero):
@@ -643,6 +644,7 @@ class Edible(Equipment):
             return True
         print("MIAM MIAM MIAM")
         return True
+
 
 class Used(Equipment):
     def __init__(self, name, abbrv="", usage=None):
@@ -1849,18 +1851,17 @@ class Game(object):
             Edible(
                 "sucette baveuse",
                 "s3",
-                usage=lambda creature: eat(creature, 1, "sucette baveuse"),
+                5,
                 f=True,
             ),
         ],
         1: [
             Equipment("lance-pierre", "a", usage=lambda creature: tir(False)),
-
             Pills("or2", "j", valeur_pillule=2),
             Edible(
                 "sucette croquée",
                 "s2",
-                usage=lambda creature: eat(creature, 3, "sucette croquée"),
+                15,
                 f=True,
             ),
         ],
@@ -1870,17 +1871,15 @@ class Game(object):
             Edible(
                 "sucette",
                 "s1",
-                usage=lambda creature: eat(creature, 7, "sucette"),
+                35,
                 f=True,
             ),
             Edible(
                 "cookie choco",
                 "cc",
-                usage=lambda creature: eat(creature, 8, "cookie choco"),
+                40,
             ),
-            Edible(
-                "happy pills", "HP", usage=lambda creature: eat(creature, 10, "HP")
-            ),
+            Edible("happy pills", "HP",50),
         ],
         3: [
             Pills("or10", "J", valeur_pillule=10),
@@ -1905,11 +1904,9 @@ class Game(object):
             Edible(
                 "cookie choco",
                 "cc",
-                usage=lambda creature: eat(creature, 8, "cookie choco"),
+                40,
             ),
-            Edible(
-                "sucette", "s3", usage=lambda creature: eat(creature, 7, "sucette")
-            ),
+            Edible("sucette", "s3", 35),
         ],
         2: [Armor("plaid", 5, 5, "pl")],
     }
@@ -1918,6 +1915,7 @@ class Game(object):
             [Decoration("lit", "Be2", True), Decoration("lit", "Be1", True)],
             [Decoration("fauteuil", "Fa", True)],
             [Decoration("pot", "Po", True)],
+            [Decoration("trou", "Tr", True)],
         ]
     }
     directions = [
@@ -2048,7 +2046,7 @@ class Game(object):
     def initgraph(self) -> None:
         "Creates the dictionary of images,and binds actions to the Tk window, then creates the mainloop."
         genPATH = __file__
-        imgPATH = genPATH[0:-len(nomprogramme)] + "images/"
+        imgPATH = genPATH[0 : -len(nomprogramme)] + "images/"
         hero_fi = PhotoImage(file=imgPATH + "hero_face_i.png").zoom(2)
         hero_ri = PhotoImage(file=imgPATH + "hero_right_i.png").zoom(2)
         hero_bi = PhotoImage(file=imgPATH + "hero_back_i.png").zoom(2)
@@ -2128,6 +2126,7 @@ class Game(object):
         beddown = PhotoImage(file=imgPATH + "lit_vert_bas_final.png").zoom(2)
         wheelchair = PhotoImage(file=imgPATH + "fauteuil.png").zoom(2)
         flowerpot = PhotoImage(file=imgPATH + "arbuste.png").zoom(2)
+        hole = PhotoImage(file=imgPATH + "trou.png").zoom(2)
         docteurM_img = PhotoImage(file=imgPATH + "medecin1.png").zoom(2)
         docteurF_img = PhotoImage(file=imgPATH + "medecin2.png").zoom(2)
         infirmiere1_img = PhotoImage(file=imgPATH + "infirmiere1.png").zoom(2)
