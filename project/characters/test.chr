@@ -1,0 +1,19 @@
+//this is a file representing a character.
+//<- this is a comment
+//each character, so each file, must have : 
+//     - a name
+//     - a description
+
+NAME=Test
+DESCRIPTION=This is a test character.
+|Can have multiple lines like that.
+MEET_DIALOG=
+|[Person]=(This is the dialog shown when Person meets Test).
+||>Test : Hello Person!
+||>Person : Hello Test!
+|[Other-Person]=(This is the dialog shown when Other-Person meets Test).
+||>Test : Hello Other-Person!
+||>Other-Person : Hello Test! How are you today?
+||>Test : I'm fine, thanks.
+ATTRIBUTE1=duksjvhskdvc
+ATTRIBUTE2=fdsf342RTZERFGDSVCX
