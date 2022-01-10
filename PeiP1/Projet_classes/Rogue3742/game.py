@@ -8,7 +8,9 @@ from tkinter import *
 import copy
 import math
 
-nomprogramme = "game.py"
+nomprogramme=__file__.split("/")[-1]
+print(nomprogramme)
+#nomprogramme = "game.py"
 delaianim = 0.05
 
 
@@ -30,80 +32,43 @@ def sign(x: float) -> int:
         theGame().floor.put(c, creature)'''
 
 
-def eat(creature, miam, name):
-    """Feed the Hero with food elements"""
-    creature.satiete += miam
-    if name == "HP" and isinstance(creature, Hero):
-        creature.joie += 10
-        creature.tristesse -= 10
-        creature.colere -= 10
-        creature.peur -= 10
-        return True
-    print("MIAM MIAM MIAM")
-    return True
-
-
-def getch():
-    """Single char input, only works only on mac/linux/windows OS terminals"""
-    try:
-        import termios
-
-        # POSIX system. Create and return a getch that manipulates the tty.
-        import sys
-        import tty
-
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(fd)
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
-    except ImportError:
-        # Non-POSIX. Return msvcrt's (Windows') getch.
-        import msvcrt
-
-        return msvcrt.getch().decode("utf-8")
-
-
 def tir(unique):
-    Devant = theGame().floor._elem[theGame().floor.hero] + theGame().floor.hero.facing
+    devant = theGame().floor._elem[theGame().floor.hero] + theGame().floor.hero.facing
     i = 5
-    if isinstance(theGame().floor.get(Devant), Creature):
-        theGame().floor.get(Devant).meet(theGame().floor.hero)
+    if isinstance(theGame().floor.get(devant), Creature):
+        theGame().floor.get(devant).meet(theGame().floor.hero)
 
-        if theGame().floor.get(Devant).meet(theGame().floor.hero) == True:
-            theGame().floor.rm(Devant)
+        if theGame().floor.get(devant).meet(theGame().floor.hero) == True:
+            theGame().floor.rm(devant)
     else:
         while (
-            (Devant + theGame().floor.hero.facing in theGame().floor)
+            (devant + theGame().floor.hero.facing in theGame().floor)
             and (
-                theGame().floor.get(Devant + theGame().floor.hero.facing)
+                theGame().floor.get(devant + theGame().floor.hero.facing)
                 in theGame().floor.listground
-                or theGame().floor.get(Devant + theGame().floor.hero.facing)
+                or theGame().floor.get(devant + theGame().floor.hero.facing)
                 in theGame().floor.listgroundwet
             )
             and i != 0
         ):
             if isinstance(
-                theGame().floor.get(Devant + theGame().floor.hero.facing), Creature
+                theGame().floor.get(devant + theGame().floor.hero.facing), Creature
             ):
-                theGame().floor.get(Devant + theGame().floor.hero.facing).meet(
+                theGame().floor.get(devant + theGame().floor.hero.facing).meet(
                     theGame().floor.hero
                 )
                 i = 0
-            Devant += theGame().floor.hero.facing
+            devant += theGame().floor.hero.facing
 
             if (
                 theGame()
-                .floor.get(Devant + theGame().floor.hero.facing)
+                .floor.get(devant + theGame().floor.hero.facing)
                 .meet(theGame().floor.hero)
                 == True
             ):
-                theGame().floor.rm(Devant + theGame().floor.hero.facing)
+                theGame().floor.rm(devant + theGame().floor.hero.facing)
 
-            Devant += theGame().floor.hero.facing
+            devant += theGame().floor.hero.facing
             i -= 1
 
 
@@ -633,16 +598,14 @@ class Edible(Equipment):
         Equipment.__init__(self, name, abbvr, transparent=transparent, f=f)
         self.miam = miam
 
-    def use(self, creature, miam, name):
+    def use(self, creature):
         """Feed the Hero with food elements"""
-        creature.satiete += miam
-        if name == "HP" and isinstance(creature, Hero):
+        creature.satiete += self.miam
+        if isinstance(creature, Hero):
             creature.joie += 10
             creature.tristesse -= 10
             creature.colere -= 10
             creature.peur -= 10
-            return True
-        print("MIAM MIAM MIAM")
         return True
 
 
@@ -1791,6 +1754,7 @@ class Game(object):
         "<space>": lambda hero: theGame().tour(),
         "u": lambda hero: theGame().select(hero.inventory),
         "j": lambda hero: hero.throw(theGame().select(hero.inventory)),
+        "<Escape>": lambda hero: theGame().fenetre.destroy,
     }
     monsters = {
         0: [
@@ -1846,7 +1810,7 @@ class Game(object):
                 usage=lambda creature: jet(True),
                 used=Used("used chewing-gum", "u"),
             ),
-            Edible("potion", "!", usage=lambda creature: creature.heal(3), f=True),
+            Equipment("potion", "!", usage=lambda creature: creature.heal(3), f=True),
             Pills("or1", "b", valeur_pillule=1),
             Edible(
                 "sucette baveuse",
@@ -1879,7 +1843,7 @@ class Game(object):
                 "cc",
                 40,
             ),
-            Edible("happy pills", "HP",50),
+            Edible("happy pills", "HP", 50),
         ],
         3: [
             Pills("or10", "J", valeur_pillule=10),
@@ -1897,7 +1861,7 @@ class Game(object):
                 usage=lambda creature: jet(True),
                 used=Used("used chewing-gum", "u"),
             ),
-            Edible("potion", "!", usage=lambda creature: creature.heal(3), f=True),
+            Equipment("potion", "!", usage=lambda creature: creature.heal(3), f=True),
         ],
         1: [
             Equipment("lance-pierre", "a", usage=lambda creature: tir(False)),
@@ -1928,6 +1892,7 @@ class Game(object):
         Coord(-1, 0),
         Coord(-1, 1),
     ]
+    ponct = ".,;:!?'\""
 
     def __init__(self, hero=None, sizemap=20, stage=10, fl=None):
         self.hero = Hero()
@@ -1960,17 +1925,16 @@ class Game(object):
                 self.etages.append(Map(self.sizemap, nbrooms=int(self.sizemap / 2)))
         self.floor = self.etages[-1]
 
-    def addMessage(self, msg) -> None:
+    def addMessage(self, msg, color="yellow", life=3) -> None:
         "Adds a message to be printed on the screen."
-        self._message.append(msg)
+        self._message.append([msg if msg[-1] in Game.ponct else msg + ".", color, life])
 
     def readMessages(self) -> str:
-        "Returns all messages to be printed on the screen"
-        if self._message != []:
-            a = ". ".join(self._message) + ". "
-            self._message = []
-            return a
-        return ""
+        "Yields all messages to be printed on the screen"
+        for i in self._message:
+            if i[2] > 0:
+                i[2] -= 1
+            yield i
 
     def randElement(self, collection: dict) -> Element:
         "Returns a copy from an element of a dictionnary in the form {rarity<int> : List[Element],...}"
@@ -2275,6 +2239,7 @@ class Game(object):
             "Be2": beddown,
             "Fa": wheelchair,
             "Po": flowerpot,
+            "Tr": hole,
             "s1": sucette1_img,
             "s2": sucette2_img,
             "s3": sucette3_img,
@@ -2559,7 +2524,10 @@ class Game(object):
             self.canvas.create_image(50, 400, image=self.dicimages["inventory"])
 
             # affiche  le niveau de satiete grace a un cookie
-            satiete = theGame().floor.hero.satiete * 5
+            satiete = theGame().floor.hero.satiete
+            self.canvas.create_image(
+                950, 70, image=self.dicimages[f"faim{math.floor(satiete/25)*25}"]
+            )
             if satiete >= 100:
                 self.canvas.create_image(950, 70, image=self.dicimages["faim100"])
             elif satiete >= 75:
@@ -2759,32 +2727,41 @@ class Game(object):
         # affichage des dialogue dans la boite de dialogue
         self.canvas.create_image(540, 740, image=self.dicimages["dialogue"])
         if last:
-            message = self.readMessages()
-            if len(message) <= 50:
-                self.canvas.create_text(
-                    540, 740, text=message, font="Arial 21 italic", fill="yellow"
-                )
-            else:
-                space = []
-                # on va récupérer la valeurs des endroit ou il peut y avoir une séparation
-                for i in range(len(message)):
-                    if message[i] == (" " or "." or "?" or "!" or ","):
-                        space.append(i)
-                milieu = int(len(space) // 2)
-                # valeur de la ou on va couper le texte en deux pour le mettre a la ligne
-                separation = space[milieu]
-                haut = ""
-                bas = ""
-                for e in range(separation):
-                    haut = haut + message[e]
-                for a in range(separation, len(message)):
-                    bas = bas + message[a]
-                self.canvas.create_text(
-                    540, 720, text=haut, font="Arial 21 italic", fill="yellow"
-                )
-                self.canvas.create_text(
-                    540, 750, text=bas, font="Arial 21 italic", fill="yellow"
-                )
+            i=0
+            for (message,color,_) in self.readMessages():
+                while len(message)>74:
+                    n=74
+                    while not (message[n] in Game.ponct+" "):
+                        n-=1
+                    self.canvas.create_text(540, 720+25*i, text=message[:n], font=("Arial 21"), fill=color)
+                    message=message[n:]
+                    i+=1
+            '''
+                if len(message) <= 50:
+                    self.canvas.create_text(
+                        540, 720+25*i, text=message, font="Arial 21", fill=color
+                    )
+                else:
+                    space = []# on va récupérer la valeurs des endroit ou il peut y avoir une séparation
+                    for i in range(len(message)):
+                        if message[i] in Game.ponct+" ":
+                            space.append(i)
+                    milieu = int(len(space) // 2)# valeur de la ou on va couper le texte en deux pour le mettre a la ligne
+                    separation = space[milieu]
+                    haut = ""
+                    bas = ""
+                    for e in range(separation):
+                        haut = haut + message[e]
+                    for a in range(separation, len(message)):
+                        bas = bas + message[a]
+                    self.canvas.create_text(
+                        540, 720+25*i, text=haut, font="Arial 21 italic", fill="yellow"
+                    )
+                    i+=1
+                    self.canvas.create_text(
+                        540, 720+25*i, text=bas, font="Arial 21 italic", fill="yellow"
+                    )
+                i+=1'''
 
         # affichage du niveau
         self.canvas.create_text(
@@ -2826,7 +2803,7 @@ class Game(object):
         self.canvas.create_text(
             85, 120, text="NEW GAME", font="Arial 16 italic", fill="blue"
         )
-        # self.bouton_quitter = Button(self.fenetre, text='Quitter', command=self.fenetre.destroy) #util pour le fullscreen
+        # self.bouton_quitter = Button(self.fenetre, text='Quitter', command=self.fenetre.destroy) #utile pour le fullscreen
         # self.bouton_quitter.place(x=1200,y=800)
         self.canvas.delete("all")
         self.canvas.destroy()
