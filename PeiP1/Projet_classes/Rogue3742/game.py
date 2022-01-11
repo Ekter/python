@@ -8,9 +8,9 @@ from tkinter import *
 import copy
 import math
 
-nomprogramme=__file__.split("/")[-1]
+nomprogramme = __file__.split("/")[-1]
 print(nomprogramme)
-#nomprogramme = "game.py"
+# nomprogramme = "game.py"
 delaianim = 0.05
 
 
@@ -1917,24 +1917,35 @@ class Game(object):
     def buildFloor(self) -> None:
         "Creates the Game's floor."
         for i in range(11):
-            if i % 2:
-                self.etages.append(
-                    Map(self.sizemap, nbrooms=int(self.sizemap / 2), coffre="O")
+            self.etages.append(
+                Map(
+                    self.sizemap,
+                    nbrooms=int(self.sizemap / 2),
+                    coffre="O" if i % 2 else None,
                 )
-            else:
-                self.etages.append(Map(self.sizemap, nbrooms=int(self.sizemap / 2)))
+            )
         self.floor = self.etages[-1]
 
     def addMessage(self, msg, color="yellow", life=3) -> None:
         "Adds a message to be printed on the screen."
         self._message.append([msg if msg[-1] in Game.ponct else msg + ".", color, life])
+        print(msg)
 
     def readMessages(self) -> str:
         "Yields all messages to be printed on the screen"
         for i in self._message:
-            if i[2] > 0:
-                i[2] -= 1
+            i[2] -= 1
+            print(i)
             yield i
+        # n=0
+        # while n<len(self._message):
+        #     if self._message[n][2]<=0:
+        #         del self._message[n]
+        #     else:
+        #         n+=1
+        self._message = [
+            self._message[n] for (n, [_, _, i]) in enumerate(self._message) if i > 0
+        ]
 
     def randElement(self, collection: dict) -> Element:
         "Returns a copy from an element of a dictionnary in the form {rarity<int> : List[Element],...}"
@@ -2120,6 +2131,7 @@ class Game(object):
         dlig = PhotoImage(file=imgPATH + "darklightblue.png")
         ora = PhotoImage(file=imgPATH + "orange.png")
         dora = PhotoImage(file=imgPATH + "darkorange.png")
+        black= PhotoImage(file=imgPATH + "black.png")
         vie = PhotoImage(file=imgPATH + "health.png")
         cle_img = PhotoImage(file=imgPATH + "cle.png")
         multi_img = PhotoImage(file=imgPATH + "multipass.png")
@@ -2404,7 +2416,7 @@ class Game(object):
             "angry9": angry9,
         }
 
-        self.dicother = {"gameover": gameover_img, "marchandepage": marchandepage_img}
+        self.dicother = {"gameover": gameover_img, "marchandepage": marchandepage_img,"black": black}
         self.canvas.config(width=1000, height=800)
         self.seeMap()
         self.updategraph()
@@ -2727,16 +2739,31 @@ class Game(object):
         # affichage des dialogue dans la boite de dialogue
         self.canvas.create_image(540, 740, image=self.dicimages["dialogue"])
         if last:
-            i=0
-            for (message,color,_) in self.readMessages():
-                while len(message)>74:
-                    n=74
-                    while not (message[n] in Game.ponct+" "):
-                        n-=1
-                    self.canvas.create_text(540, 720+25*i, text=message[:n], font=("Arial 21"), fill=color)
-                    message=message[n:]
-                    i+=1
-            '''
+            i = 0
+            for [message, color, _] in self.readMessages():
+                print(message)
+                while len(message) > 74:
+                    n = 74
+                    while not (message[n] in Game.ponct + " "):
+                        n -= 1
+                    self.canvas.create_text(
+                        540,
+                        720 + 25 * i,
+                        text=message[:n],
+                        font=("Arial 21"),
+                        fill=color,
+                    )
+                    message = message[n:]
+                    i += 1
+                self.canvas.create_text(
+                    540,
+                    745 + 25 * i,   # 720 + 25 * (i+1)
+                    text=message,
+                    font=("Arial 21"),
+                    fill=color,
+                )
+                i+=1
+            """
                 if len(message) <= 50:
                     self.canvas.create_text(
                         540, 720+25*i, text=message, font="Arial 21", fill=color
@@ -2761,7 +2788,7 @@ class Game(object):
                     self.canvas.create_text(
                         540, 720+25*i, text=bas, font="Arial 21 italic", fill="yellow"
                     )
-                i+=1'''
+                i+=1"""
 
         # affichage du niveau
         self.canvas.create_text(
