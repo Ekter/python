@@ -15,7 +15,6 @@ print(nomprogramme)
 delaianim = 0.05
 
 
-math.copysign()
 def sign(x: float) -> int:
     "Returns the sign of a float, used to determine the direction of a movement"
     return 0 if x == 0 else -1 if x < 0 else 1
@@ -35,33 +34,32 @@ def sign(x: float) -> int:
 
 
 
-def jet(unique):
+def jet(self,unique):
     "Throw the chewing-gum"
-    Devant = theGame().floor._elem[theGame(
-    ).floor.hero] + theGame().floor.hero.facing
+    devant = theGame()[self] + self.facing
     i = 5
-    if isinstance(theGame().floor.get(Devant), Creature):
-        theGame().floor.get(Devant).action += 8
+    if isinstance(theGame().floor.get(devant), Creature):
+        theGame().floor.get(devant).action += 8
     else:
         while (
-            (Devant + theGame().floor.hero.facing in theGame().floor)
+            (devant + theGame().floor.hero.facing in theGame().floor)
             and (
-                theGame().floor.get(Devant + theGame().floor.hero.facing)
+                theGame().floor.get(devant + theGame().floor.hero.facing)
                 in theGame().floor.listground
-                or theGame().floor.get(Devant + theGame().floor.hero.facing)
+                or theGame().floor.get(devant + theGame().floor.hero.facing)
                 in theGame().floor.listgroundwet
             )
             and i != 0
         ):
             if isinstance(
-                theGame().floor.get(Devant + theGame().floor.hero.facing), Creature
+                theGame().floor.get(devant + theGame().floor.hero.facing), Creature
             ):
-                theGame().floor.get(Devant + theGame().floor.hero.facing).action += 8
+                theGame().floor.get(devant + theGame().floor.hero.facing).action += 8
                 i = 0
 
-            Devant += theGame().floor.hero.facing
+            devant += theGame().floor.hero.facing
             i -= 1
-        theGame().floor.put(Devant, Used("used chewing-gum", "u"))
+        theGame().floor.put(devant, Used("used chewing-gum", "u"))
     return unique
 
 
@@ -345,8 +343,8 @@ class Creature(Element):
         self.special = special
         self.distantstrenght = distantstrenght
 
-    def __contains__(self, item):
-        return (item in self.inventory) if isinstance(item, Equipment) else item in [i.name for i in self.inventory]
+    def __contains__(self, item:Union[str,"Equipment"]):
+        return (item in self.inventory) if isinstance(item, Equipment) else (item in [i.name for i in self.inventory])
 
     def description(self) -> str:
         "Description of the Creature"
@@ -364,7 +362,7 @@ class Creature(Element):
             other.strength - random.randint(0, self.defense))
         if other.power != None:
             self.listeffects.append(other.power)
-        theGame().addMessage(f"Le {other.name} hits le {self.name}")
+        theGame().addMessage(f"Le {other.name} hits le {self.name}",life=1)
         if self.special != None and isinstance(other, Hero):
             self.special(self)
         if other.special != None and isinstance(self, Hero):
@@ -667,24 +665,19 @@ class Hero(Creature):
         if item.use(self):
             self.inventory.remove(item)
             theGame().deselect()
-            theGame().gameturn()
 
     def useitem(self, number) -> None:
         [self.fenetre.bind(i, self.gameturn) for i in self._actions]
         self.use(self.inventory[number])
 
     def destroy(self,item:Union[str,Equipment]):
-        try:
-            if isinstance(item,str):
-                for i in self.inventory():
-                    if i.name == item:
-                        self.inventory.remove(i)
-                        return True
-                self.inventory.remove(self.inventory[item])
-            else:
-                self.inventory.remove(item)
-        except ValueError:
-            pass
+        if isinstance(item,str):
+            for i in self.inventory:
+                if i.name == item:
+                    self.inventory.remove(i)
+                    return True
+        elif item in self.inventory:
+            self.inventory.remove(item)
 
     def levelup(self) -> None:
         "Level up : stats are increased"
@@ -693,6 +686,8 @@ class Hero(Creature):
         self.strength += 1
         self.joie += 10
         self.peur -= 10
+        self.tristesse -= 10
+        self.colere -= 10
         self.hp = self.hpmax
         theGame().addMessage(
             f"Bien joué! Bravo!! Tu es maintenant niveau {self.level}")
@@ -885,28 +880,19 @@ class Coffre(Element):
         Element.__init__(self, name, abbrv, transparent=True)
 
     def meet(self, creature:Creature):
-        if "key" in creature:
-            creature.destroy("key")
-        for i in creature.inventory:
-            if i.name == Equipment("key", "k").name:
-                creature.inventory.remove(i)
-            theGame().addMessage("Vous avez ouvert le coffre")
-            print("it is open")
+        if "cle" in creature:
+            creature.destroy("cle")
             coordcoffre = theGame().floor.pos(self)
-            print(coordcoffre)
             coordaround = theGame().floor.getcoordaround(coordcoffre, 3)
             theGame().floor.rm(coordcoffre)
-            print(coordaround)
             for object in [theGame().randEquipment() for _ in range(random.randint(1, 5))]:
-                print(object)
                 if len(coordaround) > 0:
                     inx = random.randint(0, len(coordaround))
                     print(coordaround[inx - 1])
                     theGame().floor.put(coordaround[inx - 1], object)
                     coordaround.pop(inx - 1)
-            return
-
-        return theGame().addMessage("Ce coffre ne s'ouvre qu'avec une clé..")
+            return theGame().addMessage("Vous avez ouvert le coffre","blue",5)
+        return theGame().addMessage("Ce coffre ne s'ouvre qu'avec une clé..","red",3)
 
 
 class NPC(Creature):
