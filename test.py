@@ -1,18 +1,21 @@
+"""
+blablabla"""
+
+
 from random import randint
 import math
 
 print(math.gcd(5,4))
-def circular(l):
-    print(l)
-    x=str(l)
-    if ', [...]' in x:
-        return True
-    else:
-        return False
+def circular(l2):
+    print(l2)
+    x=str(l2)
+    return ', [...]' in x
+
 def caca() -> int:
     "cette fonction ne sert à rien"
     print()
-    """
+
+"""
 class Client(object):
     "Cette classe représente un client"
     def __init__(self,age,genre,ageMin=-1,ageMax=-1,genreAim=["F","M","?"]):
@@ -150,22 +153,39 @@ print(l,l[::],max(l))
 a=1
 a+=1+2
 if randint(0,2)==0:
-    def fonctiontest(a=0):
-        print(a)
+    def fonctiontest(first_var=0):
+        """:param first_var:"""
+        print(first_var)
 elif randint(0,1)==0:
-    def fonctiontest(a=0,b=0):
-        print(a,b)
+    def fonctiontest(first_var=0,second_var=0):
+        """:param first_var:
+        :param second_var:"""
+        print(first_var,second_var)
 else:
-    def fonctiontest(a=0,b=0,c=0):
-        print(a,b,c)
-#fonctiontest(14,2,37)
-class Point(object):
+    def fonctiontest(first_var=0,second_var=0,third_var=0):
+        """:param first_var:
+        :param second_var:
+        :param third_var:"""
+        print(first_var,second_var,third_var)
+fonctiontest(*[randint(0,10) for i in range(randint(0,3))])
+class Point():
     "Ceci est un point."
+    def __init__(self,abscisse,ordonnee):
+        self.abs=abscisse
+        self.ord=ordonnee
+
+    def affiche_point(self):
+        """
+        Affiche un point"""
+        print("coord. horizontale =", self.abs, "coord. verticale =", self.ord)
+
+    def __repr__(self):
+        return "Point({},{})".format(self.abs,self.ord)
+
+
 p9=Point()
-p9.x=3
-p9.y=4
-def affiche_point(p):
-    print("coord. horizontale =", p.x, "coord. verticale =", p.y)
+p9.abs=3
+p9.ord=4
 class Time(object):
     "classe de temps"
     def __init__(self,heure=12,minute=0,seconde=0):
@@ -248,7 +268,6 @@ def deuxFibonacci(n,f0=1,f1=1):
     return b,a+b
 def f(n,f0=1,f1=1):
     return deuxFibonacci(n,f0,f1)[1]
-    print(f(n-1,f0,f1))
 def hanoi(n,t1,t2,t3):
     if n==0:
         return ""
@@ -259,15 +278,15 @@ def hanoi(n,t1,t2,t3):
     hanoi(1,t1,t2,t3)
     hanoi(n-1,t2,t1,t3)
 hanoi(5,"A","B","C")
-def permutations(l):
-    if l==[]:
+def permutations(l1):
+    if l1==[]:
         return [[]]
-    ltemp=permutations(l[:-1])
+    ltemp=permutations(l1[:-1])
     lt2=[]
     for k in ltemp:
         for i in range(len(k)+1):
             j=k[:]
-            j.insert(i,l[-1])
+            j.insert(i,l1[-1])
             lt2.append(j)
     return lt2
 def hanoiv2(n,t1,t2,t3):

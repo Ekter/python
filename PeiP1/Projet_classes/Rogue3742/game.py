@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 #                               MIND MAZE
 # Roguelike project, by Nino Mulac, Ilane Pelletier, Arwen Duee-Moreau, Hugo Durand, Vaiki Martelli, and Kylian Girard
-from time import sleep, time
+import time
 import random
-from typing import *
-from tkinter import *
+from typing import Any, List, Union
+import tkinter
 import copy
 import math
 
@@ -12,7 +12,7 @@ import math
 nomprogramme = __file__.split("/")[-1]
 print(nomprogramme)
 # nomprogramme = "game.py"
-delaianim = 0.05
+DELAIANIM = 0.05
 
 
 def sign(x: float) -> int:
@@ -33,8 +33,7 @@ def sign(x: float) -> int:
         theGame().floor.put(c, creature)'''
 
 
-
-def jet(self,unique):
+def jet(self, unique):
     "Throw the chewing-gum"
     devant = theGame()[self] + self.facing
     i = 5
@@ -296,6 +295,7 @@ class Element(object):
 
 class Decoration(Element):
     "Just a decoration."
+
     def __init__(self, name, abbrv=None, transparent=False):
         Element.__init__(self, name, abbrv, transparent)
 
@@ -343,7 +343,7 @@ class Creature(Element):
         self.special = special
         self.distantstrenght = distantstrenght
 
-    def __contains__(self, item:Union[str,"Equipment"]):
+    def __contains__(self, item: Union[str, "Equipment"]):
         return (item in self.inventory) if isinstance(item, Equipment) else (item in [i.name for i in self.inventory])
 
     def description(self) -> str:
@@ -362,7 +362,7 @@ class Creature(Element):
             other.strength - random.randint(0, self.defense))
         if other.power != None:
             self.listeffects.append(other.power)
-        theGame().addMessage(f"Le {other.name} hits le {self.name}",life=1)
+        theGame().addMessage(f"Le {other.name} hits le {self.name}", life=1)
         if self.special != None and isinstance(other, Hero):
             self.special(self)
         if other.special != None and isinstance(self, Hero):
@@ -467,7 +467,7 @@ class Creature(Element):
     def tir(self) -> None:
         devant = theGame().floor._elem[self] + self.facing
         portee = 5
-        if isinstance(theGame()[devant], Creature) and theGame()[devant].meet(self,distant=True):
+        if isinstance(theGame()[devant], Creature) and theGame()[devant].meet(self, distant=True):
             theGame().floor.rm(devant)
         else:
             while theGame()[devant + self.facing] in theGame().floor.listgrounds and portee != 0:
@@ -482,6 +482,7 @@ class Creature(Element):
 
 class Archer(Creature):
     "An creature attacking the hero from far away"
+
     def __init__(
         self,
         name,
@@ -670,8 +671,8 @@ class Hero(Creature):
         [self.fenetre.bind(i, self.gameturn) for i in self._actions]
         self.use(self.inventory[number])
 
-    def destroy(self,item:Union[str,Equipment]):
-        if isinstance(item,str):
+    def destroy(self, item: Union[str, Equipment]):
+        if isinstance(item, str):
             for i in self.inventory:
                 if i.name == item:
                     self.inventory.remove(i)
@@ -697,10 +698,10 @@ class Hero(Creature):
         Decreases every 3 turns, from 100 to 0.
         At 0, the hero loses hp each 3 turns."""
         self.tour += 1
-        if self.satiete == 0:
-            self.famine == True
+        if self.satiete <= 0:
+            self.famine = True
         if self.satiete >= 20:
-            self.famine == False
+            self.famine = False
             self.satiete = 20
         if self.tour % 3 == 0 and self.satiete > 0:
             self.satiete -= 1
@@ -879,7 +880,7 @@ class Coffre(Element):
     def __init__(self, name="coffre", abbrv="C"):
         Element.__init__(self, name, abbrv, transparent=True)
 
-    def meet(self, creature:Creature):
+    def meet(self, creature: Creature):
         if "cle" in creature:
             creature.destroy("cle")
             coordcoffre = theGame().floor.pos(self)
@@ -891,8 +892,8 @@ class Coffre(Element):
                     print(coordaround[inx - 1])
                     theGame().floor.put(coordaround[inx - 1], object)
                     coordaround.pop(inx - 1)
-            return theGame().addMessage("Vous avez ouvert le coffre","blue",5)
-        return theGame().addMessage("Ce coffre ne s'ouvre qu'avec une clé..","red",3)
+            return theGame().addMessage("Vous avez ouvert le coffre", "blue", 5)
+        return theGame().addMessage("Ce coffre ne s'ouvre qu'avec une clé..", "red", 3)
 
 
 class NPC(Creature):
@@ -1288,12 +1289,13 @@ class Map(object):
                 return
         self._attacks[copy.copy(attack)] = Coord(coord.x, coord.y)
 
-    def rm(self, object: Union[Element,Coord]) -> None:
+    def rm(self, object: Union[Element, Coord]) -> None:
         "Removes the Element from the Map(or the element at the given Coord)"
-        coordarr=self.pos(object) if isinstance(object,Element) else object
+        coordarr = self.pos(object) if isinstance(object, Element) else object
         if type(object) is Coord:
             self.checkCoord(object)
-            self._elem = {key: val for key, val in self._elem.items() if not val == object}
+            self._elem = {key: val for key,
+                          val in self._elem.items() if not val == object}
             self.groundize(object)
         else:
             self.groundize(self.pos(self._elem.pop(object)))
@@ -1323,7 +1325,7 @@ class Map(object):
                 if a.meet(element):
                     self.rm(coordarr)
 
-    def getcoordaround(self, index:Coord, radius:int):
+    def getcoordaround(self, index: Coord, radius: int):
         "returns the list of the coords of all the free cells around the index"
         output = []
         for y in range(index.y - radius, index.y + radius):
@@ -1723,7 +1725,7 @@ class Stairs(Special_ground):
                 # self.placescalier()
 
 
-class Game(object):
+class Game():
     """The Game class.
     \nPlease use theGame() to remain in the same game..."""
 
@@ -1737,9 +1739,9 @@ class Game(object):
         "d": lambda hero: theGame().floor.move(hero, Coord(1, 0)),
         "e": lambda hero: theGame().floor.move(hero, Coord(1, -1)),
         "i": lambda hero: theGame().addMessage(hero.fullDescription()),
-        "r": lambda hero: theGame().hero.sleep(),
+        "r": lambda hero: hero.time.sleep(),
         "p": lambda hero: theGame().floor.attackpoison(
-            theGame().floor.pos(theGame().hero)
+            theGame().floor.pos(hero)
         ),
         "f": lambda hero: theGame().floor.attackfire(
             theGame().floor.pos(hero), hero.facing
@@ -1816,7 +1818,8 @@ class Game(object):
             ),
         ],
         1: [
-            Equipment("lance-pierre", "a", usage=lambda creature: creature.tir()),
+            Equipment("lance-pierre", "a",
+                      usage=lambda creature: creature.tir()),
             Pills("or2", "j", pill_value=2),
             Edible(
                 "sucette croquée",
@@ -1863,7 +1866,8 @@ class Game(object):
                       usage=lambda creature: creature.heal(3), f=True),
         ],
         1: [
-            Equipment("lance-pierre", "a", usage=lambda creature: creature.tir()),
+            Equipment("lance-pierre", "a",
+                      usage=lambda creature: creature.tir()),
             Edible(
                 "cookie choco",
                 "cc",
@@ -1990,7 +1994,7 @@ class Game(object):
         for i in l:
             if jeter:
                 self.buttons.append(
-                    Button(
+                    tkinter.Button(
                         self.fenetre,
                         text=i.name,
                         bg="steel blue",
@@ -2001,7 +2005,7 @@ class Game(object):
                 )
             else:
                 self.buttons.append(
-                    Button(
+                    tkinter.Button(
                         self.fenetre,
                         text=i.name,
                         bg="steel blue",
@@ -2024,186 +2028,220 @@ class Game(object):
         "Creates the dictionary of images,and binds actions to the Tk window, then creates the mainloop."
         genPATH = __file__
         imgPATH = genPATH[0: -len(nomprogramme)] + "images/"
-        hero_fi = PhotoImage(file=imgPATH + "hero_face_i.png").zoom(2)
-        hero_ri = PhotoImage(file=imgPATH + "hero_right_i.png").zoom(2)
-        hero_bi = PhotoImage(file=imgPATH + "hero_back_i.png").zoom(2)
-        hero_li = PhotoImage(file=imgPATH + "hero_left_i.png").zoom(2)
-        hero_fw1 = PhotoImage(file=imgPATH + "hero_face_w1.png").zoom(2)
-        hero_rw1 = PhotoImage(file=imgPATH + "hero_right_w1.png").zoom(2)
-        hero_bw1 = PhotoImage(file=imgPATH + "hero_back_w1.png").zoom(2)
-        hero_lw1 = PhotoImage(file=imgPATH + "hero_left_w1.png").zoom(2)
-        hero_fw2 = PhotoImage(file=imgPATH + "hero_face_w2.png").zoom(2)
-        hero_rw2 = PhotoImage(file=imgPATH + "hero_right_w2.png").zoom(2)
-        hero_bw2 = PhotoImage(file=imgPATH + "hero_back_w2.png").zoom(2)
-        hero_lw2 = PhotoImage(file=imgPATH + "hero_left_w2.png").zoom(2)
-        hero_tf = PhotoImage(file=imgPATH + "hero_tombe_face.png").zoom(2)
-        hero_tr = PhotoImage(file=imgPATH + "hero_tombe_droite.png").zoom(2)
-        hero_tb = PhotoImage(file=imgPATH + "hero_tombe_dos.png").zoom(2)
-        hero_tl = PhotoImage(file=imgPATH + "hero_tombe_gauche.png").zoom(2)
+        hero_fi = tkinter.PhotoImage(file=imgPATH + "hero_face_i.png").zoom(2)
+        hero_ri = tkinter.PhotoImage(file=imgPATH + "hero_right_i.png").zoom(2)
+        hero_bi = tkinter.PhotoImage(file=imgPATH + "hero_back_i.png").zoom(2)
+        hero_li = tkinter.PhotoImage(file=imgPATH + "hero_left_i.png").zoom(2)
+        hero_fw1 = tkinter.PhotoImage(
+            file=imgPATH + "hero_face_w1.png").zoom(2)
+        hero_rw1 = tkinter.PhotoImage(
+            file=imgPATH + "hero_right_w1.png").zoom(2)
+        hero_bw1 = tkinter.PhotoImage(
+            file=imgPATH + "hero_back_w1.png").zoom(2)
+        hero_lw1 = tkinter.PhotoImage(
+            file=imgPATH + "hero_left_w1.png").zoom(2)
+        hero_fw2 = tkinter.PhotoImage(
+            file=imgPATH + "hero_face_w2.png").zoom(2)
+        hero_rw2 = tkinter.PhotoImage(
+            file=imgPATH + "hero_right_w2.png").zoom(2)
+        hero_bw2 = tkinter.PhotoImage(
+            file=imgPATH + "hero_back_w2.png").zoom(2)
+        hero_lw2 = tkinter.PhotoImage(
+            file=imgPATH + "hero_left_w2.png").zoom(2)
+        hero_tf = tkinter.PhotoImage(
+            file=imgPATH + "hero_tombe_face.png").zoom(2)
+        hero_tr = tkinter.PhotoImage(
+            file=imgPATH + "hero_tombe_droite.png").zoom(2)
+        hero_tb = tkinter.PhotoImage(
+            file=imgPATH + "hero_tombe_dos.png").zoom(2)
+        hero_tl = tkinter.PhotoImage(
+            file=imgPATH + "hero_tombe_gauche.png").zoom(2)
 
         # elements pour afficher les points de magie
-        magic = PhotoImage(file=imgPATH + "magic.png")
+        magic = tkinter.PhotoImage(file=imgPATH + "magic.png")
 
         # images hero/equipement Arou
-        hero_f = PhotoImage(file=imgPATH + "herofoulard.png").zoom(2)
-        hero_c = PhotoImage(file=imgPATH + "herobadge.png").zoom(2)
-        hero_p1 = PhotoImage(file=imgPATH + "heroplaid1.png").zoom(2)
-        hero_p2 = PhotoImage(file=imgPATH + "heroplaid2.png").zoom(2)
-        hero_p3 = PhotoImage(file=imgPATH + "heroplaid3.png").zoom(2)
-        hero_fp1 = PhotoImage(file=imgPATH + "herofoulardplaid1.png").zoom(2)
-        hero_fp2 = PhotoImage(file=imgPATH + "herofoulardplaid2.png").zoom(2)
-        hero_fp3 = PhotoImage(file=imgPATH + "herofoulardplaid3.png").zoom(2)
-        hero_cp1 = PhotoImage(file=imgPATH + "herobagdeplaid1.png").zoom(2)
-        hero_cp2 = PhotoImage(file=imgPATH + "herobagdeplaid2.png").zoom(2)
-        hero_cp3 = PhotoImage(file=imgPATH + "herobagdeplaid3.png").zoom(2)
+        hero_f = tkinter.PhotoImage(file=imgPATH + "herofoulard.png").zoom(2)
+        hero_c = tkinter.PhotoImage(file=imgPATH + "herobadge.png").zoom(2)
+        hero_p1 = tkinter.PhotoImage(file=imgPATH + "heroplaid1.png").zoom(2)
+        hero_p2 = tkinter.PhotoImage(file=imgPATH + "heroplaid2.png").zoom(2)
+        hero_p3 = tkinter.PhotoImage(file=imgPATH + "heroplaid3.png").zoom(2)
+        hero_fp1 = tkinter.PhotoImage(
+            file=imgPATH + "herofoulardplaid1.png").zoom(2)
+        hero_fp2 = tkinter.PhotoImage(
+            file=imgPATH + "herofoulardplaid2.png").zoom(2)
+        hero_fp3 = tkinter.PhotoImage(
+            file=imgPATH + "herofoulardplaid3.png").zoom(2)
+        hero_cp1 = tkinter.PhotoImage(
+            file=imgPATH + "herobagdeplaid1.png").zoom(2)
+        hero_cp2 = tkinter.PhotoImage(
+            file=imgPATH + "herobagdeplaid2.png").zoom(2)
+        hero_cp3 = tkinter.PhotoImage(
+            file=imgPATH + "herobagdeplaid3.png").zoom(2)
 
-        sol_img1 = PhotoImage(file=imgPATH + "sol_1.png").zoom(2)
-        sol_img2 = PhotoImage(file=imgPATH + "sol_2.png").zoom(2)
-        sol_img3 = PhotoImage(file=imgPATH + "sol_3.png").zoom(2)
-        sol_img4 = PhotoImage(file=imgPATH + "sol_4.png").zoom(2)
-        wetsol_img1 = PhotoImage(file=imgPATH + "sol-mouille1.png").zoom(2)
-        wetsol_img2 = PhotoImage(file=imgPATH + "sol-mouille2.png").zoom(2)
-        wetsol_img3 = PhotoImage(file=imgPATH + "sol-mouille3.png").zoom(2)
-        wetsol_img4 = PhotoImage(file=imgPATH + "sol-mouille4.png").zoom(2)
+        sol_img1 = tkinter.PhotoImage(file=imgPATH + "sol_1.png").zoom(2)
+        sol_img2 = tkinter.PhotoImage(file=imgPATH + "sol_2.png").zoom(2)
+        sol_img3 = tkinter.PhotoImage(file=imgPATH + "sol_3.png").zoom(2)
+        sol_img4 = tkinter.PhotoImage(file=imgPATH + "sol_4.png").zoom(2)
+        wetsol_img1 = tkinter.PhotoImage(
+            file=imgPATH + "sol-mouille1.png").zoom(2)
+        wetsol_img2 = tkinter.PhotoImage(
+            file=imgPATH + "sol-mouille2.png").zoom(2)
+        wetsol_img3 = tkinter.PhotoImage(
+            file=imgPATH + "sol-mouille3.png").zoom(2)
+        wetsol_img4 = tkinter.PhotoImage(
+            file=imgPATH + "sol-mouille4.png").zoom(2)
 
-        pot_img1 = PhotoImage(file=imgPATH + "fiole_1.png").zoom(2)
-        pot_img3 = PhotoImage(file=imgPATH + "fiole_3.png").zoom(2)
-        bequille_img = PhotoImage(file=imgPATH + "bequille.png").zoom(2)
-        chew_img = PhotoImage(file=imgPATH + "chewing-gum.png").zoom(2)
-        gum_img = PhotoImage(file=imgPATH + "gum.png").zoom(2)
-        sucette1_img = PhotoImage(file=imgPATH + "sucette_1.png")
-        sucette2_img = PhotoImage(file=imgPATH + "sucette_2.png")
-        sucette3_img = PhotoImage(file=imgPATH + "sucette_3.png")
-        cookie_img = PhotoImage(file=imgPATH + "cookie.png")
-        happypills_img = PhotoImage(file=imgPATH + "happy_pills.png")
-        foulard_img = PhotoImage(file=imgPATH + "foulard.png")
-        coffre_img = PhotoImage(file=imgPATH + "coffre.png")
-        plaid3_img = PhotoImage(file=imgPATH + "plaid3.png").zoom(2)
+        pot_img1 = tkinter.PhotoImage(file=imgPATH + "fiole_1.png").zoom(2)
+        pot_img3 = tkinter.PhotoImage(file=imgPATH + "fiole_3.png").zoom(2)
+        bequille_img = tkinter.PhotoImage(
+            file=imgPATH + "bequille.png").zoom(2)
+        chew_img = tkinter.PhotoImage(file=imgPATH + "chewing-gum.png").zoom(2)
+        gum_img = tkinter.PhotoImage(file=imgPATH + "gum.png").zoom(2)
+        sucette1_img = tkinter.PhotoImage(file=imgPATH + "sucette_1.png")
+        sucette2_img = tkinter.PhotoImage(file=imgPATH + "sucette_2.png")
+        sucette3_img = tkinter.PhotoImage(file=imgPATH + "sucette_3.png")
+        cookie_img = tkinter.PhotoImage(file=imgPATH + "cookie.png")
+        happypills_img = tkinter.PhotoImage(file=imgPATH + "happy_pills.png")
+        foulard_img = tkinter.PhotoImage(file=imgPATH + "foulard.png")
+        coffre_img = tkinter.PhotoImage(file=imgPATH + "coffre.png")
+        plaid3_img = tkinter.PhotoImage(file=imgPATH + "plaid3.png").zoom(2)
 
-        boul_img = PhotoImage(file=imgPATH + "boulimie.png").zoom(2)
-        tireur_img = PhotoImage(file=imgPATH + "archer.png").zoom(2)
-        sad_img = PhotoImage(file=imgPATH + "tristesse.png").zoom(2)
-        fear_img = PhotoImage(file=imgPATH + "fear.png").zoom(2)
-        colere_img = PhotoImage(file=imgPATH + "colere.png").zoom(2)
-        ted_img = PhotoImage(file=imgPATH + "ourson_1.png").zoom(2)
-        ghost_img = PhotoImage(file=imgPATH + "ghost.png").zoom(2)
-        sad_img = PhotoImage(file=imgPATH + "tristesse_1.png").zoom(2)
-        ar_img = PhotoImage(file=imgPATH + "araignee.png").zoom(2)
-        or1_img = PhotoImage(file=imgPATH + "or1.png").zoom(2)
-        bourse = PhotoImage(file=imgPATH + "or1.png")
-        or2_img = PhotoImage(file=imgPATH + "or2.png").zoom(2)
-        or5_img = PhotoImage(file=imgPATH + "or5.png").zoom(2)
-        or10_img = PhotoImage(file=imgPATH + "or10.png").zoom(2)
-        marchand_f = PhotoImage(file=imgPATH + "marchand_de_face.png").zoom(2)
-        marchand_f = PhotoImage(file=imgPATH + "marchand_de_face2.png").zoom(2)
-        marchand_d = PhotoImage(
+        boul_img = tkinter.PhotoImage(file=imgPATH + "boulimie.png").zoom(2)
+        tireur_img = tkinter.PhotoImage(file=imgPATH + "archer.png").zoom(2)
+        sad_img = tkinter.PhotoImage(file=imgPATH + "tristesse.png").zoom(2)
+        fear_img = tkinter.PhotoImage(file=imgPATH + "fear.png").zoom(2)
+        colere_img = tkinter.PhotoImage(file=imgPATH + "colere.png").zoom(2)
+        ted_img = tkinter.PhotoImage(file=imgPATH + "ourson_1.png").zoom(2)
+        ghost_img = tkinter.PhotoImage(file=imgPATH + "ghost.png").zoom(2)
+        sad_img = tkinter.PhotoImage(file=imgPATH + "tristesse_1.png").zoom(2)
+        ar_img = tkinter.PhotoImage(file=imgPATH + "araignee.png").zoom(2)
+        or1_img = tkinter.PhotoImage(file=imgPATH + "or1.png").zoom(2)
+        bourse = tkinter.PhotoImage(file=imgPATH + "or1.png")
+        or2_img = tkinter.PhotoImage(file=imgPATH + "or2.png").zoom(2)
+        or5_img = tkinter.PhotoImage(file=imgPATH + "or5.png").zoom(2)
+        or10_img = tkinter.PhotoImage(file=imgPATH + "or10.png").zoom(2)
+        marchand_f = tkinter.PhotoImage(
+            file=imgPATH + "marchand_de_face.png").zoom(2)
+        marchand_f = tkinter.PhotoImage(
+            file=imgPATH + "marchand_de_face2.png").zoom(2)
+        marchand_d = tkinter.PhotoImage(
             file=imgPATH + "marchand_vers_droite.png").zoom(2)
-        marchand_g = PhotoImage(
+        marchand_g = tkinter.PhotoImage(
             file=imgPATH + "marchand_vers_gauche.png").zoom(2)
-        marchand_sf = PhotoImage(
+        marchand_sf = tkinter.PhotoImage(
             file=imgPATH + "marchand_sucette_de_face.png").zoom(2)
-        bedup = PhotoImage(file=imgPATH + "lit_vert_haut_final.png").zoom(2)
-        beddown = PhotoImage(file=imgPATH + "lit_vert_bas_final.png").zoom(2)
-        wheelchair = PhotoImage(file=imgPATH + "fauteuil.png").zoom(2)
-        flowerpot = PhotoImage(file=imgPATH + "arbuste.png").zoom(2)
-        hole = PhotoImage(file=imgPATH + "trou.png").zoom(2)
-        docteurM_img = PhotoImage(file=imgPATH + "medecin1.png").zoom(2)
-        docteurF_img = PhotoImage(file=imgPATH + "medecin2.png").zoom(2)
-        infirmiere1_img = PhotoImage(file=imgPATH + "infirmiere1.png").zoom(2)
+        bedup = tkinter.PhotoImage(
+            file=imgPATH + "lit_vert_haut_final.png").zoom(2)
+        beddown = tkinter.PhotoImage(
+            file=imgPATH + "lit_vert_bas_final.png").zoom(2)
+        wheelchair = tkinter.PhotoImage(file=imgPATH + "fauteuil.png").zoom(2)
+        flowerpot = tkinter.PhotoImage(file=imgPATH + "arbuste.png").zoom(2)
+        hole = tkinter.PhotoImage(file=imgPATH + "trou.png").zoom(2)
+        docteurM_img = tkinter.PhotoImage(
+            file=imgPATH + "medecin1.png").zoom(2)
+        docteurF_img = tkinter.PhotoImage(
+            file=imgPATH + "medecin2.png").zoom(2)
+        infirmiere1_img = tkinter.PhotoImage(
+            file=imgPATH + "infirmiere1.png").zoom(2)
 
-        badgemedecin_img = PhotoImage(file=imgPATH + "badgemedecin.png")
+        badgemedecin_img = tkinter.PhotoImage(
+            file=imgPATH + "badgemedecin.png")
 
-        img_stonelance = PhotoImage(file=imgPATH + "lancepierre.png").zoom(2)
+        img_stonelance = tkinter.PhotoImage(
+            file=imgPATH + "lancepierre.png").zoom(2)
 
-        esc_up = PhotoImage(file=imgPATH + "escalier_up.png").zoom(2)
-        esc_down = PhotoImage(file=imgPATH + "escalier_down.png").zoom(2)
-        vide = PhotoImage(file=imgPATH + "empty.png").zoom(2)
-        hotbar = PhotoImage(file=imgPATH + "hotbar.png").zoom(2)
-        faim100 = PhotoImage(file=imgPATH + "faim100.png").zoom(2)
-        faim75 = PhotoImage(file=imgPATH + "faim75.png").zoom(2)
-        faim50 = PhotoImage(file=imgPATH + "faim50.png").zoom(2)
-        faim25 = PhotoImage(file=imgPATH + "faim25.png").zoom(2)
-        faim0 = PhotoImage(file=imgPATH + "faim0.png").zoom(2)
-        red = PhotoImage(file=imgPATH + "red.png")
-        dred = PhotoImage(file=imgPATH + "darkred.png")
-        gre = PhotoImage(file=imgPATH + "green.png")
-        dgre = PhotoImage(file=imgPATH + "darkgreen.png")
-        blu = PhotoImage(file=imgPATH + "blue.png")
-        dblu = PhotoImage(file=imgPATH + "darkblue.png")
-        yel = PhotoImage(file=imgPATH + "yellow.png")
-        dyel = PhotoImage(file=imgPATH + "darkyellow.png")
-        lig = PhotoImage(file=imgPATH + "lightblue.png")
-        dlig = PhotoImage(file=imgPATH + "darklightblue.png")
-        ora = PhotoImage(file=imgPATH + "orange.png")
-        dora = PhotoImage(file=imgPATH + "darkorange.png")
-        black = PhotoImage(file=imgPATH + "black.png")
-        vie = PhotoImage(file=imgPATH + "health.png")
-        cle_img = PhotoImage(file=imgPATH + "cle.png")
-        multi_img = PhotoImage(file=imgPATH + "multipass.png")
+        esc_up = tkinter.PhotoImage(file=imgPATH + "escalier_up.png").zoom(2)
+        esc_down = tkinter.PhotoImage(
+            file=imgPATH + "escalier_down.png").zoom(2)
+        vide = tkinter.PhotoImage(file=imgPATH + "empty.png").zoom(2)
+        hotbar = tkinter.PhotoImage(file=imgPATH + "hotbar.png").zoom(2)
+        faim100 = tkinter.PhotoImage(file=imgPATH + "faim100.png").zoom(2)
+        faim75 = tkinter.PhotoImage(file=imgPATH + "faim75.png").zoom(2)
+        faim50 = tkinter.PhotoImage(file=imgPATH + "faim50.png").zoom(2)
+        faim25 = tkinter.PhotoImage(file=imgPATH + "faim25.png").zoom(2)
+        faim0 = tkinter.PhotoImage(file=imgPATH + "faim0.png").zoom(2)
+        red = tkinter.PhotoImage(file=imgPATH + "red.png")
+        dred = tkinter.PhotoImage(file=imgPATH + "darkred.png")
+        gre = tkinter.PhotoImage(file=imgPATH + "green.png")
+        dgre = tkinter.PhotoImage(file=imgPATH + "darkgreen.png")
+        blu = tkinter.PhotoImage(file=imgPATH + "blue.png")
+        dblu = tkinter.PhotoImage(file=imgPATH + "darkblue.png")
+        yel = tkinter.PhotoImage(file=imgPATH + "yellow.png")
+        dyel = tkinter.PhotoImage(file=imgPATH + "darkyellow.png")
+        lig = tkinter.PhotoImage(file=imgPATH + "lightblue.png")
+        dlig = tkinter.PhotoImage(file=imgPATH + "darklightblue.png")
+        ora = tkinter.PhotoImage(file=imgPATH + "orange.png")
+        dora = tkinter.PhotoImage(file=imgPATH + "darkorange.png")
+        black = tkinter.PhotoImage(file=imgPATH + "black.png")
+        vie = tkinter.PhotoImage(file=imgPATH + "health.png")
+        cle_img = tkinter.PhotoImage(file=imgPATH + "cle.png")
+        multi_img = tkinter.PhotoImage(file=imgPATH + "multipass.png")
         # equipement(objets sans zoom pour quand on a besoin) Arou
-        equip_bequille = PhotoImage(file=imgPATH + "bequille.png")
+        equip_bequille = tkinter.PhotoImage(file=imgPATH + "bequille.png")
 
-        herobox0 = PhotoImage(file=imgPATH + "box0.png").zoom(3)
-        herobox10 = PhotoImage(file=imgPATH + "box10.png").zoom(3)
-        herobox20 = PhotoImage(file=imgPATH + "box20.png").zoom(3)
-        herobox30 = PhotoImage(file=imgPATH + "box30.png").zoom(3)
-        herobox40 = PhotoImage(file=imgPATH + "box40.png").zoom(3)
-        herobox50 = PhotoImage(file=imgPATH + "box50.png").zoom(3)
-        herobox60 = PhotoImage(file=imgPATH + "box60.png").zoom(3)
-        herobox70 = PhotoImage(file=imgPATH + "box70.png").zoom(3)
-        herobox80 = PhotoImage(file=imgPATH + "box80.png").zoom(3)
-        herobox90 = PhotoImage(file=imgPATH + "box90.png").zoom(3)
+        herobox0 = tkinter.PhotoImage(file=imgPATH + "box0.png").zoom(3)
+        herobox10 = tkinter.PhotoImage(file=imgPATH + "box10.png").zoom(3)
+        herobox20 = tkinter.PhotoImage(file=imgPATH + "box20.png").zoom(3)
+        herobox30 = tkinter.PhotoImage(file=imgPATH + "box30.png").zoom(3)
+        herobox40 = tkinter.PhotoImage(file=imgPATH + "box40.png").zoom(3)
+        herobox50 = tkinter.PhotoImage(file=imgPATH + "box50.png").zoom(3)
+        herobox60 = tkinter.PhotoImage(file=imgPATH + "box60.png").zoom(3)
+        herobox70 = tkinter.PhotoImage(file=imgPATH + "box70.png").zoom(3)
+        herobox80 = tkinter.PhotoImage(file=imgPATH + "box80.png").zoom(3)
+        herobox90 = tkinter.PhotoImage(file=imgPATH + "box90.png").zoom(3)
 
-        dialoguebox = PhotoImage(file=imgPATH + "dialogue.png")
+        dialoguebox = tkinter.PhotoImage(file=imgPATH + "dialogue.png")
 
-        img_psn1 = PhotoImage(file=imgPATH + "poison1.png").zoom(2)
-        img_psn2 = PhotoImage(file=imgPATH + "poison2.png").zoom(2)
-        img_psn3 = PhotoImage(file=imgPATH + "poison3.png").zoom(2)
-        img_feu1 = PhotoImage(file=imgPATH + "feu1.png").zoom(2)
-        img_feu2 = PhotoImage(file=imgPATH + "feu2.png").zoom(2)
-        img_feu3 = PhotoImage(file=imgPATH + "feu3.png").zoom(2)
-        img_ice1 = PhotoImage(file=imgPATH + "ice1.png").zoom(2)
-        img_ice2 = PhotoImage(file=imgPATH + "ice2.png").zoom(2)
-        img_ice3 = PhotoImage(file=imgPATH + "ice3.png").zoom(2)
-        joie9 = PhotoImage(file=imgPATH + "joie9.png")
-        joie8 = PhotoImage(file=imgPATH + "joie8.png")
-        joie7 = PhotoImage(file=imgPATH + "joie7.png")
-        joie6 = PhotoImage(file=imgPATH + "joie6.png")
-        joie5 = PhotoImage(file=imgPATH + "joie5.png")
-        joie4 = PhotoImage(file=imgPATH + "joie4.png")
-        joie3 = PhotoImage(file=imgPATH + "joie3.png")
-        joie2 = PhotoImage(file=imgPATH + "joie2.png")
-        joie1 = PhotoImage(file=imgPATH + "joie1.png")
-        sad9 = PhotoImage(file=imgPATH + "sad9.png")
-        sad8 = PhotoImage(file=imgPATH + "sad8.png")
-        sad7 = PhotoImage(file=imgPATH + "sad7.png")
-        sad6 = PhotoImage(file=imgPATH + "sad6.png")
-        sad5 = PhotoImage(file=imgPATH + "sad5.png")
-        sad4 = PhotoImage(file=imgPATH + "sad4.png")
-        sad3 = PhotoImage(file=imgPATH + "sad3.png")
-        sad2 = PhotoImage(file=imgPATH + "sad2.png")
-        sad1 = PhotoImage(file=imgPATH + "sad1.png")
-        peur9 = PhotoImage(file=imgPATH + "peur9.png")
-        peur8 = PhotoImage(file=imgPATH + "peur8.png")
-        peur7 = PhotoImage(file=imgPATH + "peur7.png")
-        peur6 = PhotoImage(file=imgPATH + "peur6.png")
-        peur5 = PhotoImage(file=imgPATH + "peur5.png")
-        peur4 = PhotoImage(file=imgPATH + "peur4.png")
-        peur3 = PhotoImage(file=imgPATH + "peur3.png")
-        peur2 = PhotoImage(file=imgPATH + "peur2.png")
-        peur1 = PhotoImage(file=imgPATH + "peur1.png")
-        angry9 = PhotoImage(file=imgPATH + "angry9.png")
-        angry8 = PhotoImage(file=imgPATH + "angry8.png")
-        angry7 = PhotoImage(file=imgPATH + "angry7.png")
-        angry6 = PhotoImage(file=imgPATH + "angry6.png")
-        angry5 = PhotoImage(file=imgPATH + "angry5.png")
-        angry4 = PhotoImage(file=imgPATH + "angry4.png")
-        angry3 = PhotoImage(file=imgPATH + "angry3.png")
-        angry2 = PhotoImage(file=imgPATH + "angry2.png")
-        angry1 = PhotoImage(file=imgPATH + "angry1.png")
-        equipBar = PhotoImage(file=imgPATH + "equipBar.png")
-        gameover_img = PhotoImage(file=imgPATH + "gameover.png")
-        marchandepage_img = PhotoImage(file=imgPATH + "marchandepage.png")
+        img_psn1 = tkinter.PhotoImage(file=imgPATH + "poison1.png").zoom(2)
+        img_psn2 = tkinter.PhotoImage(file=imgPATH + "poison2.png").zoom(2)
+        img_psn3 = tkinter.PhotoImage(file=imgPATH + "poison3.png").zoom(2)
+        img_feu1 = tkinter.PhotoImage(file=imgPATH + "feu1.png").zoom(2)
+        img_feu2 = tkinter.PhotoImage(file=imgPATH + "feu2.png").zoom(2)
+        img_feu3 = tkinter.PhotoImage(file=imgPATH + "feu3.png").zoom(2)
+        img_ice1 = tkinter.PhotoImage(file=imgPATH + "ice1.png").zoom(2)
+        img_ice2 = tkinter.PhotoImage(file=imgPATH + "ice2.png").zoom(2)
+        img_ice3 = tkinter.PhotoImage(file=imgPATH + "ice3.png").zoom(2)
+        joie9 = tkinter.PhotoImage(file=imgPATH + "joie9.png")
+        joie8 = tkinter.PhotoImage(file=imgPATH + "joie8.png")
+        joie7 = tkinter.PhotoImage(file=imgPATH + "joie7.png")
+        joie6 = tkinter.PhotoImage(file=imgPATH + "joie6.png")
+        joie5 = tkinter.PhotoImage(file=imgPATH + "joie5.png")
+        joie4 = tkinter.PhotoImage(file=imgPATH + "joie4.png")
+        joie3 = tkinter.PhotoImage(file=imgPATH + "joie3.png")
+        joie2 = tkinter.PhotoImage(file=imgPATH + "joie2.png")
+        joie1 = tkinter.PhotoImage(file=imgPATH + "joie1.png")
+        sad9 = tkinter.PhotoImage(file=imgPATH + "sad9.png")
+        sad8 = tkinter.PhotoImage(file=imgPATH + "sad8.png")
+        sad7 = tkinter.PhotoImage(file=imgPATH + "sad7.png")
+        sad6 = tkinter.PhotoImage(file=imgPATH + "sad6.png")
+        sad5 = tkinter.PhotoImage(file=imgPATH + "sad5.png")
+        sad4 = tkinter.PhotoImage(file=imgPATH + "sad4.png")
+        sad3 = tkinter.PhotoImage(file=imgPATH + "sad3.png")
+        sad2 = tkinter.PhotoImage(file=imgPATH + "sad2.png")
+        sad1 = tkinter.PhotoImage(file=imgPATH + "sad1.png")
+        peur9 = tkinter.PhotoImage(file=imgPATH + "peur9.png")
+        peur8 = tkinter.PhotoImage(file=imgPATH + "peur8.png")
+        peur7 = tkinter.PhotoImage(file=imgPATH + "peur7.png")
+        peur6 = tkinter.PhotoImage(file=imgPATH + "peur6.png")
+        peur5 = tkinter.PhotoImage(file=imgPATH + "peur5.png")
+        peur4 = tkinter.PhotoImage(file=imgPATH + "peur4.png")
+        peur3 = tkinter.PhotoImage(file=imgPATH + "peur3.png")
+        peur2 = tkinter.PhotoImage(file=imgPATH + "peur2.png")
+        peur1 = tkinter.PhotoImage(file=imgPATH + "peur1.png")
+        angry9 = tkinter.PhotoImage(file=imgPATH + "angry9.png")
+        angry8 = tkinter.PhotoImage(file=imgPATH + "angry8.png")
+        angry7 = tkinter.PhotoImage(file=imgPATH + "angry7.png")
+        angry6 = tkinter.PhotoImage(file=imgPATH + "angry6.png")
+        angry5 = tkinter.PhotoImage(file=imgPATH + "angry5.png")
+        angry4 = tkinter.PhotoImage(file=imgPATH + "angry4.png")
+        angry3 = tkinter.PhotoImage(file=imgPATH + "angry3.png")
+        angry2 = tkinter.PhotoImage(file=imgPATH + "angry2.png")
+        angry1 = tkinter.PhotoImage(file=imgPATH + "angry1.png")
+        equipBar = tkinter.PhotoImage(file=imgPATH + "equipBar.png")
+        gameover_img = tkinter.PhotoImage(file=imgPATH + "gameover.png")
+        marchandepage_img = tkinter.PhotoImage(
+            file=imgPATH + "marchandepage.png")
 
         self.dicimages = {
             "C": coffre_img,
@@ -2447,7 +2485,7 @@ class Game(object):
             print("TURN")
             self.updategraph(i, [self.floor.pos(self.hero), poshero], i == 2)
             print(poshero, self.floor.pos(self.hero))
-            sleep(delaianim)
+            time.sleep(DELAIANIM)
         [self.fenetre.bind(i, self.gameturn) for i in self._actions]
         self.deselect()
 
@@ -2864,7 +2902,7 @@ class Game(object):
         self.fenetre.configure(background="pink")
         self.canvas = Canvas(self.fenetre, width=1200,
                              height=800, background="black")
-        # time.sleep(5)
+        # time.time.sleep(5)
         self.canvas.place(x=0, y=0)
         self.canvas.create_text(
             85, 120, text="NEW GAME", font="Arial 16 italic", fill="blue"
