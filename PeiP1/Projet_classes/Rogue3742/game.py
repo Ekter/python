@@ -15,22 +15,9 @@ print(nomprogramme)
 DELAIANIM = 0.05
 
 
-def sign(x: float) -> int:
+def sign(number: float) -> int:
     "Returns the sign of a float, used to determine the direction of a movement"
-    return 0 if x == 0 else -1 if x < 0 else 1
-
-
-'''teleport
-    def teleport(creature: "Hero"):
-    """Teleport the creature"""
-    if creature.mp >= 1:
-        creature.mp -= 1
-        r = theGame().floor.randRoom()
-        c = r.randCoord()
-        while not theGame().floor.get(c) in Map.listground:
-            c = r.randCoord()
-        theGame().floor.rm(theGame().floor.pos(creature))
-        theGame().floor.put(c, creature)'''
+    return 0 if number == 0 else -1 if number < 0 else 1
 
 
 def jet(self, unique):
@@ -62,103 +49,97 @@ def jet(self, unique):
     return unique
 
 
-class Coord(object):
-    "Vec2D object, created by rectangular or polar coordinates(with int coords in normal condition, but if broken, can have floats.(used for the moving anims)"
+class Coord():
+    """Vec2D object, created by rectangular or polar coordinates(with int coords in normal
+    condition, but if broken, can have floats.(used for the moving anims)"""
 
-    def __init__(self, x: int, y: int, angle=False, broken=False):
-        if not (angle):
-            self.x = x
-            self.y = y
+    def __init__(self, abscisse: int, ordonnee: int, angle=False, broken=False):
+        if not angle:
+            self.abs = abscisse
+            self.ord = ordonnee
         else:
-            self.x = x * math.cos(y)
-            self.y = x * math.sin(y)
-        if not (broken):
-            self.x = int(self.x)
-            self.y = int(self.y)
+            self.abs = abscisse * math.cos(ordonnee)
+            self.ord = abscisse * math.sin(ordonnee)
+        if not broken:
+            self.abs = int(self.abs)
+            self.ord = int(self.ord)
 
     def __repr__(self) -> str:
-        return "<" + str(self.x) + "," + str(self.y) + ">"
+        return "<" + str(self.abs) + "," + str(self.ord) + ">"
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: "Coord") -> bool:
         return (
-            self.x == other.x and self.y == other.y
-            if type(other) is Coord
+            self.abs == other.abs and self.ord == other.ord
+            if isinstance(other, Coord)
             else len(self) == other
         )
 
-    def __ne__(self, other) -> bool:
-        return not (self == other)
+    def __ne__(self, other: "Coord") -> bool:
+        return not self == other
 
-    def __add__(self, other):
-        if type(other) is Coord:
-            return Coord(self.x + other.x, self.y + other.y, broken=True)
-        if (type(other) is int) or (type(other) is float):
-            return Coord(self.x + other, self.y + other)
+    def __add__(self, other: "Coord"):
+        if isinstance(other, Coord):
+            return Coord(self.abs + other.abs, self.ord + other.ord, broken=True)
+        return Coord(self.abs + other, self.ord + other)
 
     def __neg__(self):
-        return Coord(-self.x, -self.y, broken=True)
+        return Coord(-self.abs, -self.ord, broken=True)
 
-    def __mul__(self, other):
-        if type(other) is Coord:
-            return Coord(self.x * other.x, self.y * other.y, broken=True)
-        if (type(other) is int) or (type(other) is float):
-            return Coord(self.x * other, self.y * other)
+    def __mul__(self, other: "Coord"):
+        if isinstance(other, Coord):
+            return Coord(self.abs * other.abs, self.ord * other.ord, broken=True)
+        return Coord(self.abs * other, self.ord * other)
 
-    def __sub__(self, other):
-        if type(other) is Coord:
-            return Coord(self.x - other.x, self.y - other.y, broken=True)
-        if (type(other) is int) or (type(other) is float):
-            return Coord(self.x - other, self.y - other)
+    def __sub__(self, other: "Coord"):
+        if isinstance(other, Coord):
+            return Coord(self.abs - other.abs, self.ord - other.ord, broken=True)
+        return Coord(self.abs - other, self.ord - other)
 
     def __abs__(self):
-        return Coord(abs(self.x), abs(self.y), broken=True)
+        return Coord(abs(self.abs), abs(self.ord), broken=True)
 
-    def __floordiv__(self, other):
-        if type(other) is Coord:
-            return Coord(self.x / other.x, self.y / other.y, broken=True)
-        if (type(other) is int) or (type(other) is float):
-            return Coord(self.x / other, self.y / other)
+    def __floordiv__(self, other: "Coord"):
+        if isinstance(other, Coord):
+            return Coord(self.abs / other.abs, self.ord / other.ord, broken=True)
+        return Coord(self.abs / other, self.ord / other)
 
-    def __truediv__(self, other):
-        if type(other) is Coord:
-            return Coord(self.x / other.x, self.y / other.y, broken=True)
-        if (type(other) is int) or (type(other) is float):
-            return Coord(self.x / other, self.y / other)
+    def __truediv__(self, other: "Coord"):
+        if isinstance(other, Coord):
+            return Coord(self.abs / other.abs, self.ord / other.ord, broken=True)
+        return Coord(self.abs / other, self.ord / other)
 
     def __len__(self) -> float:
-        return math.sqrt(self.x ** 2 + self.y ** 2)
+        return math.sqrt(self.abs ** 2 + self.ord ** 2)
 
-    def __lt__(self, other) -> bool:
-        if type(other) is Coord:
+    def __lt__(self, other: "Coord") -> bool:
+        if isinstance(other, Coord):
             return len(self) < len(other)
-        if (type(other) is int) or (type(other) is float):
-            return len(self) < other
+        return len(self) < other
 
-    def __gt__(self, other) -> bool:
-        if type(other) is Coord:
+    def __gt__(self, other: "Coord") -> bool:
+        if isinstance(other, Coord):
             return len(self) > len(other)
-        if (type(other) is int) or (type(other) is float):
-            return len(self) > other
+        return len(self) > other
 
-    def __le__(self, other) -> bool:
-        if type(other) is Coord:
+    def __le__(self, other: "Coord") -> bool:
+        if isinstance(other, Coord):
             return len(self) <= len(other)
-        if (type(other) is int) or (type(other) is float):
-            return len(self) <= other
+        return len(self) <= other
 
-    def __ge__(self, other) -> bool:
-        if type(other) is Coord:
+    def __ge__(self, other: "Coord") -> bool:
+        if isinstance(other, Coord):
             return len(self) >= len(other)
-        if (type(other) is int) or (type(other) is float):
-            return len(self) >= other
+        return len(self) >= other
 
     def getangle(self) -> float:
-        return math.atan2(self.x, self.y)
+        """returns the angle of the vector (self.abs, self.ord)"""
+        return math.atan2(self.abs, self.ord)
 
     def ind(self) -> tuple:
-        return self.x, self.y
+        """returns a tuple (abs,ord). Used for """
+        return self.abs, self.ord
 
-    def distance(self, other) -> float:
+    def distance(self, other: "Coord") -> float:
         "Diagonal distance between two points"
         return (self - other).__len__()
 
@@ -166,86 +147,49 @@ class Coord(object):
         "Direction from the center to a point"
         if self == Coord(0, 0):
             return Coord(0, 0)
-        cos = self.x / self.__len__()
+        cos = self.abs / self.__len__()
         if cos > 1 / math.sqrt(2) - 0.1:
             return Coord(-1, 0)
         if cos < -1 / math.sqrt(2) + 0.1:
             return Coord(1, 0)
-        if self.y > 0:
+        if self.ord > 0:
             return Coord(0, -1)
         return Coord(0, 1)
 
-    def cosinus(self, other):
-        return (self - other).x / (self - other).__len__()
+    def cosinus(self, other: "Coord"):
+        """returns the cosine of a coord (adj/hyp)"""
+        return (self - other).abs / (self - other).__len__()
 
-    def direction(self, other):
+    def direction(self, other: "Coord"):
         "Direction from a point to another"
         return (self - other).dirtrig()
 
     def inverse(self):
         "Inverse of a Coord(swapping x and y)"
-        return Coord(self.y, self.x)
+        return Coord(self.ord, self.abs)
 
-    def coin1(self, other):
+    def coin1(self, other: "Coord"):
         "First combinaison of two Coords"
-        return Coord(self.x, other.y)
+        return Coord(self.abs, other.ord)
 
-    def coin2(self, other):
+    def coin2(self, other: "Coord"):
         "Second combinaison of two Coords"
-        return Coord(other.x, self.y)
+        return Coord(other.abs, self.ord)
 
-    def middle(self, other):
+    def middle(self, other: "Coord"):
         "Middle of two Coords"
         return (self + other) // 2
 
     def facing(self):
         "Function to choose the correct direction of an image"
-        cp = self.dirtrig()
-        if cp == Coord(0, 0):
-            return 0
-        if cp == Coord(0, -1):
-            return 0
-        if cp == Coord(0, 1):
+        direction = self.dirtrig()
+        if direction == Coord(0, 1):
             return 1
-        if cp == Coord(1, 0):
+        if direction == Coord(1, 0):
             return 2
-        if cp == Coord(-1, 0):
+        if direction == Coord(-1, 0):
             return 3
-
-    def testaffine(self, other1, other2, other3):
-        a = 0
-        try:
-
-            def affine1(x):
-                return (
-                    (other1.y - other2.y) / (other1.x - other2.x) * x
-                    - (other1.y - other2.y) / (other1.x - other2.x) * other1.x
-                    + other1.y
-                )
-
-            def affine2(x):
-                return (
-                    (other1.y - other3.y) / (other1.x - other3.x) * x
-                    - (other1.y - other3.y) / (other1.x - other3.x) * other1.x
-                    + other1.y
-                )
-
-            def affine3(x):
-                return (
-                    (other3.y - other2.y) / (other3.x - other2.x) * x
-                    - (other3.y - other2.y) / (other3.x - other2.x) * other3.x
-                    + other3.y
-                )
-
-        except ZeroDivisionError:
-            return False
-        if affine1(self.x) >= self.y:
-            a += 1
-        if affine2(self.x) >= self.y:
-            a += 1
-        if affine3(self.x) >= self.y:
-            a += 1
-        return a == 2
+        return 0
 
 
 class CoordScreen(Coord):
@@ -255,8 +199,8 @@ class CoordScreen(Coord):
         Coord.__init__(self, x * 1080, y * 800, broken=True)
 
 
-class Status(object):
-    "Status affecting a creature each turn, making her losing points from a stat"
+class Status():
+    "Status affecting a creature each turn, making her lose points from a stat"
 
     def __init__(self, name, turns, effect, cible="hp", prb=1):
         self.name = name
@@ -970,10 +914,10 @@ class Room(object):
 
     def __contains__(self, coord: Coord) -> bool:
         "Check if a Coord is in the Room"
-        return self.c1.x <= coord.x <= self.c2.x and self.c1.y <= coord.y <= self.c2.y
+        return self.c1.abs <= coord.abs <= self.c2.abs and self.c1.ord <= coord.ord <= self.c2.ord
 
     def __repr__(self) -> str:
-        return f"[<{self.c1.x},{self.c1.y}>, <{self.c2.x},{self.c2.y}>]"
+        return f"[<{self.c1.abs},{self.c1.ord}>, <{self.c2.abs},{self.c2.ord}>]"
 
     def center(self) -> Coord:
         "Returns the center of the Room, using the Coord.middle method"
@@ -996,8 +940,8 @@ class Room(object):
     def randCoord(self) -> Coord:
         "Returns a random Coord in the Room."
         return Coord(
-            random.randint(self.c1.x, self.c2.x), random.randint(
-                self.c1.y, self.c2.y)
+            random.randint(self.c1.abs, self.c2.abs), random.randint(
+                self.c1.ord, self.c2.ord)
         )
 
     def randEmptyCoord(self, map: "Map") -> Coord:
@@ -1053,7 +997,7 @@ class SpeRoom(Room):
     def __init__(self, c1, cent, contour="+"):
         self.c1 = c1
         self.c2 = Coord(self.c1.x + 7, self.c1.y)
-        self.c3 = Coord((self.c1.x + self.c2.x) // 2, self.c1.y + 4)
+        self.c3 = Coord((self.c1.x + self.c2.abs) // 2, self.c1.y + 4)
         self.mat = []
         for _ in range(4):
             self.mat.append([Map.empty] * 7)
@@ -1073,12 +1017,12 @@ class SpeRoom(Room):
     def __contains__(self, coord: Coord) -> bool:
         "Check if a Coord is in the Room"
         try:
-            return self.mat[coord.y - self.c1.y][coord.x - self.c1.x] == Map.ground1
+            return self.mat[coord.ord - self.c1.y][coord.abs - self.c1.x] == Map.ground1
         except IndexError:
             return False
 
     def __repr__(self) -> str:
-        return f"[<{self.c1.x},{self.c1.y}>,<{self.c3.x},{self.c3.y}>, <{self.c2.x},{self.c2.y}>]"
+        return f"[<{self.c1.x},{self.c1.y}>,<{self.c3.abs},{self.c3.ord}>, <{self.c2.abs},{self.c2.ord}>]"
 
     def center(self) -> Coord:
         "Returns the center of the Room, using the Coord.middle method"
@@ -1102,13 +1046,13 @@ class SpeRoom(Room):
         "Returns a random Coord in the Room."
 
         c = Coord(
-            random.randint(self.c1.x, self.c2.x), random.randint(
-                self.c1.y, self.c3.y)
+            random.randint(self.c1.x, self.c2.abs), random.randint(
+                self.c1.y, self.c3.ord)
         )
         while not (c in self):
             c = Coord(
-                random.randint(self.c1.x, self.c2.x),
-                random.randint(self.c1.y, self.c3.y),
+                random.randint(self.c1.x, self.c2.abs),
+                random.randint(self.c1.y, self.c3.ord),
             )
             print("spérandCoord")
         return c
@@ -1215,7 +1159,7 @@ class Map(object):
     def __contains__(self, item) -> bool:
         "Check, for an element, if it is in _elem, or for a coord, if it is in the map"
         if isinstance(item, Coord):
-            return 0 <= item.x <= len(self) - 1 and 0 <= item.y <= len(self) - 1
+            return 0 <= item.abs <= len(self) - 1 and 0 <= item.ord <= len(self) - 1
         return item in self._elem.keys()
 
     def __getitem__(self, item) -> Any:
@@ -1245,7 +1189,7 @@ class Map(object):
         for i, j in self._elem.items():
             if j == coord:
                 return i
-        return self._mat[coord.y][coord.x]
+        return self._mat[coord.ord][coord.abs]
 
     def pos(self, element: Element) -> Coord:
         "Returns the Coords of an Element"
@@ -1254,11 +1198,11 @@ class Map(object):
 
     def groundize(self, coord: Coord) -> None:
         "Puts a ground on a cell.(we have 4 different grounds, and they are saved in blankmap)"
-        self._mat[coord.y][coord.x] = self.blankmap[coord.y][coord.x]
+        self._mat[coord.ord][coord.abs] = self.blankmap[coord.ord][coord.abs]
 
     def elementize(self, coord: Coord, abbrv: str) -> None:
         "Puts the abbvr of an Element on the Map."
-        self._mat[coord.y][coord.x] = abbrv
+        self._mat[coord.ord][coord.abs] = abbrv
 
     def put(self, coord: Coord, element: Element) -> None:
         "Puts an Element at the given Coord."
@@ -1275,7 +1219,7 @@ class Map(object):
             raise ValueError("Incorrect cell")
         if element in self:
             raise KeyError("Already placed")
-        self._elem[element] = Coord(coord.x, coord.y)
+        self._elem[element] = Coord(coord.abs, coord.ord)
         self.elementize(coord, element.abbrv)
 
     def putattack(self, coord: Coord, attack: Attack) -> None:
@@ -1287,7 +1231,7 @@ class Map(object):
             if self._attacks[i] == coord and i.name == attack.name:
                 print("pasbon" + str(coord))
                 return
-        self._attacks[copy.copy(attack)] = Coord(coord.x, coord.y)
+        self._attacks[copy.copy(attack)] = Coord(coord.abs, coord.ord)
 
     def rm(self, object: Union[Element, Coord]) -> None:
         "Removes the Element from the Map(or the element at the given Coord)"
@@ -1312,15 +1256,15 @@ class Map(object):
             element.abbrv = "@"
         if coordarr in self:
             if not coordarr in self._elem.values() and (
-                self._mat[coordarr.y][coordarr.x] in Map.listground
-                or self._mat[coordarr.y][coordarr.x] in Map.listgroundwet
+                self._mat[coordarr.ord][coordarr.abs] in Map.listground
+                or self._mat[coordarr.ord][coordarr.abs] in Map.listgroundwet
             ):
-                if self._mat[coordarr.y][coordarr.x] in Map.listgroundwet:
+                if self._mat[coordarr.ord][coordarr.abs] in Map.listgroundwet:
                     Special_ground.glissade(self, element)
                 self.groundize(self.pos(element))
                 self._elem[element] = coordarr
                 self.elementize(coordarr, element.abbrv)
-            elif self._mat[coordarr.y][coordarr.x] != Map.empty:
+            elif self._mat[coordarr.ord][coordarr.abs] != Map.empty:
                 a = self.get(coordarr)
                 if a.meet(element):
                     self.rm(coordarr)
@@ -1328,8 +1272,8 @@ class Map(object):
     def getcoordaround(self, index: Coord, radius: int):
         "returns the list of the coords of all the free cells around the index"
         output = []
-        for y in range(index.y - radius, index.y + radius):
-            for x in range(index.x - radius, index.x + radius):
+        for y in range(index.ord - radius, index.ord + radius):
+            for x in range(index.abs - radius, index.abs + radius):
                 if Coord(x, y) in self and self.get(Coord(x, y)) in self.listgrounds:
                     output.append(Coord(x, y))
         return output
@@ -1390,12 +1334,12 @@ class Map(object):
     def fillrectangle(self, c1: Coord, c2: Coord, thing=empty) -> None:
         "Fills a rectangle of Cords with a given object. For a list, the object will be chosen randomly"
         if type(thing) is list:
-            for i in range(c1.x, c2.x + 1):
-                for j in range(c1.y, c2.y + 1):
+            for i in range(c1.abs, c2.abs + 1):
+                for j in range(c1.ord, c2.ord + 1):
                     self._mat[j][i] = random.choice(thing)
         else:
-            for i in range(c1.x, c2.x + 1):
-                for j in range(c1.y, c2.y + 1):
+            for i in range(c1.abs, c2.abs + 1):
+                for j in range(c1.ord, c2.ord + 1):
                     self._mat[j][i] = thing
 
     def filltriangle(self, room, thing=empty) -> None:
@@ -1431,9 +1375,9 @@ class Map(object):
         "Groundizes a Coord, and if it is in a room, removes it from roomToReach."
         alea = random.randint(1, 10)
         if alea == 3 and self.menage == True:
-            self._mat[coord.y][coord.x] = random.choice(self.listgroundwet)
+            self._mat[coord.ord][coord.abs] = random.choice(self.listgroundwet)
         else:
-            self._mat[coord.y][coord.x] = random.choice(self.listground)
+            self._mat[coord.ord][coord.abs] = random.choice(self.listground)
         a = self.findRoom(coord)
         if a:
             self._rooms.append(a)
@@ -1442,17 +1386,17 @@ class Map(object):
     def corridor(self, c1: Coord, c2: Coord) -> None:
         "Digs from a Coord to another"
         self.dig(c1)
-        coord = Coord(c1.x, c1.y)
+        coord = Coord(c1.abs, c1.ord)
         while not (coord == c2):
             coord += self.dircorridor(coord, c2)
             self.dig(coord)
 
     def dircorridor(self, c1: Coord, c2: Coord) -> Coord:
         "Returns the direction to dig to."
-        if c1.y != c2.y:
-            return Coord(0, 1) if c1.y < c2.y else Coord(0, -1)
-        if c1.x != c2.x:
-            return Coord(1, 0) if c1.x < c2.x else Coord(-1, 0)
+        if c1.ord != c2.ord:
+            return Coord(0, 1) if c1.ord < c2.ord else Coord(0, -1)
+        if c1.abs != c2.abs:
+            return Coord(1, 0) if c1.abs < c2.abs else Coord(-1, 0)
 
     def reach(self) -> None:
         "Digs between two random rooms."
@@ -1532,9 +1476,9 @@ class Map(object):
                             posmonstre = self.pos(i)
                             poshero = self.pos(self.hero)
                             new = posmonstre - poshero
-                            way1 = Coord(-sign(new.x), -sign(new.y))
+                            way1 = Coord(-sign(new.abs), -sign(new.ord))
                             # diagonale 'imparfaite'
-                            if ((way1.x and way1.y) != 0) and (
+                            if ((way1.abs and way1.ord) != 0) and (
                                 self._elem[i].cosinus(self._elem[self.hero])
                                 != (1 / math.sqrt(2) or -1 / math.sqrt(2))
                             ):
@@ -1542,30 +1486,30 @@ class Map(object):
                                     self._elem[self.hero])
                                 # creation de way3 et way4
                                 if way2.y == 0:
-                                    way3 = Coord(way2.x, -way1.y)
-                                    way4 = Coord(0, way1.y)
+                                    way3 = Coord(way2.x, -way1.ord)
+                                    way4 = Coord(0, way1.ord)
                                 else:
-                                    way3 = Coord(-way1.x, way2.y)
-                                    way4 = Coord(way1.x, 0)
+                                    way3 = Coord(-way1.abs, way2.y)
+                                    way4 = Coord(way1.abs, 0)
                                 way5 = 0
                             # diagonales 'parfaites'
-                            elif (way1.x and way1.y) != 0:
+                            elif (way1.abs and way1.ord) != 0:
                                 # creation de way2, way3, way4, way5
-                                way2 = Coord(0, way1.y)
-                                way3 = Coord(way1.x, 0)
-                                way4 = Coord(way1.x, -way1.y)
-                                way5 = Coord(-way1.x, way1.y)
+                                way2 = Coord(0, way1.ord)
+                                way3 = Coord(way1.abs, 0)
+                                way4 = Coord(way1.abs, -way1.ord)
+                                way5 = Coord(-way1.abs, way1.ord)
 
                             # cas ou le monstre doit se deplacer en ligne droite
                             else:
-                                if way1.x == 0:
-                                    way2 = Coord(1, way1.y)
-                                    way3 = Coord(-1, way1.y)
+                                if way1.abs == 0:
+                                    way2 = Coord(1, way1.ord)
+                                    way3 = Coord(-1, way1.ord)
                                     way4 = Coord(1, 0)
                                     way5 = Coord(-1, 0)
                                 else:
-                                    way2 = Coord(way1.x, 1)
-                                    way3 = Coord(way1.x, -1)
+                                    way2 = Coord(way1.abs, 1)
+                                    way3 = Coord(way1.abs, -1)
                                     way4 = Coord(0, 1)
                                     way5 = Coord(0, -1)
 
@@ -2471,7 +2415,7 @@ class Game():
     def gameturn(self, event) -> None:
         "Makes an action according to the bind result"
         poshero = self.floor.pos(self.hero)
-        if isinstance(event, Event) and event.char in self._actions:
+        if isinstance(event, tkinter.Event) and event.char in self._actions:
             self._actions[event.char](self.floor.hero)
         [self.fenetre.bind(i, None) for i in self._actions]
         self.hero.food()
@@ -2877,7 +2821,7 @@ class Game():
             text=theGame().floor.hero.bourse,
             font="Arial 18 bold",
             fill="white",
-            anchor=W,
+            anchor=tkinter.W,
         )
         self.canvas.create_image(850, 340, image=self.dicinventory["bourse"])
         self.canvas.create_image(850, 370, image=self.dicimages["magic"])
@@ -2896,12 +2840,12 @@ class Game():
         """Inits the Game, creates the Tk window and the Canvas, launches the mainloop by executing initgraph.
         \n Not perfect yet"""
         # self.mouse=Controller()
-        self.fenetre = Tk()
+        self.fenetre = tkinter.Tk()
         self.fenetre.title("DG")
         self.fenetre.attributes("-fullscreen", True)
         self.fenetre.configure(background="pink")
-        self.canvas = Canvas(self.fenetre, width=1200,
-                             height=800, background="black")
+        self.canvas = tkinter.Canvas(self.fenetre, width=1200,
+                                     height=800, background="black")
         # time.time.sleep(5)
         self.canvas.place(x=0, y=0)
         self.canvas.create_text(
@@ -2913,10 +2857,10 @@ class Game():
         self.canvas.destroy()
         # bouton_jouer = Button(self.fenetre,text='Jouer',command=self.beginplay)
         # bouton_jouer.place(x=1500,y=800)
-        self.canvas = Canvas(self.fenetre, width=1200,
-                             height=800, background="black")
+        self.canvas = tkinter.Canvas(self.fenetre, width=1200,
+                                     height=800, background="black")
         self.canvas.place(x=0, y=0)
-        bouton_quitter = Button(
+        bouton_quitter = tkinter.Button(
             self.fenetre, text="Quitter", command=self.fenetre.destroy
         )
         bouton_quitter.place(x=1200, y=800)
