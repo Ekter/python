@@ -209,8 +209,24 @@ class Status():
         self.prb = prb
         self.turns = turns
 
+    def __str__(self) -> str:
+        return self.name + " " + str(self.turns) + " " + str(self.effect) + " " + str(
+            self.cible) + " " + str(self.prb)
 
-class Element(object):
+    def __eq__(self, other: "Status") -> bool:
+        return (
+            self.name == other.name
+            and self.turns == other.turns
+            and self.effect == other.effect
+            and self.cible == other.cible
+            and self.prb == other.prb
+        )
+
+    def __ne__(self, other: "Status") -> bool:
+        return not self == other
+
+
+class Element():
     "Basic Element of the roguelike"
 
     def __init__(self, name, abbrv=None, transparent=False, f=False):
@@ -258,8 +274,8 @@ class Creature(Element):
         abbrv: str = None,
         strength: int = 1,
         defense: int = 0,
-        inventory: List["Equipment"] = [],
-        equips: List["Equipment"] = [None, None, None, None],
+        inventory: List["Equipment"] = None,
+        equips: List["Equipment"] = None,
         bourse: int = 0,
         vitesse: int = 1,
         level: int = 1,
@@ -276,8 +292,8 @@ class Creature(Element):
         self.defense = int(defense * (1.5 ** level))
         self.xp = (self.hp + 3 * self.strength) * level
         self.bourse = bourse
-        self.inventory = inventory
-        self.equips = equips
+        self.inventory = inventory if inventory != None else []
+        self.equips = equips if equips != None else [None, None, None, None]
         self.listeffects = []
         self.dpl = []
         self.vitesse = vitesse
