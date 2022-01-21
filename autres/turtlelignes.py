@@ -1,15 +1,25 @@
+from turtle import Turtle
+from random import normalvariate
+from pynput import mouse
 
-from time import sleep
-from turtle import *
-from random import randint
 
+tu = Turtle()
+lis=[]
 
-tu=Turtle()
+def click(*args, **kwargs):
+    "NIK"
+    print("pas encore ok")
+    lis.append((*args,{**kwargs}))
+    print("ok")
+
 tu.speed(0)
 tu.pendown()
 tu.getscreen().window_height()
+listener = mouse.Listener(on_click=click)
+listener.start()
 while True:
-    while randint(1,500000000)!=1:
-        tu.goto(randint(-1000,1000),randint(-700,700))
-    sleep(3)
-    tu.clear()
+    tu.goto(normalvariate(0, 500), normalvariate(0, 500))
+    if len(lis)>0:
+        tu.clear()
+        print(lis.pop(0))
+
