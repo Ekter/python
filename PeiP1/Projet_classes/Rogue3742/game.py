@@ -232,11 +232,11 @@ class Element():
     def __init__(self, name, abbrv=None, transparent=False, f=False):
         self.name = name
         self.transparent = transparent
-        if abbrv == None:
+        if abbrv is None:
             self.abbrv = name[0]
         else:
             self.abbrv = abbrv
-        self.f = f
+        self.is_f = f
 
     def __repr__(self) -> str:
         return self.abbrv
@@ -245,12 +245,14 @@ class Element():
         "Description of the Element"
         return "<{}>".format(self.name)
 
-    def meet(self, hero):
+    def meet(self, other: "Creature", distant=False):
         "Warning! Not defined for Elements yet!"
-        raise NotImplementedError("Not implemented yet")
+        raise NotImplementedError(f"""Not implemented yet:
+            {self} can't meet {other} at distance {distant}""")
 
     def accord(self):
-        return f"e {self.name}" if self.f else f" {self.name}"
+        "returns {e name} if is_f else just { name} (for un accords)"
+        return f"e {self.name}" if self.is_f else f" {self.name}"
 
 
 class Decoration(Element):
@@ -259,8 +261,8 @@ class Decoration(Element):
     def __init__(self, name, abbrv=None, transparent=False):
         Element.__init__(self, name, abbrv, transparent)
 
-    def meet(self, other: Element):
-        "useless function called when the hero bumps a decoration"
+    def meet(self, other: "Creature", distant=False):
+        "useless function called when a creature bumps a decoration"
         return False
 
 
@@ -292,8 +294,8 @@ class Creature(Element):
         self.defense = int(defense * (1.5 ** level))
         self.xp = (self.hp + 3 * self.strength) * level
         self.bourse = bourse
-        self.inventory = inventory if inventory != None else []
-        self.equips = equips if equips != None else [None, None, None, None]
+        self.inventory = inventory if inventory is not None else []
+        self.equips = equips if equips is not None else [None, None, None, None]
         self.listeffects = []
         self.dpl = []
         self.vitesse = vitesse
@@ -304,7 +306,8 @@ class Creature(Element):
         self.distantstrenght = distantstrenght
 
     def __contains__(self, item: Union[str, "Equipment"]):
-        return (item in self.inventory) if isinstance(item, Equipment) else (item in [i.name for i in self.inventory])
+        return (item in self.inventory) if isinstance(item, Equipment) else (item in [
+            i.name for i in self.inventory])
 
     def description(self) -> str:
         "Description of the Creature"
@@ -317,17 +320,18 @@ class Creature(Element):
         return True
 
     def meet(self, other: "Creature", distant=False) -> bool:
-        "Encounter between two creatures: the first(self) is attacked by the second(other). If distant, the first is attacked by the second's distant attack."
+        """Encounter between two creatures: the first(self) is attacked by the second(other).
+            If distant, the first is attacked by the second's distant attack."""
         self.hp -= self.distantstrenght if distant else (
             other.strength - random.randint(0, self.defense))
-        if other.power != None:
+        if other.power is not None:
             self.listeffects.append(other.power)
         theGame().addMessage(f"Le {other.name} hits le {self.name}", life=1)
-        if self.special != None and isinstance(other, Hero):
+        if self.special is not None and isinstance(other, Hero):
             self.special(self)
-        if other.special != None and isinstance(self, Hero):
+        if other.special is not None and isinstance(self, Hero):
             other.special(other)
-        if self.equips[1] != None:
+        if self.equips[1] is not None:
             self.equips[1].breakable(other)
         if self.hp <= 0:
             return other.gainxp(self)
@@ -346,8 +350,8 @@ class Creature(Element):
 
     def creaturn(self, mapp: "Map") -> None:
         "Affect a creature with its statuses"
-        for attack in mapp._attacks:
-            if mapp._attacks[attack] == mapp.pos(self):
+        for attack in mapp.getattacks():
+            if mapp.getattacks()[attack] == mapp[self]:
                 for i in attack.effects:
                     self.listeffects.append(i)
         newlist = []
@@ -1194,6 +1198,9 @@ class Map(object):
                 self.put(valeur, cle)
             else:
                 self.tp(cle, valeur)
+
+    def getattacks(self):
+        return self._attacks
 
     def getrooms(self):
         return self._rooms[:]
