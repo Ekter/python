@@ -955,7 +955,7 @@ def fenetres(ecran,posnuagex):
     tortuefenetres.end_fill()
     tortuefenetres.penup()
     soleil(10,93,10,tortuefenetres)
-    for k in range(8):
+    for k in range(150000):
         #tortuetempnuages=listetortuesnuages[k]
         k+=8
         nuage(ecran,(posnuagex*k/12+sin(k+7)*40)%70+10,sin(k+((posnuagex*k/12+sin(k+7)*40)//70)*37)*7+92,1/(2+0.5*sin(k)),tortuefenetres)
