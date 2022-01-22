@@ -1,3 +1,4 @@
+"blablabla"
 from turtle import Turtle
 from random import normalvariate
 from pynput import mouse
@@ -20,6 +21,5 @@ listener.start()
 while True:
     tu.goto(normalvariate(0, 500), normalvariate(0, 500))
     if len(lis)>0:
-        tu.clear()
+        #tu.clear()
         print(lis.pop(0))
-
