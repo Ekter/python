@@ -12,7 +12,7 @@ import math
 nomprogramme = __file__.split("/")[-1]
 print(nomprogramme)
 # nomprogramme = "game.py"
-DELAIANIM = 0.05
+DELAIANIM = 0.1
 
 
 def sign(number: float) -> int:
@@ -351,6 +351,7 @@ class Creature(Element):
         "Affect a creature with its statuses"
         for attack in mapp.getattacks():
             if mapp.getattacks()[attack] == mapp[self]:
+                self.heal(attack.dmg)
                 for i in attack.effects:
                     self.listeffects.append(i)
         newlist = []
@@ -477,7 +478,7 @@ class Archer(Creature):
 
     def tir(self):
         theGame().hero.hp -= 2
-        theGame().addMessage(f"L'archer vous tire dessus.")
+        theGame().addMessage(f"Le Tireur vous tire dessus.", life=1)
 
 
 class Pills(Element):
@@ -580,14 +581,15 @@ class Hero(Creature):
     "The Hero, controled by the player in the game."
 
     def __init__(self, name="Hero", hp=37, abbrv="@", strength=2, satiete=100):
-        Creature.__init__(self, name, hp, abbrv, strength, distantstrenght=3)
+        Creature.__init__(self, name, hp, abbrv, strength,
+                          distantstrenght=3, level=5)
         self.joie = 50
         self.tristesse = 50
         self.colere = 50
         self.peur = 50
         self.absp = 0
         self.satiete = satiete
-        self.mp = 0
+        self.mp = 124323
         self.tour = 0
         self.famine = False
         self.distvision = 6
@@ -649,7 +651,8 @@ class Hero(Creature):
         self.hp = self.hpmax
         theGame().addMessage(f"Bravo! Tu es maintenant niveau {self.level}")
         if self.level in theGame().sorts:
-            theGame().addMessage(f"Tu as débloqué le {theGame().sorts[self.level]}!")
+            theGame().addMessage(
+                f"Tu as débloqué le {theGame().sorts[self.level]}!")
 
     def food(self) -> None:
         """The food level.
@@ -1275,7 +1278,7 @@ class Map():
         self.move(element, self.pos(element) - dest)
 
     def attackpoison(self, coord: Coord) -> None:
-        if self.hero.level >= 2 and self.hero.mp > 5:
+        if self.hero.level >= 2 and self.hero.mp >= 5:
             self.hero.mp -= 5
             self.putattack(
                 coord, Attack("Poison", "psn", 0, 10, [
@@ -1289,36 +1292,31 @@ class Map():
                 f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/5")
 
     def attackwind(self, coord: Coord) -> None:
-        if self.hero.level >= 3 and self.hero.mp > 7:
+        if self.hero.level >= 3 and self.hero.mp >= 7:
             self.hero.mp -= 7
             for direction in theGame().directions:
                 self.putattack(
-                    coord+direction, Attack("Wind", "wnd", 10, 1, [Status("Poison", 5, -1, prb=1)]))
-            theGame().addMessage("Sort de poison activé!", "blue", 1)
+                    coord+direction, Attack("Wind", "wnd", -10, 5, []))
+            theGame().addMessage("Sort de vent activé!", "blue", 1)
         elif self.hero.level < 3:
             theGame().addMessage("Tu n'as pas le niveau requis pour utiliser ce sort! Niveau requis: 3")
         else:
             theGame().addMessage(
                 f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/7")
 
-
     def attackfire(self, coord: Coord, facing: Coord) -> None:
         if self.hero.level >= 4 and self.hero.mp >= 10:
             self.hero.mp -= 10
-            theta = facing.getangle() - math.pi / 3
+            theta = facing.getangle() - math.pi / 6
             ch = coord
-            while theta <= facing.getangle() + math.pi / 3:
-                r = 0
+            while theta <= facing.getangle() + math.pi / 6:
+                r = 1
                 cv = Coord(0, 0)
                 while (
                     r <= self.hero.distvision
                     and (ch + cv in self)
                     and (
-                        (
-                            self[ch + cv] in Map.listground
-                            or self[ch + cv] in Map.listgroundwet
-                        )
-                        or Coord(0, 0) == cv
+                        (self[ch + cv] in Map.listgrounds)
                         or (
                             isinstance(self[ch + cv], Element)
                             and self[ch + cv].transparent == True
@@ -1327,7 +1325,7 @@ class Map():
                 ):
                     self.putattack(
                         cv + ch,
-                        Attack("Feu", "feu", 5, 10, [
+                        Attack("Feu", "feu", -5, 10, [
                                Status("Brulé", 5, -1, prb=1)]),
                     )
                     r += 0.2
@@ -1704,6 +1702,7 @@ class Game():
         "p": lambda hero: theGame().floor.attackpoison(
             theGame()[hero]+hero.facing
         ),
+        "v": lambda hero: theGame().floor.attackwind(theGame()[hero]),
         "f": lambda hero: theGame().floor.attackfire(
             theGame().floor.pos(hero), hero.facing
         ),
@@ -2668,82 +2667,14 @@ class Game():
             y += 4
 
         # affichage des emotions
-        if theGame().hero.joie >= 90:
-            self.canvas.create_image(950, 125, image=self.dicemotion["joy9"])
-        elif theGame().hero.joie >= 80:
-            self.canvas.create_image(950, 125, image=self.dicemotion["joy8"])
-        elif theGame().hero.joie >= 70:
-            self.canvas.create_image(950, 125, image=self.dicemotion["joy7"])
-        elif theGame().hero.joie >= 60:
-            self.canvas.create_image(950, 125, image=self.dicemotion["joy6"])
-        elif theGame().hero.joie >= 50:
-            self.canvas.create_image(950, 125, image=self.dicemotion["joy5"])
-        elif theGame().hero.joie >= 40:
-            self.canvas.create_image(950, 125, image=self.dicemotion["joy4"])
-        elif theGame().hero.joie >= 30:
-            self.canvas.create_image(950, 125, image=self.dicemotion["joy3"])
-        elif theGame().hero.joie >= 20:
-            self.canvas.create_image(950, 125, image=self.dicemotion["joy2"])
-        else:
-            self.canvas.create_image(950, 125, image=self.dicemotion["joy1"])
-
-        if theGame().hero.tristesse >= 90:
-            self.canvas.create_image(950, 165, image=self.dicemotion["sad9"])
-        elif theGame().hero.tristesse >= 80:
-            self.canvas.create_image(950, 165, image=self.dicemotion["sad8"])
-        elif theGame().hero.tristesse >= 70:
-            self.canvas.create_image(950, 165, image=self.dicemotion["sad7"])
-        elif theGame().hero.tristesse >= 60:
-            self.canvas.create_image(950, 165, image=self.dicemotion["sad6"])
-        elif theGame().hero.tristesse >= 50:
-            self.canvas.create_image(950, 165, image=self.dicemotion["sad5"])
-        elif theGame().hero.tristesse >= 40:
-            self.canvas.create_image(950, 165, image=self.dicemotion["sad4"])
-        elif theGame().hero.tristesse >= 30:
-            self.canvas.create_image(950, 165, image=self.dicemotion["sad3"])
-        elif theGame().hero.tristesse >= 20:
-            self.canvas.create_image(950, 165, image=self.dicemotion["sad2"])
-        else:
-            self.canvas.create_image(950, 165, image=self.dicemotion["sad1"])
-
-        if theGame().hero.colere >= 90:
-            self.canvas.create_image(950, 205, image=self.dicemotion["angry9"])
-        elif theGame().hero.colere >= 80:
-            self.canvas.create_image(950, 205, image=self.dicemotion["angry8"])
-        elif theGame().hero.colere >= 70:
-            self.canvas.create_image(950, 205, image=self.dicemotion["angry7"])
-        elif theGame().hero.colere >= 60:
-            self.canvas.create_image(950, 205, image=self.dicemotion["angry6"])
-        elif theGame().hero.colere >= 50:
-            self.canvas.create_image(950, 205, image=self.dicemotion["angry5"])
-        elif theGame().hero.colere >= 40:
-            self.canvas.create_image(950, 205, image=self.dicemotion["angry4"])
-        elif theGame().hero.colere >= 30:
-            self.canvas.create_image(950, 205, image=self.dicemotion["angry3"])
-        elif theGame().hero.colere >= 20:
-            self.canvas.create_image(950, 205, image=self.dicemotion["angry2"])
-        else:
-            self.canvas.create_image(950, 205, image=self.dicemotion["angry1"])
-
-        if theGame().hero.peur >= 90:
-            self.canvas.create_image(950, 245, image=self.dicemotion["peur9"])
-        elif theGame().hero.peur >= 80:
-            self.canvas.create_image(950, 245, image=self.dicemotion["peur8"])
-        elif theGame().hero.peur >= 70:
-            self.canvas.create_image(950, 245, image=self.dicemotion["peur7"])
-        elif theGame().hero.peur >= 60:
-            self.canvas.create_image(950, 245, image=self.dicemotion["peur6"])
-        elif theGame().hero.peur >= 50:
-            self.canvas.create_image(950, 245, image=self.dicemotion["peur5"])
-        elif theGame().hero.peur >= 40:
-            self.canvas.create_image(950, 245, image=self.dicemotion["peur4"])
-        elif theGame().hero.peur >= 30:
-            self.canvas.create_image(950, 245, image=self.dicemotion["peur3"])
-        elif theGame().hero.peur >= 20:
-            self.canvas.create_image(950, 245, image=self.dicemotion["peur2"])
-        else:
-            self.canvas.create_image(950, 245, image=self.dicemotion["peur1"])
-
+        self.canvas.create_image(
+            950, 125, image=self.dicemotion[f"joy{theGame().hero.joie//10 if theGame().hero.joie>=20 else 1}"])
+        self.canvas.create_image(
+            950, 165, image=self.dicemotion[f"sad{theGame().hero.tristesse//10 if theGame().hero.tristesse>=20 else 1}"])
+        self.canvas.create_image(
+            950, 205, image=self.dicemotion[f"angry{theGame().hero.colere//10 if theGame().hero.colere>=20 else 1}"])
+        self.canvas.create_image(
+            950, 245, image=self.dicemotion[f"peur{theGame().hero.peur//10 if theGame().hero.peur>=20 else 1}"])
         # affichage des dialogue dans la boite de dialogue
         self.canvas.create_image(540, 740, image=self.dicimages["dialogue"])
         if last:
