@@ -321,7 +321,7 @@ class Creature(Element):
         self.hp = min(self.hpmax, self.hp + heal_amount)
         return True
 
-    def meet(self, other: "Creature", distant:bool=False) -> bool:
+    def meet(self, other: "Creature", distant: bool = False) -> bool:
         """Encounter between two creatures: the first(self) is attacked by the second(other).
             If distant, the first is attacked by the second's distant attack."""
         self.hp -= self.distantstrenght if distant else (
@@ -359,14 +359,14 @@ class Creature(Element):
                 newlist.append(status)
         self.listeffects = newlist
 
-    def take(self, equip:"Equipment") -> bool:
+    def take(self, equip: "Equipment") -> bool:
         "Taking an Equipment: add it to the Creature's inventory"
         if len(self.inventory) <= (9 if isinstance(self, Hero) else 1):
             self.inventory.append(equip)
             return True
         return False
 
-    def gainxp(self, creature:"Creature") -> True:
+    def gainxp(self, creature: "Creature") -> True:
         "Killing a Creature makes you gain xp."
         self.absp += creature.absp/2
         if self.absp >= 5 + 5 * self.level:
@@ -384,7 +384,7 @@ class Creature(Element):
             f"Le {self.description()} a gagné un niveau!(niveau {self.level})"
         )
 
-    def throw(self, equip:"Equipment") -> None:
+    def throw(self, equip: "Equipment") -> None:
         "Throws the item"
         devant = theGame()[self] + self.facing
         portee = 5
@@ -418,7 +418,7 @@ class Creature(Element):
         theGame().deselect()
         theGame().gameturn()
 
-    def unhide(self, newabbrv:str) -> None:
+    def unhide(self, newabbrv: str) -> None:
         "Changes the abbrv of a creature. Useful for gosts"
         self.abbrv = newabbrv
 
@@ -443,17 +443,17 @@ class Archer(Creature):
 
     def __init__(
         self,
-        name:str,
-        hp:int,
-        abbrv:str=None,
-        strength:int=1,
-        defense:int=0,
-        inventory:List["Equipment"]=None,
-        equips:List["Equipment"]=None,
-        bourse:int=0,
-        vitesse:int=1,
-        level:int=1,
-        action:int=0,
+        name: str,
+        hp: int,
+        abbrv: str = None,
+        strength: int = 1,
+        defense: int = 0,
+        inventory: List["Equipment"] = None,
+        equips: List["Equipment"] = None,
+        bourse: int = 0,
+        vitesse: int = 1,
+        level: int = 1,
+        action: int = 0,
         power=None,
         special=None,
     ):
@@ -648,20 +648,22 @@ class Hero(Creature):
         self.colere -= 20
         self.hp = self.hpmax
         theGame().addMessage(f"Bravo! Tu es maintenant niveau {self.level}")
+        if self.level in theGame().sorts:
+            theGame().addMessage(f"Tu as débloqué le {theGame().sorts[self.level]}!")
 
     def food(self) -> None:
         """The food level.
         Decreases every 3 turns, from 100 to 0.
         At 0, the hero loses hp each 3 turns."""
         self.tour += 1
-        self.famine=(self.satiete<=0)
-        self.satiete=min(100,self.satiete)
-        self.satiete=max(0,self.satiete)
+        self.famine = (self.satiete <= 0)
+        self.satiete = min(100, self.satiete)
+        self.satiete = max(0, self.satiete)
         if self.tour % 3 == 0 and self.satiete > 0:
             self.satiete -= 1
         if self.tour % 3 == 0 and self.famine == True:
             self.heal(-1)
-            theGame().addMessage("Il faut manger!","red",3)
+            theGame().addMessage("Il faut manger!", "red", 3)
 
     def sleep(self) -> None:
         listdpl = [
@@ -686,9 +688,9 @@ class Hero(Creature):
 
     def emotion_effect(self) -> None:
         "Affects the hero according to its emotions"
-        if self.tour%5==0:
+        if self.tour % 5 == 0:
             # joie
-            self.mp += self.joie / 10
+            self.mp += int(self.joie / 10)
             self.heal(int(random.expovariate(1/((self.joie-50)/50))))
             if self.joie <= 10:
                 self.hp -= 2
@@ -1277,14 +1279,28 @@ class Map():
             self.hero.mp -= 5
             self.putattack(
                 coord, Attack("Poison", "psn", 0, 10, [
-                              Status("Poison", 5, -1, prb=1)])
+                              Status("Poison", 5, -3, prb=1)])
             )
-            theGame().addMessage("Sort de poison activé!","blue",1)
-        elif self.hero.level<2:
-            theGame().addMessage("Tu n'as pas le niveau requis pour utiliser cette attaque! Niveau requis: 2")
+            theGame().addMessage("Sort de poison activé!", "blue", 1)
+        elif self.hero.level < 2:
+            theGame().addMessage("Tu n'as pas le niveau requis pour utiliser ce sort! Niveau requis: 2")
         else:
-            theGame().addMessage(f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/5")
-        
+            theGame().addMessage(
+                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/5")
+
+    def attackwind(self, coord: Coord) -> None:
+        if self.hero.level >= 3 and self.hero.mp > 7:
+            self.hero.mp -= 7
+            for direction in theGame().directions:
+                self.putattack(
+                    coord+direction, Attack("Wind", "wnd", 10, 1, [Status("Poison", 5, -1, prb=1)]))
+            theGame().addMessage("Sort de poison activé!", "blue", 1)
+        elif self.hero.level < 3:
+            theGame().addMessage("Tu n'as pas le niveau requis pour utiliser ce sort! Niveau requis: 3")
+        else:
+            theGame().addMessage(
+                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/7")
+
 
     def attackfire(self, coord: Coord, facing: Coord) -> None:
         if self.hero.level >= 4 and self.hero.mp >= 10:
@@ -1325,6 +1341,12 @@ class Map():
                                Status("Brulé", 5, -1, prb=1)]),
                     )
                 theta += math.pi / 32
+            theGame().addMessage("Sort de feu activé!", "blue", 1)
+        elif self.hero.level < 2:
+            theGame().addMessage("Tu n'as pas le niveau requis pour utiliser ce sort! Niveau requis: 4")
+        else:
+            theGame().addMessage(
+                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/10")
 
     def fillrectangle(self, c1: Coord, c2: Coord, thing=empty) -> None:
         "Fills a rectangle of Cords with a given object. For a list, the object will be chosen randomly"
@@ -1337,7 +1359,7 @@ class Map():
                 for j in range(c1.ord, c2.ord + 1):
                     self._mat[j][i] = thing
 
-    def filltriangle(self, room:SpeRoom) -> None:
+    def filltriangle(self, room: SpeRoom) -> None:
         mat_salle = room.mat
         for y in range(room.c1.ord, room.c3.ord):
 
@@ -1835,6 +1857,7 @@ class Game():
         Coord(-1, 1),
     ]
     ponct = ".,;:!?'\""
+    sorts = {2: "sort de poison", 3: "sort de vent", 4: "sort de feu"}
 
     def __init__(self, hero=None, sizemap=20, stage=10, fl=None):
         self.hero = Hero()
@@ -2145,6 +2168,9 @@ class Game():
         img_ice1 = tkinter.PhotoImage(file=imgPATH + "ice1.png").zoom(2)
         img_ice2 = tkinter.PhotoImage(file=imgPATH + "ice2.png").zoom(2)
         img_ice3 = tkinter.PhotoImage(file=imgPATH + "ice3.png").zoom(2)
+        img_wnd1 = tkinter.PhotoImage(file=imgPATH + "wind1.png").zoom(2)
+        img_wnd2 = tkinter.PhotoImage(file=imgPATH + "wind2.png").zoom(2)
+        img_wnd3 = tkinter.PhotoImage(file=imgPATH + "wind3.png").zoom(2)
         joie9 = tkinter.PhotoImage(file=imgPATH + "joie9.png")
         joie8 = tkinter.PhotoImage(file=imgPATH + "joie8.png")
         joie7 = tkinter.PhotoImage(file=imgPATH + "joie7.png")
@@ -2357,6 +2383,7 @@ class Game():
             "psn": [img_psn1, img_psn2, img_psn3],
             "feu": [img_feu1, img_feu2, img_feu3],
             "ice": [img_ice1, img_ice2, img_ice3],
+            "wnd": [img_wnd1, img_wnd2, img_wnd3],
         }
 
         self.dicemotion = {
@@ -2528,7 +2555,6 @@ class Game():
             self.canvas.create_image(
                 950, 70, image=self.dicimages[f"faim{(theGame().hero.satiete//25)*25}"]
             )
-
 
             # affichage de la boite affichant le niveau d'xp et contenant le hero
             experience = theGame().hero.absp
