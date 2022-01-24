@@ -28,22 +28,22 @@ def jet(self, unique):
         theGame().floor.get(devant).action += 8
     else:
         while (
-            (devant + theGame().floor.hero.facing in theGame().floor)
+            (devant + theGame().hero.facing in theGame().floor)
             and (
-                theGame().floor.get(devant + theGame().floor.hero.facing)
+                theGame().floor.get(devant + theGame().hero.facing)
                 in theGame().floor.listground
-                or theGame().floor.get(devant + theGame().floor.hero.facing)
+                or theGame().floor.get(devant + theGame().hero.facing)
                 in theGame().floor.listgroundwet
             )
             and i != 0
         ):
             if isinstance(
-                theGame().floor.get(devant + theGame().floor.hero.facing), Creature
+                theGame().floor.get(devant + theGame().hero.facing), Creature
             ):
-                theGame().floor.get(devant + theGame().floor.hero.facing).action += 8
+                theGame().floor.get(devant + theGame().hero.facing).action += 8
                 i = 0
 
-            devant += theGame().floor.hero.facing
+            devant += theGame().hero.facing
             i -= 1
         theGame().floor.put(devant, Used("used chewing-gum", "u"))
     return unique
@@ -229,7 +229,7 @@ class Status():
 class Element():
     """Basic Element of the roguelike. Added an dictionary of images, of the form {"idle":[name_img_facing_up,right,down,left],anim:[name_img_facing_up_1,right_1,down_1,left_1,up_2...left_2]}."""
 
-    def __init__(self, name, abbrv=None, transparent=False, f=False,dic_images=None):
+    def __init__(self, name, abbrv=None, transparent=False, f=False, dic_images=None):
         self.name = name
         self.transparent = transparent
         self.abbrv = name[0] if abbrv is None else abbrv
@@ -238,8 +238,7 @@ class Element():
         else:
             self.abbrv = abbrv
         self.is_f = f
-        self.dic_images=dic_images
-
+        self.dic_images = dic_images
 
     def __repr__(self) -> str:
         return self.abbrv
@@ -271,6 +270,7 @@ class Decoration(Element):
 
 class Creature(Element):
     "Element with hps and strength, movable in a Map"
+
     def __init__(
         self,
         name: str,
@@ -317,32 +317,28 @@ class Creature(Element):
         return Element.description(self) + f"({self.hp})*{self.level}*"
 
     def heal(self, heal_amount: int = 3) -> True:
-        """Heals a creature \n
-        Deprecated, we will prefer using the Status class"""
+        """Heals a creature"""
         self.hp = min(self.hpmax, self.hp + heal_amount)
         return True
 
-    def meet(self, other: "Creature", distant=False) -> bool:
+    def meet(self, other: "Creature", distant:bool=False) -> bool:
         """Encounter between two creatures: the first(self) is attacked by the second(other).
             If distant, the first is attacked by the second's distant attack."""
         self.hp -= self.distantstrenght if distant else (
             other.strength - random.randint(0, self.defense))
         if other.power is not None:
             self.listeffects.append(other.power)
-        theGame().addMessage(f"Le {other.name} hits le {self.name}", life=1)
+        theGame().addMessage(f"Le {other.name} frappe le {self.name}", life=1)
         if self.special is not None and isinstance(other, Hero):
             self.special(self)
         if other.special is not None and isinstance(self, Hero):
             other.special(other)
-        if self.equips[1] is not None:
-            self.equips[1].breakable(other)
         if self.hp <= 0:
             return other.gainxp(self)
         return False
 
     def statuslose(self, status: Status) -> None:
         "Make the Creature be affected by its statuses"
-        print(status.name)
         if status.cible in self.__dict__:
             if random.random() < status.prb:
                 self.__dict__[status.cible] += status.effect
@@ -363,16 +359,16 @@ class Creature(Element):
                 newlist.append(status)
         self.listeffects = newlist
 
-    def take(self, equip) -> bool:
-        "Taking an Equipment: we add it to the Creature's inventory"
+    def take(self, equip:"Equipment") -> bool:
+        "Taking an Equipment: add it to the Creature's inventory"
         if len(self.inventory) <= (9 if isinstance(self, Hero) else 1):
             self.inventory.append(equip)
             return True
         return False
 
-    def gainxp(self, creature) -> True:
+    def gainxp(self, creature:"Creature") -> True:
         "Killing a Creature makes you gain xp."
-        self.absp += creature.absp
+        self.absp += creature.absp/2
         if self.absp >= 5 + 5 * self.level:
             self.absp = 0
             self.levelup()
@@ -388,20 +384,20 @@ class Creature(Element):
             f"Le {self.description()} a gagné un niveau!(niveau {self.level})"
         )
 
-    def throw(self, equip) -> None:
+    def throw(self, equip:"Equipment") -> None:
         "Throws the item"
         devant = theGame()[self] + self.facing
-        i = 5
+        portee = 5
         while (
             (devant + self.facing in theGame().floor)
             and (
                 theGame()[devant + self.facing] in Map.listground
                 or theGame()[devant + self.facing] in Map.listgroundwet
             )
-            and i != 0
+            and portee != 0
         ):
             devant += self.facing
-            i -= 1
+            portee -= 1
         if ((devant + self.facing) in theGame().floor) and isinstance(
             theGame()[devant + self.facing], Creature
         ):
@@ -422,7 +418,8 @@ class Creature(Element):
         theGame().deselect()
         theGame().gameturn()
 
-    def unhide(self, newabbrv) -> None:
+    def unhide(self, newabbrv:str) -> None:
+        "Changes the abbrv of a creature. Useful for gosts"
         self.abbrv = newabbrv
 
     def tir(self) -> None:
@@ -446,17 +443,17 @@ class Archer(Creature):
 
     def __init__(
         self,
-        name,
-        hp,
-        abbrv=None,
-        strength=1,
-        defense=0,
-        inventory=[],
-        equips=[None, None, None, None],
-        bourse=0,
-        vitesse=1,
-        level=1,
-        action=0,
+        name:str,
+        hp:int,
+        abbrv:str=None,
+        strength:int=1,
+        defense:int=0,
+        inventory:List["Equipment"]=None,
+        equips:List["Equipment"]=None,
+        bourse:int=0,
+        vitesse:int=1,
+        level:int=1,
+        action:int=0,
         power=None,
         special=None,
     ):
@@ -464,17 +461,17 @@ class Archer(Creature):
             self,
             name,
             hp,
-            abbrv=None,
-            strength=1,
-            defense=0,
-            inventory=[],
-            equips=[None, None, None, None],
-            bourse=0,
-            vitesse=1,
-            level=1,
-            action=0,
-            power=None,
-            special=None,
+            abbrv=abbrv,
+            strength=strength,
+            defense=defense,
+            inventory=[] if inventory is None else inventory,
+            equips=[None, None, None, None] if equips is None else equips,
+            bourse=bourse,
+            vitesse=vitesse,
+            level=level,
+            action=action,
+            power=power,
+            special=special,
         )
         self.action = 255
 
@@ -582,7 +579,7 @@ class Enchant(object):
 class Hero(Creature):
     "The Hero, controled by the player in the game."
 
-    def __init__(self, name="Hero", hp=37, abbrv="@", strength=2, satiete=20):
+    def __init__(self, name="Hero", hp=37, abbrv="@", strength=2, satiete=100):
         Creature.__init__(self, name, hp, abbrv, strength, distantstrenght=3)
         self.joie = 50
         self.tristesse = 50
@@ -593,7 +590,6 @@ class Hero(Creature):
         self.mp = 0
         self.tour = 0
         self.famine = False
-        self.satieteInit = satiete
         self.distvision = 6
 
     def description(self) -> str:
@@ -643,31 +639,29 @@ class Hero(Creature):
 
     def levelup(self) -> None:
         "Level up : stats are increased"
-        self.hpmax += 2
+        self.hpmax += 5
         self.level += 1
         self.strength += 1
-        self.joie += 10
-        self.peur -= 10
-        self.tristesse -= 10
-        self.colere -= 10
+        self.joie += 20
+        self.peur -= 20
+        self.tristesse -= 20
+        self.colere -= 20
         self.hp = self.hpmax
-        theGame().addMessage(
-            f"Bien joué! Bravo!! Tu es maintenant niveau {self.level}")
+        theGame().addMessage(f"Bravo! Tu es maintenant niveau {self.level}")
 
     def food(self) -> None:
         """The food level.
         Decreases every 3 turns, from 100 to 0.
         At 0, the hero loses hp each 3 turns."""
         self.tour += 1
-        if self.satiete <= 0:
-            self.famine = True
-        if self.satiete >= 20:
-            self.famine = False
-            self.satiete = 20
+        self.famine=(self.satiete<=0)
+        self.satiete=min(100,self.satiete)
+        self.satiete=max(0,self.satiete)
         if self.tour % 3 == 0 and self.satiete > 0:
             self.satiete -= 1
         if self.tour % 3 == 0 and self.famine == True:
-            self.hp -= 1
+            self.heal(-1)
+            theGame().addMessage("Il faut manger!","red",3)
 
     def sleep(self) -> None:
         listdpl = [
@@ -692,55 +686,37 @@ class Hero(Creature):
 
     def emotion_effect(self) -> None:
         "Affects the hero according to its emotions"
-        # joie
-        self.mp += self.joie / 10
-        if self.joie >= 90:
-            self.hp = min(self.hp + 2, self.hpmax)
-            self.tristesse -= 2
-            self.colere -= 1
-            self.peur -= 1
-        elif self.joie >= 80:
-            self.hp = min(self.hp + 1, self.hpmax)
-            self.tristesse -= 1
-            self.colere -= 1
-            self.peur -= 1
-        elif self.joie >= 30:
-            self.tristesse += 1
-        elif self.joie >= 20:
-            self.hp -= 1
-            self.tristesse += 1
-        elif self.joie >= 10:
-            self.hp -= 2
-            self.tristesse += 2
-            self.colere += 1
-            self.peur += 5
-        elif self.joie <= 0:
-            self.hp -= 5
-            self.tristesse += 5
-            self.colere += 1
-            self.peur += 10
-        # tristesse
-        self.distvision = 2.5 * self.tristesse / 100 + 2.5
-        if self.tristesse <= 10:
-            self.hp = min(self.hp + 2, self.hpmax)
-            self.joie += 2
-            self.peur -= 1
-        elif self.tristesse <= 90:
-            self.hp -= 1
-        # peur
-        if self.peur <= 10:
-            self.hp += 2
-            self.joie += 2
-        elif self.peur <= 90:
-            self.hp -= 1
-            r = random.randint(1, 4)
-            if r == 1:
-                theGame().gameturn("<space>")
-                self.peur += 2
-        # colere
-        if self.colere <= 10:
-            self.hp += 2
-            self.joie += 2
+        if self.tour%5==0:
+            # joie
+            self.mp += self.joie / 10
+            self.heal(int(random.expovariate(1/((self.joie-50)/50))))
+            if self.joie <= 10:
+                self.hp -= 2
+                self.tristesse += 1
+                self.colere += 1
+                self.peur += 5
+            # tristesse
+            self.distvision = 2.5 * (100-self.tristesse) / 100 + 2.5
+            if self.tristesse <= 10:
+                self.hp = min(self.hp + 2, self.hpmax)
+                self.joie += 2
+                self.peur -= 1
+            elif self.tristesse <= 90:
+                self.hp -= 1
+            # peur
+            if self.peur <= 10:
+                self.hp += 2
+                self.joie += 2
+            elif self.peur <= 90:
+                self.hp -= 1
+                r = random.randint(1, 4)
+                if r == 1:
+                    theGame().gameturn("<space>")
+                    self.peur += 2
+            # colere
+            if self.colere <= 10:
+                self.hp += 2
+                self.joie += 2
 
 
 class Weapon(Equipment):
@@ -795,12 +771,6 @@ class Armor(Equipment):
         "Using a armor: equip it and return True to remove it from the inventory."
         self.equiper(creature)
         return True
-
-    def breakable(self, creature):
-        "Show the destruction of the armor."
-        self.durabilite -= creature.strength
-        if self.durabilite <= 0:
-            return self.usage(creature)
 
 
 class Amulet(Equipment):
@@ -1305,11 +1275,16 @@ class Map():
     def attackpoison(self, coord: Coord) -> None:
         if self.hero.level >= 2 and self.hero.mp > 5:
             self.hero.mp -= 5
-        self.putattack(
-            coord, Attack("Poison", "psn", 0, 10, [
-                          Status("Poison", 5, -1, prb=1)])
-        )
-        print("poison")
+            self.putattack(
+                coord, Attack("Poison", "psn", 0, 10, [
+                              Status("Poison", 5, -1, prb=1)])
+            )
+            theGame().addMessage("Sort de poison activé!","blue",1)
+        elif self.hero.level<2:
+            theGame().addMessage("Tu n'as pas le niveau requis pour utiliser cette attaque! Niveau requis: 2")
+        else:
+            theGame().addMessage(f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/5")
+        
 
     def attackfire(self, coord: Coord, facing: Coord) -> None:
         if self.hero.level >= 4 and self.hero.mp >= 10:
@@ -1362,7 +1337,7 @@ class Map():
                 for j in range(c1.ord, c2.ord + 1):
                     self._mat[j][i] = thing
 
-    def filltriangle(self, room, thing=empty) -> None:
+    def filltriangle(self, room:SpeRoom) -> None:
         mat_salle = room.mat
         for y in range(room.c1.ord, room.c3.ord):
 
@@ -1645,8 +1620,8 @@ class Special_ground():
             creature.hp -= 1
             if isinstance(creature, Hero):
                 creature.abbrv = "@*"
-                creature.colere += 5
-                creature.tristesse += 5
+                creature.colere += 1
+                creature.tristesse += 1
                 theGame().addMessage(
                     f"ATTENTION ! {creature.name} glisse sur le sol mouillé."
                 )
@@ -1705,7 +1680,7 @@ class Game():
         "i": lambda hero: theGame().addMessage(hero.fullDescription()),
         "r": lambda hero: hero.time.sleep(),
         "p": lambda hero: theGame().floor.attackpoison(
-            theGame().floor.pos(hero)
+            theGame()[hero]+hero.facing
         ),
         "f": lambda hero: theGame().floor.attackfire(
             theGame().floor.pos(hero), hero.facing
@@ -1768,7 +1743,7 @@ class Game():
             Equipment(
                 "gum",
                 "g",
-                usage=lambda creature: jet(True),
+                usage=lambda creature: creature.jet(True),
                 used=Used("used chewing-gum", "u"),
             ),
             Equipment("potion", "!",
@@ -1967,7 +1942,8 @@ class Game():
                     bg="steel blue",
                     fg="cyan",
                     font=("Comic Sans MS", 10),
-                    command=lambda z=i: theGame().hero.throw(z) if jeter else theGame().hero.use(z),
+                    command=lambda z=i: theGame().hero.throw(
+                        z) if jeter else theGame().hero.use(z),
                 )
             )
             # else:
@@ -2542,54 +2518,22 @@ class Game():
             )
 
         # truc pour l'interface
-        if theGame().floor.hero.hp >= 1:
+        if theGame().hero.hp >= 1:
 
             # creation de la barre d'inventaire
             self.canvas.create_image(
                 50, 400, image=self.dicimages["inventory"])
 
             # affiche  le niveau de satiete grace a un cookie
-            satiete = theGame().floor.hero.satiete
             self.canvas.create_image(
-                950, 70, image=self.dicimages[f"faim{math.floor(satiete/25)*25}"]
+                950, 70, image=self.dicimages[f"faim{(theGame().hero.satiete//25)*25}"]
             )
-            if satiete >= 100:
-                self.canvas.create_image(
-                    950, 70, image=self.dicimages["faim100"])
-            elif satiete >= 75:
-                self.canvas.create_image(
-                    950, 70, image=self.dicimages["faim75"])
-            elif satiete >= 50:
-                self.canvas.create_image(
-                    950, 70, image=self.dicimages["faim50"])
-            elif satiete >= 25:
-                self.canvas.create_image(
-                    950, 70, image=self.dicimages["faim25"])
-            elif satiete > 0:
-                self.canvas.create_image(
-                    950, 70, image=self.dicimages["faim0"])
-                self.canvas.create_text(
-                    540,
-                    765,
-                    text="niveau de nourriture bas !!!!",
-                    font="Arial 21 italic",
-                    fill="red",
-                )
-            else:
-                self.canvas.create_image(
-                    950, 70, image=self.dicimages["empty"])
-                self.canvas.create_text(
-                    540,
-                    765,
-                    text="il faut manger !!!!",
-                    font="Arial 21 italic",
-                    fill="red",
-                )
+
 
             # affichage de la boite affichant le niveau d'xp et contenant le hero
-            experience = theGame().floor.hero.absp
+            experience = theGame().hero.absp
             percent = int(
-                ((experience) / (5 + 5 * theGame().floor.hero.level)) * 100)
+                ((experience) / (5 + 5 * theGame().hero.level)) * 100)
             if percent >= 90:
                 self.canvas.create_image(
                     870, 160, image=self.dicimages["herobox90"])
@@ -2622,7 +2566,7 @@ class Game():
                     870, 160, image=self.dicimages["herobox0"])
 
             # affichage du niveau de vie
-            for i in range(theGame().floor.hero.hp):
+            for i in range(theGame().hero.hp):
                 self.canvas.create_image(
                     130 + 24 * i - (i // 26) * 26 * 24,
                     50 + 40 * (i // 26),
@@ -2631,7 +2575,7 @@ class Game():
 
             # affichage des objets dans l'inventaire
             place = 0
-            for e in theGame().floor.hero.inventory:
+            for e in theGame().hero.inventory:
                 picture = self.dicinventory.get(e.abbrv)
                 self.canvas.create_image(50, 45 + 78 * (place), image=picture)
                 place = place + 1
@@ -2643,15 +2587,15 @@ class Game():
             foulard = False
             plaid = False
             for i in range(4):
-                if theGame().floor.hero.equips[i] != None:
+                if theGame().hero.equips[i] != None:
                     picture = self.dicequipement[theGame(
                     ).floor.hero.equips[i].abbrv]
                     self.canvas.create_image(811 + 40 * i, 300, image=picture)
-                    if theGame().floor.hero.equips[i].name == "plaid":
+                    if theGame().hero.equips[i].name == "plaid":
                         plaid = True
-                    if theGame().floor.hero.equips[i].name == "carte de docteur":
+                    if theGame().hero.equips[i].name == "carte de docteur":
                         badge = True
-                    if theGame().floor.hero.equips[i].name == "foulard":
+                    if theGame().hero.equips[i].name == "foulard":
                         foulard = True
 
             # affichage du hero avec les equipements
@@ -2698,78 +2642,78 @@ class Game():
             y += 4
 
         # affichage des emotions
-        if theGame().floor.hero.joie >= 90:
+        if theGame().hero.joie >= 90:
             self.canvas.create_image(950, 125, image=self.dicemotion["joy9"])
-        elif theGame().floor.hero.joie >= 80:
+        elif theGame().hero.joie >= 80:
             self.canvas.create_image(950, 125, image=self.dicemotion["joy8"])
-        elif theGame().floor.hero.joie >= 70:
+        elif theGame().hero.joie >= 70:
             self.canvas.create_image(950, 125, image=self.dicemotion["joy7"])
-        elif theGame().floor.hero.joie >= 60:
+        elif theGame().hero.joie >= 60:
             self.canvas.create_image(950, 125, image=self.dicemotion["joy6"])
-        elif theGame().floor.hero.joie >= 50:
+        elif theGame().hero.joie >= 50:
             self.canvas.create_image(950, 125, image=self.dicemotion["joy5"])
-        elif theGame().floor.hero.joie >= 40:
+        elif theGame().hero.joie >= 40:
             self.canvas.create_image(950, 125, image=self.dicemotion["joy4"])
-        elif theGame().floor.hero.joie >= 30:
+        elif theGame().hero.joie >= 30:
             self.canvas.create_image(950, 125, image=self.dicemotion["joy3"])
-        elif theGame().floor.hero.joie >= 20:
+        elif theGame().hero.joie >= 20:
             self.canvas.create_image(950, 125, image=self.dicemotion["joy2"])
         else:
             self.canvas.create_image(950, 125, image=self.dicemotion["joy1"])
 
-        if theGame().floor.hero.tristesse >= 90:
+        if theGame().hero.tristesse >= 90:
             self.canvas.create_image(950, 165, image=self.dicemotion["sad9"])
-        elif theGame().floor.hero.tristesse >= 80:
+        elif theGame().hero.tristesse >= 80:
             self.canvas.create_image(950, 165, image=self.dicemotion["sad8"])
-        elif theGame().floor.hero.tristesse >= 70:
+        elif theGame().hero.tristesse >= 70:
             self.canvas.create_image(950, 165, image=self.dicemotion["sad7"])
-        elif theGame().floor.hero.tristesse >= 60:
+        elif theGame().hero.tristesse >= 60:
             self.canvas.create_image(950, 165, image=self.dicemotion["sad6"])
-        elif theGame().floor.hero.tristesse >= 50:
+        elif theGame().hero.tristesse >= 50:
             self.canvas.create_image(950, 165, image=self.dicemotion["sad5"])
-        elif theGame().floor.hero.tristesse >= 40:
+        elif theGame().hero.tristesse >= 40:
             self.canvas.create_image(950, 165, image=self.dicemotion["sad4"])
-        elif theGame().floor.hero.tristesse >= 30:
+        elif theGame().hero.tristesse >= 30:
             self.canvas.create_image(950, 165, image=self.dicemotion["sad3"])
-        elif theGame().floor.hero.tristesse >= 20:
+        elif theGame().hero.tristesse >= 20:
             self.canvas.create_image(950, 165, image=self.dicemotion["sad2"])
         else:
             self.canvas.create_image(950, 165, image=self.dicemotion["sad1"])
 
-        if theGame().floor.hero.colere >= 90:
+        if theGame().hero.colere >= 90:
             self.canvas.create_image(950, 205, image=self.dicemotion["angry9"])
-        elif theGame().floor.hero.colere >= 80:
+        elif theGame().hero.colere >= 80:
             self.canvas.create_image(950, 205, image=self.dicemotion["angry8"])
-        elif theGame().floor.hero.colere >= 70:
+        elif theGame().hero.colere >= 70:
             self.canvas.create_image(950, 205, image=self.dicemotion["angry7"])
-        elif theGame().floor.hero.colere >= 60:
+        elif theGame().hero.colere >= 60:
             self.canvas.create_image(950, 205, image=self.dicemotion["angry6"])
-        elif theGame().floor.hero.colere >= 50:
+        elif theGame().hero.colere >= 50:
             self.canvas.create_image(950, 205, image=self.dicemotion["angry5"])
-        elif theGame().floor.hero.colere >= 40:
+        elif theGame().hero.colere >= 40:
             self.canvas.create_image(950, 205, image=self.dicemotion["angry4"])
-        elif theGame().floor.hero.colere >= 30:
+        elif theGame().hero.colere >= 30:
             self.canvas.create_image(950, 205, image=self.dicemotion["angry3"])
-        elif theGame().floor.hero.colere >= 20:
+        elif theGame().hero.colere >= 20:
             self.canvas.create_image(950, 205, image=self.dicemotion["angry2"])
         else:
             self.canvas.create_image(950, 205, image=self.dicemotion["angry1"])
 
-        if theGame().floor.hero.peur >= 90:
+        if theGame().hero.peur >= 90:
             self.canvas.create_image(950, 245, image=self.dicemotion["peur9"])
-        elif theGame().floor.hero.peur >= 80:
+        elif theGame().hero.peur >= 80:
             self.canvas.create_image(950, 245, image=self.dicemotion["peur8"])
-        elif theGame().floor.hero.peur >= 70:
+        elif theGame().hero.peur >= 70:
             self.canvas.create_image(950, 245, image=self.dicemotion["peur7"])
-        elif theGame().floor.hero.peur >= 60:
+        elif theGame().hero.peur >= 60:
             self.canvas.create_image(950, 245, image=self.dicemotion["peur6"])
-        elif theGame().floor.hero.peur >= 50:
+        elif theGame().hero.peur >= 50:
             self.canvas.create_image(950, 245, image=self.dicemotion["peur5"])
-        elif theGame().floor.hero.peur >= 40:
+        elif theGame().hero.peur >= 40:
             self.canvas.create_image(950, 245, image=self.dicemotion["peur4"])
-        elif theGame().floor.hero.peur >= 30:
+        elif theGame().hero.peur >= 30:
             self.canvas.create_image(950, 245, image=self.dicemotion["peur3"])
-        elif theGame().floor.hero.peur >= 20:
+        elif theGame().hero.peur >= 20:
             self.canvas.create_image(950, 245, image=self.dicemotion["peur2"])
         else:
             self.canvas.create_image(950, 245, image=self.dicemotion["peur1"])
@@ -2830,13 +2774,13 @@ class Game():
 
         # affichage du niveau
         self.canvas.create_text(
-            870, 68, text=theGame().floor.hero.level, font="Arial 25 bold", fill="white"
+            870, 68, text=theGame().hero.level, font="Arial 25 bold", fill="white"
         )
         # affichage de la bourse
         self.canvas.create_text(
             870,
             340,
-            text=theGame().floor.hero.bourse,
+            text=theGame().hero.bourse,
             font="Arial 18 bold",
             fill="white",
             anchor=tkinter.W,
@@ -2846,7 +2790,7 @@ class Game():
 
         self.canvas.pack()
         self.fenetre.update()
-        if theGame().floor.hero.hp < 1:
+        if theGame().hero.hp < 1:
             self.endgame()
 
     def introduction(self):
@@ -2916,16 +2860,18 @@ class Game():
                     )
                 )
             ):
-                self.seenmap[(cv + ch).ord][(cv + ch).abs] = self.floor[cv + ch]
+                self.seenmap[(cv + ch).ord][(cv +
+                                             ch).abs] = self.floor[cv + ch]
                 self.viewablemap[(cv + ch).ord][(cv +
-                                               ch).abs] = str(self.floor[cv + ch])
+                                                 ch).abs] = str(self.floor[cv + ch])
                 r += 0.2
                 cv = Coord(r, theta, True)
             cv = Coord(r + 0.5, theta, True)
             if r < 6 and ch + cv in self.floor:
-                self.seenmap[(cv + ch).ord][(cv + ch).abs] = self.floor[cv + ch]
+                self.seenmap[(cv + ch).ord][(cv +
+                                             ch).abs] = self.floor[cv + ch]
                 self.viewablemap[(cv + ch).ord][(cv +
-                                               ch).abs] = str(self.floor[cv + ch])
+                                                 ch).abs] = str(self.floor[cv + ch])
             theta += math.pi / 32
 
 
