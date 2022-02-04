@@ -133,7 +133,7 @@ class Coord():
 
     def getangle(self) -> float:
         """returns the angle of the vector (self.abs, self.ord)"""
-        return math.atan2(self.abs, self.ord)
+        return math.atan2(self.ord, self.abs)
 
     def ind(self) -> tuple:
         """returns a tuple (abs,ord). Used for """
@@ -352,6 +352,7 @@ class Creature(Element):
         for attack in mapp.getattacks():
             if mapp.getattacks()[attack] == mapp[self]:
                 self.heal(attack.dmg)
+                theGame().addMessage(str(attack.dmg))
                 for i in attack.effects:
                     self.listeffects.append(i)
         newlist = []
@@ -1307,9 +1308,9 @@ class Map():
     def attackfire(self, coord: Coord, facing: Coord) -> None:
         if self.hero.level >= 4 and self.hero.mp >= 10:
             self.hero.mp -= 10
-            theta = facing.getangle() - math.pi / 6
+            theta = facing.getangle() - math.pi / 12
             ch = coord
-            while theta <= facing.getangle() + math.pi / 6:
+            while theta <= facing.getangle() + math.pi / 12:
                 r = 1
                 cv = Coord(0, 0)
                 while (
@@ -1729,7 +1730,7 @@ class Game():
         ],
         3: [
             NPC(
-                "docteur",
+                "Docteur",
                 abbrv="docM",
                 strength=0,
                 defense=0,
@@ -1738,7 +1739,7 @@ class Game():
                 ],
             ),
             NPC(
-                "docteur",
+                "Docteur",
                 abbrv="docF",
                 strength=0,
                 defense=0,
@@ -1747,7 +1748,7 @@ class Game():
                 ],
             ),
             NPC(
-                "infiermiere",
+                "Infirmière",
                 abbrv="inf",
                 strength=0,
                 defense=0,
@@ -1896,8 +1897,9 @@ class Game():
             )
         self.floor = self.etages[-1]
 
-    def addMessage(self, msg, color="yellow", life=3) -> None:
+    def addMessage(self, msg:str, color="yellow", life=3) -> None:
         "Adds a message to be printed on the screen."
+
         self._message.append(
             [msg if msg[-1] in Game.ponct else msg + ".", color, life])
         print(msg)
@@ -2681,8 +2683,8 @@ class Game():
             i = 0
             for [message, color, _] in self.readMessages():
                 print(message)
-                while len(message) > 74:
-                    n = 74
+                while len(message) > 69:
+                    n = 69
                     while not (message[n] in Game.ponct + " "):
                         n -= 1
                     self.canvas.create_text(
@@ -2696,7 +2698,7 @@ class Game():
                     i += 1
                 self.canvas.create_text(
                     540,
-                    745 + 25 * i,   # 720 + 25 * (i+1)
+                    720 + 25 * i,   # 720 + 25 * (i+1)
                     text=message,
                     font=("Arial 21"),
                     fill=color,
