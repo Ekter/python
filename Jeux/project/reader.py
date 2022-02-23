@@ -2,7 +2,7 @@
 Program to read data from chr files and create Character objects.
 """
 import random
-import sys
+from typing import Any
 
 
 class Character():
@@ -70,7 +70,7 @@ testeuh["abc"]=":)"
 print(testeuh)
 print(dicttest)
 
-def editsometimesnested(dictionary :dict,target:str,newvalue)-> None:
+def editsometimesnested(dictionary :dict,target:str,newvalue: Any)-> None:
     """
     Edits a nested dictionary.
     """
@@ -78,4 +78,4 @@ def editsometimesnested(dictionary :dict,target:str,newvalue)-> None:
     for i in listtarget:
         dictionary=dictionary[i]
         #TO#DO à finir
-
+    dictionary[listtarget[-1]]=newvalue

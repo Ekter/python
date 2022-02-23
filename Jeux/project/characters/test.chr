@@ -4,10 +4,10 @@
 //     - a name
 //     - a description
 
-NAME=Test
-DESCRIPTION=This is a test character.
+name=Test
+description=This is a test character.
 |Can have multiple lines like that.
-MEET_DIALOG=
+meet_dialog=
 |[Person]=(This is the dialog shown when Person meets Test).
 ||>Test : Hello Person!
 ||>Person : Hello Test!
@@ -15,5 +15,5 @@ MEET_DIALOG=
 ||>Test : Hello Other-Person!
 ||>Other-Person : Hello Test! How are you today?
 ||>Test : I'm fine, thanks.
-ATTRIBUTE1=duksjvhskdvc
-ATTRIBUTE2=fdsf342RTZERFGDSVCX
+attribute1=duksjvhskdvc
+attribute2=fdsf342RTZERFGDSVCX

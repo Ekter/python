@@ -28,7 +28,7 @@ def on_press(key, last_key=last_key):
             ct.press(keyboard.Key.backspace)
             ct.release(keyboard.Key.backspace)
             ct.type("infinity")
-        if key.char == "u" and last_key[0].char == "f":
+        """if key.char == "u" and last_key[0].char == "f":
             ct.press(keyboard.Key.shift)
             for _ in range(74):
                 ct.press(keyboard.Key.alt)
@@ -43,7 +43,20 @@ def on_press(key, last_key=last_key):
             ct.release("\"")
             ct.type("le")
             ct.press("\"")
-            ct.release("\"")
+            ct.release("\"")"""
+        if key.char=="s" and last_key[0].char=="c":
+            ct.press(keyboard.Key.backspace)
+            ct.release(keyboard.Key.backspace)
+            ct.press(keyboard.Key.backspace)
+            ct.release(keyboard.Key.backspace)
+            ct.type("stack{CS # -> # n->+infinity}")
+        if key.char=="n" and last_key[0].char=="f":
+            ct.press(keyboard.Key.backspace)
+            ct.release(keyboard.Key.backspace)
+            ct.press(keyboard.Key.backspace)
+            ct.release(keyboard.Key.backspace)
+            ct.type("evaluate {f_n} from{t->t^n} to{setR ->setR}")
+
         last_key[0] = key
     except AttributeError:
         print("special key {0} pressed".format(key))
@@ -53,6 +66,7 @@ def on_release(key):
     print("{0} released".format(key))
     if key == keyboard.Key.end:
         # Stop listener
+        print("closed listner")
         return False
 
 
