@@ -34,12 +34,12 @@ def sign(x: float) -> int:
 
 
 
-def jet(self,unique):
+def stun_chewing_gum(self,unique):
     "Throw the chewing-gum"
     devant = theGame()[self] + self.facing
     i = 5
     if isinstance(theGame().floor.get(devant), Creature):
-        theGame().floor.get(devant).action += 8
+        theGame()[devant].action += 8
     else:
         while (
             (devant + theGame().floor.hero.facing in theGame().floor)
@@ -1802,7 +1802,7 @@ class Game(object):
             Equipment(
                 "gum",
                 "g",
-                usage=lambda creature: jet(True),
+                usage=lambda creature: creature.trow(True),
                 used=Used("used chewing-gum", "u"),
             ),
             Equipment("potion", "!",
@@ -1856,7 +1856,7 @@ class Game(object):
             Equipment(
                 "gum",
                 "g",
-                usage=lambda creature: jet(True),
+                usage=lambda creature: creature.throw(True),
                 used=Used("used chewing-gum", "u"),
             ),
             Equipment("potion", "!",

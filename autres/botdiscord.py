@@ -3,6 +3,7 @@ import random
 import pandas as pd
 import discord
 from discord.ext import commands
+from discord import Member
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import urllib.request
@@ -45,7 +46,7 @@ async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
 
 
-@bot.command(name="info", help="Informations tirées du Plikoran",aliases=["infos","i","!"])
+@bot.command(name="info", help="Informations tirées du Plikoran", aliases=["infos", "i", "!"])
 async def info(ctx: commands.Context, n: int = -1):
     if not n in range(len(RESPONSES)):
         response = random.choice(RESPONSES)
@@ -55,7 +56,7 @@ async def info(ctx: commands.Context, n: int = -1):
     await ctx.send(response)
 
 
-@bot.command(name="attack", help="Fait des dégats à un boss",aliases=["a","attaque","att","at"])
+@bot.command(name="attack", help="Fait des dégats à un boss", aliases=["a", "attaque", "att", "at"])
 async def info(
     ctx: commands.Context, boss: str = "ver", degats: int = -1, team: str = "team"
 ):
@@ -78,13 +79,14 @@ async def info(
         await ctx.send(f"boss {boss} non trouvé")
         print(e)
 
-@bot.command(name="vie",help="Affiche la vie actuelle des boss",aliases=["v","vieact","vieactuelle","vieactuel"])
+
+@bot.command(name="vie", help="Affiche la vie actuelle des boss", aliases=["v", "vieact", "vieactuelle", "vieactuel"])
 async def vie(ctx: commands.Context):
     dfvie = pd.read_csv("vieactboss.csv")
     await ctx.send(f"{dfvie}")
 
 
-@bot.command(name="ping",help="Ping en masse de la personne voulue(actuellement pas fonctionnel)",aliases=["p","pong"])
+@bot.command(name="ping", help="Ping en masse de la personne voulue(actuellement pas fonctionnel)", aliases=["p", "pong"])
 async def info(ctx: commands.Context, n: int = 10, user: discord.Member = "ver"):
     for i in range(n):
         try:
@@ -92,46 +94,73 @@ async def info(ctx: commands.Context, n: int = 10, user: discord.Member = "ver")
         except Exception as e:
             await ctx.send(f"Ping {i} {ctx.author.mention}")
 
-@bot.command(name="id",help="fait un id random")
+
+@bot.command(name="id", help="fait un id random")
 async def i_d(ctx: commands.Context, n: int = 24):
-    s="61cd"
-    while len(s)<n:
-        s+=str(random.choice("0 1 2 3 4 5 6 7 8 9 a b c d e f".split(" ")))
+    s = "61cd"
+    while len(s) < n:
+        s += str(random.choice("0 1 2 3 4 5 6 7 8 9 a b c d e f".split(" ")))
     await ctx.send(s)
 
-@bot.command(name="wiki",help="Affiche la page wikipédia voulue(sans accent svp)",aliases=["w"])
+
+@bot.command(name="wiki", help="Affiche la page wikipédia voulue(sans accent svp)", aliases=["w"])
 async def wiki(ctx: commands.Context, target: str = None):
-    url="https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target==None else "https://fr.wikipedia.org/wiki/"+target
-    url=url.lower()
+    url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target
+    url = url.lower()
     print(url)
     with urllib.request.urlopen(url) as response:
         webpage = response.read()
         soup = BeautifulSoup(webpage, 'html.parser')
         print(soup)
-        n=0
+        n = 0
         for anchor in soup.get_text().split("\n"):
-            if n>0:
+            if n > 0:
                 try:
                     await ctx.send(anchor)
                 except Exception as e:
                     print(f"{e}")
                     pass
-            n+=1
+            n += 1
 
-@bot.command(name="ckoi",help="Affiche une description courte (sans accent svp)",aliases=["c"])
+
+@bot.command(name="ckoi", help="Affiche une description courte (sans accent svp)", aliases=["c"])
 async def wk(ctx: commands.Context, target: str = None):
     try:
-        url="https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target==None else "https://fr.wikipedia.org/wiki/"+target
+        url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target
         with urllib.request.urlopen(url) as response:
             webpage = response.read()
             soup = BeautifulSoup(webpage, 'html.parser')
             num2 = soup.find("div", {"class": "mw-parser-output"})
             for i in num2:
-                if str(i)[:3]=="<p>":
+                if str(i)[:3] == "<p>":
                     await ctx.send(i.get_text())
                     break
     except Exception as e:
         await ctx.send(f"Je ne sais pas ce que c'est {target}.")
+
+
+@bot.command(name="justice", help="répend la justice", aliases=["j", "jus"])
+@commands.has_role("Membre du HAUT CONSEIL")
+async def justice(ctx: commands.Context,name_member:Member=None):
+    print(ctx.guild.owner)
+    print(name_member)
+    if random.randint(0, 2) == 0:
+        await ctx.send("""Coupable édition prestige !
+(Goulag 24h)""")
+        if name_member is None:
+            await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name="dechet de la societe"))
+        else:
+            await name_member.add_roles(discord.utils.get(ctx.guild.roles, name="dechet de la societe"))
+    elif random.randint(0,1) == 0:
+        t=random.randint(1,59)
+        await ctx.send(f"""Coupable !
+(Goulag {t} min)""")
+        if name_member is None:
+            await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name="dechet de la societe"))
+        else:
+            await name_member.add_roles(discord.utils.get(ctx.guild.roles, name="dechet de la societe"))
+    else:
+        await ctx.send("Non coupable !")
 
 @bot.event
 async def on_error(event, *args, **kwargs):
