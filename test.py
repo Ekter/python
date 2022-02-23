@@ -4,6 +4,19 @@ blablabla"""
 
 from random import randint
 import math
+import time
+t=time.time()
+s=0
+n=1
+while s<20:
+    s+=1/n
+    n+=1
+    if n%1==0:   #43.177613973617554  #32.93029999732971   #91.33971166610718   #29.316272735595703
+        print(s)
+print(n)
+print(math.log(n))
+print(time.time()-t)
+input()
 
 print(math.gcd(5,4))
 def circular(l2):

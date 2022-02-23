@@ -421,7 +421,7 @@ class Creature(Element):
         theGame().gameturn()
 
     def unhide(self, newabbrv: str) -> None:
-        "Changes the abbrv of a creature. Useful for gosts"
+        "Changes the abbrv of a creature. Useful for ghosts"
         self.abbrv = newabbrv
 
     def tir(self) -> None:

@@ -23,6 +23,6 @@ def degrade(lenght: int, weight: int, col1: Tuple[int, int, int] = (0, 0, 0), co
 
 cv.waitKey(0)
 cv.destroyAllWindows()
-# for i in range(0, 255, 25):
-    # cv.imwrite(f"Lena{i//25}.png", np.array(
-        # degrade(1000, 1000, (i, i, i), (i+25, i+25, i+25))))
+for i in range(0, 255, 25):
+    cv.imwrite(f"Lena{i//25}.png", np.array(
+        degrade(1000, 1000, (i, i, i), (i+25, i+25, i+25))))
