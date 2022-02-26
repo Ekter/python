@@ -1,15 +1,19 @@
 from pynput import keyboard
 import random
+import time
 
 last_key = [keyboard.Key.space]
 
 
 def on_press(key, last_key=last_key):
     ct = keyboard.Controller()
-    # ct.release(key)
+    ct.press(keyboard.Key.f18)
+    time.sleep(0.1)
+    ct.release(keyboard.Key.f18)
+    time.sleep(0.1)
     # C'EST TROP PUISSANT PUTAIN
     try:
-        print("alphanumeric key {0} pressed".format(key.char))
+        print(f"alphanumeric key {key.char} pressed")
         if key.char == "l" and last_key[0].char == "n":
             ct.press(keyboard.Key.backspace)
             ct.release(keyboard.Key.backspace)

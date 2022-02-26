@@ -25,7 +25,7 @@ def jet(self, unique):
     devant = theGame()[self] + self.facing
     i = 5
     if isinstance(theGame().floor.get(devant), Creature):
-        theGame().floor.get(devant).action += 8
+        theGame()[devant].action += 8
     else:
         while (
             (devant + theGame().hero.facing in theGame().floor)
@@ -1765,7 +1765,7 @@ class Game():
             Equipment(
                 "gum",
                 "g",
-                usage=lambda creature: creature.jet(True),
+                usage=lambda creature: creature.trow(True),
                 used=Used("used chewing-gum", "u"),
             ),
             Equipment("potion", "!",
@@ -1820,7 +1820,7 @@ class Game():
             Equipment(
                 "gum",
                 "g",
-                usage=lambda creature: jet(True),
+                usage=lambda creature: creature.throw(True),
                 used=Used("used chewing-gum", "u"),
             ),
             Equipment("potion", "!",

@@ -23,7 +23,7 @@ class Character():
         """
         return f"{self.name} : {self.description}"
 
-    def meet(self, other, *args) -> None:
+    def meet(self, other:"Character", *args) -> None:
         """
         Prints the meet dialog
         """
