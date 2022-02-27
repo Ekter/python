@@ -54,7 +54,7 @@ async def info(ctx: commands.Context, n: int = -1):
     await ctx.send(response)
 
 
-@bot.command(name="askben",help="Pose une question à Ben", aliases=["ask", "a","ben","b"])
+@bot.command(name="askben",help="Pose une question à Ben", aliases=["ask","ben","b"])
 async def askben(ctx: commands.Context,*question):
     if random.randint(0,1)==0:
         await ctx.send("Yes")
