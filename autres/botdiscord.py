@@ -35,8 +35,6 @@ RESPONSES = [
     "#je suis fatigué",
     "#il fait froid",
     "Faire tomber une patate, c'est 37 ans de malheur",
-    None,
-    1,
 ]
 bot = commands.Bot(command_prefix=["§", "rb"])
 
@@ -55,6 +53,13 @@ async def info(ctx: commands.Context, n: int = -1):
     await ctx.message.delete()
     await ctx.send(response)
 
+
+@bot.command(name="askben",help="Pose une question à Ben", aliases=["ask","ben","b"])
+async def askben(ctx: commands.Context,*question):
+    if random.randint(0,1)==0:
+        await ctx.send("Yes")
+    else:
+        await ctx.send("No")
 
 @bot.command(name="attack", help="Fait des dégats à un boss", aliases=["a", "attaque", "att", "at"])
 async def info(
