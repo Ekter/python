@@ -13,7 +13,7 @@ from numba import jit, cuda
 # matrice2 = matrice.copy()
 
 
-@jit(nopython=True,nogil=True)#target="CUDA"
+@jit(nopython=True,nogil=True,parallel=True)
 def premier(n:int)-> bool:
     m=2
     r = math.sqrt(n)
@@ -67,11 +67,12 @@ def degradev3(lenght: int, weight: int):
 #        degrade(100, 100, (i, i, i), (i+25, i+25, i+25))))
 
 t=time()
-
-cv.imwrite(f"test2degrade.png", np.array(degradev2(10000,10000)))
+# l=degradev2(100,100)
+cv.imwrite(f"test2degrade.png", np.array(degradev2(100,100)))
 a=time()-t
 
 t=time()
-cv.imwrite(f"test3degrade.png", np.array(degradev3(1000,1000)))
+# l=degradev3(100,100)
+cv.imwrite(f"test3degrade.png", np.array(degradev3(100,100)))
 print(a)
 print(time()-t)

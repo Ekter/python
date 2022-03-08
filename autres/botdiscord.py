@@ -7,6 +7,7 @@ from discord import Member
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import urllib.request
+from time import sleep
 
 
 load_dotenv("../../globals.env")
@@ -36,6 +37,7 @@ RESPONSES = [
     "#il fait froid",
     "Faire tomber une patate, c'est 37 ans de malheur",
 ]
+COULEURS=["vert","jaune","rose","rouge","bleu"]
 bot = commands.Bot(command_prefix=["§", "rb"])
 
 
@@ -175,5 +177,17 @@ async def on_error(event, *args, **kwargs):
         else:
             raise
 
+@bot.command(name="rainbow", help="rainbowise le membre")
+# @commands.has_role("Membre du HAUT CONSEIL")
+async def rainbow(ctx: commands.Context,name_member:Member=None):
+    if name_member is None:
+        name_member=ctx.author
+    while 1:
+        print("boucle")
+        for couleur in COULEURS:
+            await name_member.add_roles(discord.utils.get(ctx.guild.roles, name=couleur))
+            print(" "+couleur)
+            sleep(1)
+            await name_member.remove_roles(discord.utils.get(ctx.guild.roles, name=couleur))
 
 bot.run(TOKEN)
