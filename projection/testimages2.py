@@ -15,10 +15,9 @@ from numba import jit, cuda, vectorize
 
 # @vectorize(["boolean(int16)"], target='cpu')
 
-
-@jit(nopython=True, nogil=True)  # , target="cuda")
-def premier(n: int) -> bool:
-    m = 2
+@jit(nopython=True,nogil=True,parallel=True)
+def premier(n:int)-> bool:
+    m=2
     r = math.sqrt(n)
     while m <= r:
         if n % m == 0:
@@ -75,14 +74,14 @@ def degradev3(lenght: int, weight: int):
 #    cv.imwrite(f"test1degrade{i//25}.png", np.array(
 #        degrade(100, 100, (i, i, i), (i+25, i+25, i+25))))
 
+t=time()
+# l=degradev2(100,100)
+cv.imwrite(f"test2degrade.png", np.array(degradev2(100,100)))
+a=time()-t
 
-t = time()
-
-cv.imwrite(f"test2degrade.png", np.array(degradev2(100, 100)))
-a = time()-t
-
-t = time()
-cv.imwrite(f"test3degrade.png", np.array(degradev3(100, 100)))
+t=time()
+# l=degradev3(100,100)
+cv.imwrite(f"test3degrade.png", np.array(degradev3(100,100)))
 print(a)
 print(time()-t)
 
