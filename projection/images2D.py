@@ -223,7 +223,7 @@ class Triangle2():
     def __neg__(self):
         return Triangle2(-self.point1, -self.point2, -self.point3)
 
-    def __mul__(self, other: "int"):
+    def __mul__(self, other: int):
         if isinstance(other, Triangle2):
             return Triangle2(self.point1 * other.point1, self.point2 * other.point2, self.point3 * other.point3)
         return Triangle2(self.point1 * other, self.point2 * other, self.point3 * other)
@@ -246,7 +246,7 @@ class Triangle2():
         return [self.point3, self.point1, self.point2]
 
     def enumerate(self) -> Tuple[Segment2, Coord2]:
-        "Yields the three points of the triangle"
+        "Yields the three points of the triangle, with their segments"
         yield (Segment2(self.point1, self.point2), self.point3)
         yield (Segment2(self.point2, self.point3), self.point1)
         yield (Segment2(self.point3, self.point1), self.point2)
@@ -268,6 +268,26 @@ class Triangle2():
                 a, b, c = matrice[i][j]
                 if Coord2(i, j) in self:
                     matrice[i][j] = col
+        return matrice
+
+    def draw_shaders(self, length: int, heigth: int, col=(255, 255, 255), mat=None):
+        matrice = [[(0, 0, 0) for _ in range(length)]
+                   for _ in range(heigth)] if mat is None else mat.copy()
+        for i in self.rangex:
+            for j in self.rangey:
+                a, b, c = matrice[i][j]
+                if Coord2(i, j) in self:
+                    matrice[i][j] = col
+        mat2=matrice.copy()
+        for i in self.rangex:
+            for j in self.rangey:
+                a1, b1, c1 = matrice[i][j-2] if j-2>=0 else (0,0,0)
+                a2, b2, c2 = matrice[i][j+2] if j+2<heigth else (0,0,0)
+                a3, b3, c3 = matrice[i][j-1] if j-1>=0 else (0,0,0)
+                a4, b4, c4 = matrice[i][j+1] if j+1<heigth else (0,0,0)
+                a5, b5, c5 = matrice[i][j]
+                mat2[i][j]=[(a1+a2+a3+a4+a5)/5,(b1+b2+b3+b4+b5)/5,(c1+c2+c3+c4+c5)/5]
+
         return matrice
 
     def drawpoints(self, col=(255, 0, 0), mat=None):
@@ -303,13 +323,14 @@ if __name__ == "__main__":
 
     print(p1 in tri)
 
-    sizemax = 10000
-    sizetri = 10000
-    num = 1
+    sizemax = 100
+    sizetri = 100
+    num = 50
+    num2=1
     delay = 0.05
     tott = 0
     ttot = time.time()
-    for j in range(1):
+    for j in range(num2):
         t = time.time()
         for _ in range(num):
             ar = np.array(Triangle2.randomTriangle(
@@ -320,6 +341,20 @@ if __name__ == "__main__":
                        for _ in range(sizemax)]
             b = np.array(matrice)
         tott += (time.time()-t)/num  # t-num*delay
-    print(tott/1)
-    print((sizemax, sizetri))
+    print(tott/num2)
+    print(time.time()-ttot)
+
+    ttot = time.time()
+    for j in range(num2):
+        t = time.time()
+        for _ in range(num):
+            ar = np.array(Triangle2.randomTriangle(
+                sizetri, sizetri).draw_shaders(sizemax, sizemax))
+            cv.imwrite(f"triangle.png", ar)
+            time.sleep(delay)
+            matrice = [[(0, 0, 0) for _ in range(sizemax)]
+                       for _ in range(sizemax)]
+            b = np.array(matrice)
+        tott += (time.time()-t)/num  # t-num*delay
+    print(tott/num2)
     print(time.time()-ttot)
