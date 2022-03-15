@@ -190,4 +190,19 @@ async def rainbow(ctx: commands.Context,name_member:Member=None):
             sleep(1)
             await name_member.remove_roles(discord.utils.get(ctx.guild.roles, name=couleur))
 
+@bot.command(name="manga", help="affiche une page précise d'un manga")
+async def manga(ctx: commands.Context, manga: str="one-piece",chapter:int=1, page: int = 1,host:str="https://scan-fr.cc/uploads/manga/"):
+    print(f'{host}{manga}/chapters/{chapter}/0{page}.png')
+    print(f'{host}{manga}/chapters/{chapter}/vfr/0{page}.jpg')
+    await ctx.send("Essai 1:")
+    await ctx.send(f'{host}{manga}/chapters/{chapter}/0{page}.png')
+    await ctx.send("Essai 2:")
+    await ctx.send(f'{host}{manga}/chapters/{chapter}/vfr/0{page}.jpg')
+    url = f"https://www.scan-fr.cc/manga/{manga}/{chapter}/{page}"
+    print(url)
+    with urllib.request.urlopen(url) as response:
+        webpage = response.read()
+        soup = BeautifulSoup(webpage, 'html.parser')
+        page = soup.find("img", {"class": "img-responsive scan-page"})
+        print(page)
 bot.run(TOKEN)
