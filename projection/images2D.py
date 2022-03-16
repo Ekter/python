@@ -286,7 +286,7 @@ class Triangle2():
                 a3, b3, c3 = matrice[i][j-1] if j-1>=0 else (0,0,0)
                 a4, b4, c4 = matrice[i][j+1] if j+1<heigth else (0,0,0)
                 a5, b5, c5 = matrice[i][j]
-                mat2[i][j]=[(a1+a2+a3+a4+a5)/5,(b1+b2+b3+b4+b5)/5,(c1+c2+c3+c4+c5)/5]
+                mat2[i][j]=[(a1*0.1+a2*0.1+a3*0.2+a4*0.2+a5*0.4),(b1*0.1+b2*0.1+b3*0.2+b4*0.2+b5*0.4),(c1*0.1+c2*0.1+c3*0.2+c4*0.2+c5*0.4)]
 
         return matrice
 
