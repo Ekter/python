@@ -1,6 +1,6 @@
 {
     "python.pythonPath": "/usr/bin/python3",
-    "jupyter.jupyterServerType": "remote",
+    "jupyter.jupyterServerType": "local",
     "python.testing.unittestArgs": [
         "-v",
         "-s",

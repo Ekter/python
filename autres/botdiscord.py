@@ -11,8 +11,9 @@ from time import sleep
 
 
 load_dotenv("../../globals.env")
+with open("../../globals.env", "r") as f:
+    TOKEN = f.readline()
 TOKEN = os.getenv("DISCORD_TOKEN")
-GUILD = os.getenv("DISCORD_GUILD")
 RESPONSES = [
     "PLIK37",
     "#Évangile n°1 : Plik a raison",
@@ -191,7 +192,7 @@ async def rainbow(ctx: commands.Context,name_member:Member=None):
             await name_member.remove_roles(discord.utils.get(ctx.guild.roles, name=couleur))
 
 @bot.command(name="manga", help="affiche une page précise d'un manga")
-async def manga(ctx: commands.Context, manga: str="one-piece",chapter:int=1, page: int = 1,host:str="https://scan-fr.cc/manga/"):
+async def manga(ctx: commands.Context, manga: str="one-piece",chapter:int=1, page: int = 1):
     # print(f'{host}{manga}/chapters/{chapter}/0{page}.png')
     # print(f'{host}{manga}/chapters/{chapter}/vfr/0{page}.jpg')
     # await ctx.send("Essai 1:")
@@ -207,4 +208,13 @@ async def manga(ctx: commands.Context, manga: str="one-piece",chapter:int=1, pag
         print(page)
         res=page.get("src").strip().replace(" ", "%20")
         await ctx.send(res)
+
+@bot.command(name="report_manga", help="affiche une page précise d'un manga",aliases=["report"])
+async def report(ctx: commands.Context, manga: str="one-piece",chapter:int=1, page: int = 1):
+    url = f"http://www.scan-fr.cc/manga/{manga}/{chapter}/{page}"
+    print(url)
+    await ctx.send(f"url: {url} a été report, merci") 
+
+
+
 bot.run(TOKEN)
