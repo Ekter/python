@@ -326,7 +326,7 @@ if __name__ == "__main__":
     sizemax = 100
     sizetri = 100
     num = 50
-    num2=1
+    num2=10
     delay = 0.05
     tott = 0
     ttot = time.time()
