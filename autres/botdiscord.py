@@ -1,14 +1,16 @@
 import os
 import random
-import pandas as pd
-import discord
-from discord.ext import commands
-from discord import Member
-from dotenv import load_dotenv
-from bs4 import BeautifulSoup
 import urllib.request
 from time import sleep
 
+import discord
+import pandas as pd
+from bs4 import BeautifulSoup
+from discord import Member
+from discord.ext import commands
+from dotenv import load_dotenv
+
+urllib.request.URLopener.version = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
 
 load_dotenv("../../globals.env")
 with open("../../globals.env", "r") as f:
