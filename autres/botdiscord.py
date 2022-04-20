@@ -115,28 +115,32 @@ async def i_d(ctx: commands.Context, n: int = 24):
 
 @bot.command(name="wiki", help="Affiche la page wikipédia voulue(sans accent svp)", aliases=["w"])
 async def wiki(ctx: commands.Context, target: str = None):
-    url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target
-    url = url.lower()
-    print(url)
-    with urllib.request.urlopen(url) as response:
-        webpage = response.read()
-        soup = BeautifulSoup(webpage, 'html.parser')
-        print(soup)
-        n = 0
-        for anchor in soup.get_text().split("\n"):
-            if n > 0:
-                try:
-                    await ctx.send(anchor)
-                except Exception as e:
-                    print(f"{e}")
-                    pass
-            n += 1
+    try:
+        url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target.replace(" ","_").replace("é",r"%C3%A9").replace("à",r"%C3%A0").replace("è",r"%C3%A8").replace("ç",r"%C3%A7").replace("ê",r"%C3%AA").replace("î",r"%C3%AE").replace("ô",r"%C3%B4").replace("û",r"%C3%BB")
+        url = url.lower()
+        print(url)
+        with urllib.request.urlopen(url) as response:
+            webpage = response.read()
+            soup = BeautifulSoup(webpage, 'html.parser')
+            print(soup)
+            n = 0
+            for anchor in soup.get_text().split("\n"):
+                if n > 0:
+                    try:
+                        await ctx.send(anchor)
+                    except Exception as e:
+                        print(f"{e}")
+                        pass
+                n += 1
+    except Exception as e:
+        await ctx.send(f"Je ne sais pas ce que c'est {target}.")
+
 
 
 @bot.command(name="ckoi", help="Affiche une description courte (sans accent svp)", aliases=["c"])
 async def wk(ctx: commands.Context, target: str = None):
     try:
-        url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target
+        url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target.replace(" ","_").replace("é",r"%C3%A9").replace("à",r"%C3%A0").replace("è",r"%C3%A8").replace("ç",r"%C3%A7").replace("ê",r"%C3%AA").replace("î",r"%C3%AE").replace("ô",r"%C3%B4").replace("û",r"%C3%BB")
         with urllib.request.urlopen(url) as response:
             webpage = response.read()
             soup = BeautifulSoup(webpage, 'html.parser')
