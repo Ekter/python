@@ -65,6 +65,7 @@ def degradev3(lenght: int, weight: int):
         for j in range(weight):
             p = premier2(weight*i+j)*255
             matrice[i][j] = p
+            
         print(i)
     return matrice
 
