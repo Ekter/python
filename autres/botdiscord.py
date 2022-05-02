@@ -13,8 +13,9 @@ from dotenv import load_dotenv
 urllib.request.URLopener.version = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
 
 load_dotenv("../../globals.env")
+with open("../../globals.env", "r") as f:
+    TOKEN = f.readline()
 TOKEN = os.getenv("DISCORD_TOKEN")
-GUILD = os.getenv("DISCORD_GUILD")
 RESPONSES = [
     "PLIK37",
     "#Évangile n°1 : Plik a raison",
@@ -114,28 +115,32 @@ async def i_d(ctx: commands.Context, n: int = 24):
 
 @bot.command(name="wiki", help="Affiche la page wikipédia voulue(sans accent svp)", aliases=["w"])
 async def wiki(ctx: commands.Context, target: str = None):
-    url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target
-    url = url.lower()
-    print(url)
-    with urllib.request.urlopen(url) as response:
-        webpage = response.read()
-        soup = BeautifulSoup(webpage, 'html.parser')
-        print(soup)
-        n = 0
-        for anchor in soup.get_text().split("\n"):
-            if n > 0:
-                try:
-                    await ctx.send(anchor)
-                except Exception as e:
-                    print(f"{e}")
-                    pass
-            n += 1
+    try:
+        url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target.replace(" ","_").replace("é",r"%C3%A9").replace("à",r"%C3%A0").replace("è",r"%C3%A8").replace("ç",r"%C3%A7").replace("ê",r"%C3%AA").replace("î",r"%C3%AE").replace("ô",r"%C3%B4").replace("û",r"%C3%BB")
+        url = url.lower()
+        print(url)
+        with urllib.request.urlopen(url) as response:
+            webpage = response.read()
+            soup = BeautifulSoup(webpage, 'html.parser')
+            print(soup)
+            n = 0
+            for anchor in soup.get_text().split("\n"):
+                if n > 0:
+                    try:
+                        await ctx.send(anchor)
+                    except Exception as e:
+                        print(f"{e}")
+                        pass
+                n += 1
+    except Exception as e:
+        await ctx.send(f"Je ne sais pas ce que c'est {target}.")
+
 
 
 @bot.command(name="ckoi", help="Affiche une description courte (sans accent svp)", aliases=["c"])
 async def wk(ctx: commands.Context, target: str = None):
     try:
-        url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target
+        url = "https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard" if target == None else "https://fr.wikipedia.org/wiki/"+target.replace(" ","_").replace("é",r"%C3%A9").replace("à",r"%C3%A0").replace("è",r"%C3%A8").replace("ç",r"%C3%A7").replace("ê",r"%C3%AA").replace("î",r"%C3%AE").replace("ô",r"%C3%B4").replace("û",r"%C3%BB")
         with urllib.request.urlopen(url) as response:
             webpage = response.read()
             soup = BeautifulSoup(webpage, 'html.parser')
@@ -193,7 +198,7 @@ async def rainbow(ctx: commands.Context,name_member:Member=None):
             await name_member.remove_roles(discord.utils.get(ctx.guild.roles, name=couleur))
 
 @bot.command(name="manga", help="affiche une page précise d'un manga")
-async def manga(ctx: commands.Context, manga: str="one-piece",chapter:int=1, page: int = 1,host:str="https://scan-fr.cc/manga/"):
+async def manga(ctx: commands.Context, manga: str="one-piece",chapter:int=1, page: int = 1):
     # print(f'{host}{manga}/chapters/{chapter}/0{page}.png')
     # print(f'{host}{manga}/chapters/{chapter}/vfr/0{page}.jpg')
     # await ctx.send("Essai 1:")
@@ -209,4 +214,13 @@ async def manga(ctx: commands.Context, manga: str="one-piece",chapter:int=1, pag
         print(page)
         res=page.get("src").strip().replace(" ", "%20")
         await ctx.send(res)
+
+@bot.command(name="report_manga", help="affiche une page précise d'un manga",aliases=["report"])
+async def report(ctx: commands.Context, manga: str="one-piece",chapter:int=1, page: int = 1):
+    url = f"http://www.scan-fr.cc/manga/{manga}/{chapter}/{page}"
+    print(url)
+    await ctx.send(f"url: {url} a été report, merci") 
+
+
+
 bot.run(TOKEN)
