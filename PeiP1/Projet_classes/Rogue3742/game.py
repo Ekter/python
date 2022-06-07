@@ -2838,5 +2838,4 @@ def theGame(game=Game()) -> Game:
     "Returns the Game singleton."
     return game
 
-
 theGame().begingame()
