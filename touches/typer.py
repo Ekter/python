@@ -1,10 +1,10 @@
 """a module to type things."""
 
-from dotenv import get_key
+# from dotenv import get_key
 from pynput import keyboard
 from time import time, sleep
 # from typing import List, Tuple
-from multiprocessing import Process, freeze_support
+# from multiprocessing import Process, freeze_support
 
 
 class Typer():
