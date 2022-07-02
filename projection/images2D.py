@@ -1,15 +1,15 @@
 """a module to create images with shapes"""
 import math
+import random
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Union
+
 import cv2 as cv
 import numpy as np
-import random
 
 
 class Coord2():
-    """Vec2D object, created by rectangular or polar coordinates(with int coords in normal
-    condition, but if broken, can have floats.(used for the moving anims))"""
+    """Vec2D object, created by rectangular or polar coordinates"""
 
     def __init__(self, abscisse: float, ordonnee: float, angle=False):
         if not angle:
@@ -133,6 +133,7 @@ class Coord2():
 
 class Segment2(Coord2):
     """A segment is a line between two points"""
+    PREC=0.01
 
     def __init__(self, point1: Coord2, point2: Coord2):
         if point1.abs==point2.abs:
@@ -163,7 +164,7 @@ class Segment2(Coord2):
     def __neg__(self):
         return Segment2(-self.point1, -self.point2)
 
-    def __mul__(self, other: "int"):
+    def __mul__(self, other: float):
         if isinstance(other, Segment2):
             return Segment2(self.point1 * other.point1, self.point2 * other.point2)
         return Segment2(self.point1 * other, self.point2 * other)
@@ -181,7 +182,19 @@ class Segment2(Coord2):
 
     def under(self, point: Coord2) -> bool:
         return self.function(point.abs) <= point.ord
-    # TODO def intersect(self,other:"Segment2") -> Coord2:
+
+    def intersect(self,other:"Segment2",xmin=-1000,xmax=1000,temp=None) -> Tuple(Union[Coord2,None],bool):
+        if xmax-xmin<Segment2.PREC:
+            return Coord2((xmin+xmax)/2,self.function((xmin+xmax)/2))
+        if temp is None:
+            if self.under(Coord2((xmin,self.function(xmin))))==self.under(Coord2((xmax,self.function(xmax)))):
+                
+        if self.under(Coord2((xmin+xmax)/2,self.function((xmin+xmax)/2))):
+            return self.intersect(other,)
+        if int(self.under(other.point1))+int(self.under(other.point2))==1 and int(other.under(self.point1))+int(other.under(self.point2)):
+            return Coord2(0,0)
+        else:
+            return None
 
 
 class Triangle2():
@@ -223,7 +236,7 @@ class Triangle2():
     def __neg__(self):
         return Triangle2(-self.point1, -self.point2, -self.point3)
 
-    def __mul__(self, other: int):
+    def __mul__(self, other: float):
         if isinstance(other, Triangle2):
             return Triangle2(self.point1 * other.point1, self.point2 * other.point2, self.point3 * other.point3)
         return Triangle2(self.point1 * other, self.point2 * other, self.point3 * other)
