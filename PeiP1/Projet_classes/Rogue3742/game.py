@@ -3,7 +3,7 @@
 # Roguelike project, by Nino Mulac, Ilane Pelletier, Arwen Duee-Moreau, Hugo Durand, Vaiki Martelli, and Kylian Girard
 import time
 import random
-from typing import Any, List, Union
+from typing import Any, Callable, List, Union
 import tkinter
 import copy
 import math
@@ -96,6 +96,9 @@ class Coord():
     def __iter__(self):
         for i in (self.abs,self.ord):
             yield i
+
+    def __hash__(self) -> int:
+        return hash((self.abs, self.ord))
 
     def getangle(self) -> float:
         """returns the angle of the vector (self.abs, self.ord)"""
@@ -249,11 +252,11 @@ class Creature(Element):
         vitesse: int = 1,
         level: int = 1,
         action: int = 0,
-        power=None,
-        special=None,
-        distantstrenght=0,
+        power:List[Status]=None,
+        special:Union[Callable[["Creature"],None],None]=None,
+        distantstrenght:int=0,
     ):
-        Element.__init__(self, name, abbrv, transparent=True)
+        super().__init__(self, name, abbrv, transparent=True)
         self.hp = int(hp * (1.5 ** level))
         self.hpmax = self.hp
         self.level = level
@@ -390,7 +393,7 @@ class Creature(Element):
         self.abbrv = newabbrv
 
     def tir(self) -> None:
-        devant = theGame().floor._elem[self] + self.facing
+        devant = theGame().floor._creatures[self] + self.facing
         portee = 5
         if isinstance(theGame()[devant], Creature) and theGame()[devant].meet(self, distant=True):
             theGame().floor.rm(devant)
@@ -404,6 +407,41 @@ class Creature(Element):
                 devant += self.facing
                 portee -= 1
 
+
+class Flying(Creature):
+    def __init__(
+        self,
+        name: str,
+        hp: int,
+        abbrv: str = None,
+        strength: int = 1,
+        defense: int = 0,
+        inventory: List["Equipment"] = None,
+        equips: List["Equipment"] = None,
+        bourse: int = 0,
+        vitesse: int = 1,
+        level: int = 1,
+        action: int = 0,
+        power:List[Status]=None,
+        special:Union[Callable[["Creature"],None],None]=None,
+        distantstrenght:int=0,
+    ):
+        super().__init__(
+            name,
+            hp,
+            abbrv,
+            strength,
+            defense,
+            inventory,
+            equips,
+            bourse,
+            vitesse,
+            level,
+            action,
+            power,
+            special,
+            distantstrenght,
+        )
 
 class Archer(Creature):
     "An creature attacking the hero from far away"
@@ -907,23 +945,23 @@ class Room():
         "Returns a coord not assigned to any Element in the Map"
         coord = self.center()
         cc = self.center()
-        while (coord in map._elem.values() or coord == cc) or not (
+        while (coord in map._creatures.values() or coord == cc) or not (
             map.get(coord) in Floor.listground
         ):
             print(coord)
             coord = self.randCoord()
         return coord
 
-    def randEmptyCoord2(self, map) -> Coord:
+    def randEmptyCoord2(self, map: "Floor") -> Coord:
         "Returns a coord not assigned to any Element in the Map + the coord up from the previous one not assignated either"
         coord = self.center()
         cc = self.center()
         while (
             not (map.get(coord + Coord(0, -1)) in Floor.listground)
             or not (map.get(coord) in Floor.listground)
-            or coord in map._elem.values()
+            or coord in map._creatures.values()
             or coord == cc
-            or coord + Coord(0, -1) in map._elem.values()
+            or coord + Coord(0, -1) in map._creatures.values()
             or coord + Coord(0, -1) == cc
         ):
             coord = self.randCoord()
@@ -1020,7 +1058,7 @@ class SpeRoom(Room):
         "Returns a coord not assigned to any Element in the Map"
         coord = self.center()
         cc = self.center()
-        while coord in map._elem.values() or cc == coord:
+        while coord in map._creatures.values() or cc == coord:
             print(coord)
             coord = self.randCoord()
         return coord
@@ -1070,7 +1108,7 @@ class Floor():
         self._roomsToReach = []
         self.menage = menage
         self._mat = [[self.empty for i in range(self.size)] for k in range(self.size)]
-        self._elem = {}
+        self._creatures = {}
         self._attacks = {}
         self.generateRooms(self.nbrooms)
         if coffre == "O":
@@ -1082,8 +1120,8 @@ class Floor():
         ]
         self.__len__ = (50, 50)
         self.put(self._rooms[0].center(), theGame().hero)
-        for i in self._elem.keys():
-            self._mat[self._elem.get(i).ord][self._elem.get(i).abs] = i.abbrv
+        for i in self._creatures.keys():
+            self._mat[self._creatures.get(i).ord][self._creatures.get(i).abs] = i.abbrv
         for r in self._rooms:
             print(self)
             k = r.randEmptyCoord(self)
@@ -1116,10 +1154,10 @@ class Floor():
         return len(self._mat)
 
     def __contains__(self, item) -> bool:
-        "Check, for an element, if it is in _elem, or for a coord, if it is in the map"
+        "Check, for an element, if it is in _creatures, or for a coord, if it is in the map"
         if isinstance(item, Coord):
             return 0 <= item.abs <= len(self) - 1 and 0 <= item.ord <= len(self) - 1
-        return item in self._elem.keys()
+        return item in self._creatures.keys()
 
     def containsmieux(self, c: Coord) -> bool:
         for val in c:
@@ -1154,7 +1192,7 @@ class Floor():
         "Returns the Element in the Map having this Coord."
         if testeroupas:
             self.checkCoord(coord)
-        for i, j in self._elem.items():
+        for i, j in self._creatures.items():
             if j == coord:
                 return i
         return self._mat[coord.ord][coord.abs]
@@ -1162,7 +1200,7 @@ class Floor():
     def pos(self, element: Element) -> Coord:
         "Returns the Coords of an Element"
         self.checkElement(element)
-        return self._elem.get(element)
+        return self._creatures.get(element)
 
     def groundize(self, coord: Coord) -> None:
         "Puts a ground on a cell.(we have 4 different grounds, and they are saved in blankmap)"
@@ -1187,7 +1225,7 @@ class Floor():
             raise ValueError("Incorrect cell")
         if element in self:
             raise KeyError("Already placed")
-        self._elem[element] = Coord(coord.abs, coord.ord)
+        self._creatures[element] = Coord(coord.abs, coord.ord)
         self.elementize(coord, element.abbrv)
 
     def putattack(self, coord: Coord, attack: Attack) -> None:
@@ -1206,35 +1244,35 @@ class Floor():
         coordarr = self.pos(object) if isinstance(object, Element) else object
         if type(object) is Coord:
             self.checkCoord(object)
-            self._elem = {key: val for key,
-                          val in self._elem.items() if not val == object}
+            self._creatures = {key: val for key,
+                          val in self._creatures.items() if not val == object}
             self.groundize(object)
         else:
-            self.groundize(self.pos(self._elem.pop(object)))
+            self.groundize(self.pos(self._creatures.pop(object)))
         if isinstance(object, Creature):
             for ele in object.inventory:
                 theGame().floor.put(coordarr, ele)
 
-    def move(self, element: Element, way: Coord) -> None:
+    def move(self, creature: Creature, way: Coord) -> None:
         "Moves an element from a Coord to another relatively, meets the destination."
-        coordarr = self.pos(element) + way
-        if isinstance(element, Creature):
-            element.facing = way
-        if isinstance(element, Hero):
-            element.abbrv = "@"
-        if coordarr in self:
-            if not coordarr in self._elem.values() and (
+        coordarr = self.pos(creature) + way
+        if isinstance(creature, Creature):
+            creature.facing = way
+        if isinstance(creature, Hero):
+            creature.abbrv = "@"
+        if coordarr in self or (self[coordarr] == self.empty and isinstance(creature,Flying)):
+            if not coordarr in self._creatures.values() and (
                 self._mat[coordarr.ord][coordarr.abs] in Floor.listground
                 or self._mat[coordarr.ord][coordarr.abs] in Floor.listgroundwet
             ):
                 if self._mat[coordarr.ord][coordarr.abs] in Floor.listgroundwet:
-                    Special_ground.glissade(self, element)
-                self.groundize(self.pos(element))
-                self._elem[element] = coordarr
-                self.elementize(coordarr, element.abbrv)
+                    Special_ground.glissade(self, creature)
+                self.groundize(self.pos(creature))
+                self._creatures[creature] = coordarr
+                self.elementize(coordarr, creature.abbrv)
             elif self._mat[coordarr.ord][coordarr.abs] != Floor.empty:
                 a = self.get(coordarr)
-                if a.meet(element):
+                if a.meet(creature):
                     self.rm(coordarr)
 
     def getcoordaround(self, index: Coord, radius: int):
@@ -1470,7 +1508,7 @@ class Floor():
 
     def moveAllMonsters(self) -> None:
         """Moves all creatures from the map, except the Hero."""
-        for i in self._elem:
+        for i in self._creatures:
             if isinstance(i, Creature) and not (
                 isinstance(i, Hero) or isinstance(i, NPC)
             ):
@@ -1478,32 +1516,32 @@ class Floor():
                 if i.action > 0:
                     i.action -= 1
                     if isinstance(i, Archer):
-                        if self._elem[i].distance(self._elem[theGame().hero]) < 3:
+                        if self._creatures[i].distance(self._creatures[theGame().hero]) < 3:
                             Archer.tir(self)
                     pass
                 else:
                     for _ in range(i.vitesse):
-                        if self._elem[i].distance(self._elem[theGame().hero]) <= 1 or (
+                        if self._creatures[i].distance(self._creatures[theGame().hero]) <= 1 or (
                             (
-                                self._elem[i].cosinus(self._elem[theGame().hero])
+                                self._creatures[i].cosinus(self._creatures[theGame().hero])
                                 == (1 / math.sqrt(2) or -1 / math.sqrt(2))
                             )
-                            and self._elem[i].distance(self._elem[theGame().hero])
+                            and self._creatures[i].distance(self._creatures[theGame().hero])
                             <= math.sqrt(2)
                         ):
                             theGame().hero.meet(i)
-                        elif self._elem[i].distance(self._elem[theGame().hero]) < 6:
+                        elif self._creatures[i].distance(self._creatures[theGame().hero]) < 6:
                             posmonstre = self.pos(i)
                             poshero = self.pos(theGame().hero)
                             new = posmonstre - poshero
                             way1 = Coord(-utils.sign(new.abs), -utils.sign(new.ord))
                             # diagonale 'imparfaite'
                             if ((way1.abs and way1.ord) != 0) and (
-                                self._elem[i].cosinus(self._elem[theGame().hero])
+                                self._creatures[i].cosinus(self._creatures[theGame().hero])
                                 != (1 / math.sqrt(2) or -1 / math.sqrt(2))
                             ):
-                                way2 = self._elem[i].direction(
-                                    self._elem[theGame().hero])
+                                way2 = self._creatures[i].direction(
+                                    self._creatures[theGame().hero])
                                 # creation de way3 et way4
                                 if way2.ord == 0:
                                     way3 = Coord(way2.abs, -way1.ord)
@@ -1535,73 +1573,73 @@ class Floor():
 
                             # cas ou il n'y a aucun obstacle devant la premiere direction (on privilegie le deplacement en diagonale)
                             if (
-                                (self._elem[i] + way1) in self
+                                (self._creatures[i] + way1) in self
                                 and (
                                     self.get(
-                                        self._elem[i] + way1) in self.listground
-                                    or self.get(self._elem[i] + way1)
+                                        self._creatures[i] + way1) in self.listground
+                                    or self.get(self._creatures[i] + way1)
                                     in self.listgroundwet
                                 )
-                                or isinstance(self.get(self._elem[i] + way1), Used)
+                                or isinstance(self.get(self._creatures[i] + way1), Used)
                             ):
                                 self.move(i, way1)
 
                             # cas ou il y a un obstacle devant la premiere direction possible, on choisi donc la deuxieme direction possible
                             elif (
-                                (self._elem[i] + way2) in self
+                                (self._creatures[i] + way2) in self
                                 and (
                                     self.get(
-                                        self._elem[i] + way2) in self.listground
-                                    or self.get(self._elem[i] + way2)
+                                        self._creatures[i] + way2) in self.listground
+                                    or self.get(self._creatures[i] + way2)
                                     in self.listgroundwet
                                 )
-                                or isinstance(self.get(self._elem[i] + way2), Used)
+                                or isinstance(self.get(self._creatures[i] + way2), Used)
                             ):
                                 self.move(i, way2)
 
                             # cas ou il y a un obstacle devant la premiere et deuxieme direction possible, on choisi donc la troisieme direction possible
                             elif (
-                                (self._elem[i] + way3) in self
+                                (self._creatures[i] + way3) in self
                                 and (
                                     self.get(
-                                        self._elem[i] + way3) in self.listground
-                                    or self.get(self._elem[i] + way3)
+                                        self._creatures[i] + way3) in self.listground
+                                    or self.get(self._creatures[i] + way3)
                                     in self.listgroundwet
                                 )
-                                or isinstance(self.get(self._elem[i] + way3), Used)
+                                or isinstance(self.get(self._creatures[i] + way3), Used)
                             ):
                                 self.move(i, way3)
 
                             # cas ou il y a un obstacle devant la premiere, deuxieme et troisieme direction possible, on choisi donc la quatrieme direction possible
                             elif (
-                                (self._elem[i] + way4) in self
+                                (self._creatures[i] + way4) in self
                                 and (
                                     self.get(
-                                        self._elem[i] + way4) in self.listground
-                                    or self.get(self._elem[i] + way4)
+                                        self._creatures[i] + way4) in self.listground
+                                    or self.get(self._creatures[i] + way4)
                                     in self.listgroundwet
                                 )
-                                or isinstance(self.get(self._elem[i] + way4), Used)
+                                or isinstance(self.get(self._creatures[i] + way4), Used)
                             ):
                                 self.move(i, way4)
 
                             # cas ou il y a un obstacle devant la premiere, deuxieme ,troisieme et quatrieme direction possible, on choisi donc la cinquieme direction possible
                             elif (
-                                (self._elem[i] + way5) in self
+                                (self._creatures[i] + way5) in self
                                 and (
                                     self.get(
-                                        self._elem[i] + way5) in self.listground
-                                    or self.get(self._elem[i] + way5)
+                                        self._creatures[i] + way5) in self.listground
+                                    or self.get(self._creatures[i] + way5)
                                     in self.listgroundwet
                                 )
-                                or isinstance(self.get(self._elem[i] + way5), Used)
+                                or isinstance(self.get(self._creatures[i] + way5), Used)
                             ) and isinstance(way5, Coord):
                                 self.move(i, way5)
 
                         """else: #si le monstre est trop loin du hero, il a 25%  de chance de faire un deplacement completement aleatoire)
                             if random.randint(0,3)==0:
                                 rdway = Coord(random.randint(-1,1),random.randint(-1,1))
-                                if ((self._elem[i]+rdway) in self and (self.get(self._elem[i]+rdway) in self.listground or self.get(self._elem[i]+rdway) in self.listgroundwet )  or isinstance(self.get(self._elem[i]+rdway),Used)):
+                                if ((self._creatures[i]+rdway) in self and (self.get(self._creatures[i]+rdway) in self.listground or self.get(self._creatures[i]+rdway) in self.listgroundwet )  or isinstance(self.get(self._creatures[i]+rdway),Used)):
                                     self.move(i,rdway)"""
 
     def checkCoord(self, coord) -> None:
@@ -1686,7 +1724,6 @@ class Stairs(Special_ground):
                     [Floor.empty for i in range(theGame().sizemap + 2)]
                     for k in range(theGame().sizemap + 2)
                 ]
-                # self.placescalier()
 
 
 class Game():
