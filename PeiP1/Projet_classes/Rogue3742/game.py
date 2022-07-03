@@ -9,13 +9,7 @@ import copy
 import math
 import constants
 import utils
-
-
-
-nomprogramme = __file__.split("/")[-1]
-print(nomprogramme)
-# nomprogramme = "game.py"
-
+import images
 
 class Coord():
     """Vec2D object, created by rectangular or polar coordinates(with int coords in normal
@@ -172,25 +166,25 @@ class CoordScreen(Coord):
 
 
 class Status():
-    "Status affecting a creature each turn, making her lose points from a stat"
+    "Status affecting a creature each turn, making it lose points from a stat"
 
-    def __init__(self, name, turns, effect, cible="hp", prb=1):
+    def __init__(self, name, turns, effect, target="hp", prb=1):
         self.name = name
-        self.cible = cible
+        self.target = target
         self.effect = effect
         self.prb = prb
         self.turns = turns
 
     def __str__(self) -> str:
         return self.name + " " + str(self.turns) + " " + str(self.effect) + " " + str(
-            self.cible) + " " + str(self.prb)
+            self.target) + " " + str(self.prb)
 
     def __eq__(self, other: "Status") -> bool:
         return (
             self.name == other.name
             and self.turns == other.turns
             and self.effect == other.effect
-            and self.cible == other.cible
+            and self.target == other.target
             and self.prb == other.prb
         )
 
@@ -199,9 +193,9 @@ class Status():
 
 
 class Element():
-    """Basic Element of the roguelike. Added an dictionary of images, of the form {"idle":[name_img_facing_up,right,down,left],anim:[name_img_facing_up_1,right_1,down_1,left_1,up_2...left_2]}."""
+    """Basic Element of the roguelike."""
 
-    def __init__(self, name, abbrv=None, transparent=False, f=False, dic_images=None):
+    def __init__(self, name, abbrv=None, transparent=False, f=False):
         self.name = name
         self.transparent = transparent
         self.abbrv = name[0] if abbrv is None else abbrv
@@ -210,7 +204,6 @@ class Element():
         else:
             self.abbrv = abbrv
         self.is_f = f
-        self.dic_images = dic_images
 
     def __repr__(self) -> str:
         return self.abbrv
@@ -311,9 +304,9 @@ class Creature(Element):
 
     def statuslose(self, status: Status) -> None:
         "Make the Creature be affected by its statuses"
-        if status.cible in self.__dict__:
+        if status.target in self.__dict__:
             if random.random() < status.prb:
-                self.__dict__[status.cible] += status.effect
+                self.__dict__[status.target] += status.effect
             status.turns -= 1
             if status.turns > 0:
                 return False
@@ -1059,29 +1052,24 @@ class Floor():
     ground2 = ","
     ground3 = "`"
     ground4 = "´"
-    ground5 = "-"
-    listground = [ground1, ground2, ground3, ground4, ground5]
+    listground = [ground1, ground2, ground3, ground4]
     groundwet1 = ".m"
     groundwet2 = ",m"
     groundwet3 = "`m"
     groundwet4 = "´m"
-    groundwet5 = "-m"
     wall = "|"
-    listgroundwet = [groundwet1, groundwet2, groundwet3, groundwet4, groundwet5]
+    listgroundwet = [groundwet1, groundwet2, groundwet3, groundwet4]
     listgrounds = listground+listgroundwet
     empty = " "
 
-    def __init__(self, size:int=None, hero=None, nbrooms=10, menage=True, coffre=None):
+    def __init__(self, number_floor=1, size:int=None, nbrooms=10, menage=True, coffre=None):
         self.nbrooms = nbrooms
         self.size = constants.SIZEMAP if size is None else size
+        self.number_floor = number_floor
         self._rooms = []
         self._roomsToReach = []
         self.menage = menage
-        if hero == None:
-            self.hero = theGame().hero
-        else:
-            self.hero = hero
-        self._mat = [[self.empty for i in range(size)] for k in range(size)]
+        self._mat = [[self.empty for i in range(self.size)] for k in range(self.size)]
         self._elem = {}
         self._attacks = {}
         self.generateRooms(self.nbrooms)
@@ -1093,7 +1081,7 @@ class Floor():
             [str(self._mat[j][i]) for i in range(len(self))] for j in range(len(self))
         ]
         self.__len__ = (50, 50)
-        self.put(self._rooms[0].center(), self.hero)
+        self.put(self._rooms[0].center(), theGame().hero)
         for i in self._elem.keys():
             self._mat[self._elem.get(i).ord][self._elem.get(i).abs] = i.abbrv
         for r in self._rooms:
@@ -1263,43 +1251,43 @@ class Floor():
         self.move(element, self.pos(element) - dest)
 
     def attackpoison(self, coord: Coord) -> None:
-        if self.hero.level >= constants.LEVEL_POISON and self.hero.mp >= constants.MP_POISON:
-            self.hero.mp -= constants.MP_POISON
+        if theGame().hero.level >= constants.LEVEL_POISON and theGame().hero.mp >= constants.MP_POISON:
+            theGame().hero.mp -= constants.MP_POISON
             self.putattack(
                 coord, Attack("Poison", "psn", 0, 10, [
                               Status("Poison", 5, -3, prb=1)])
             )
             theGame().addMessage("Sort de poison activé!", "blue", 1)
-        elif self.hero.level < 2:
+        elif theGame().hero.level < 2:
             theGame().addMessage("Tu n'as pas le niveau requis pour utiliser ce sort! Niveau requis: " +
                                  str(constants.LEVEL_POISON))
         else:
             theGame().addMessage(
-                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/{constants.MP_POISON}")
+                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {theGame().hero.mp}/{constants.MP_POISON}")
 
     def attackwind(self, coord: Coord) -> None:
-        if self.hero.level >= 3 and self.hero.mp >= 7:
-            self.hero.mp -= 7
+        if theGame().hero.level >= 3 and theGame().hero.mp >= 7:
+            theGame().hero.mp -= 7
             for direction in theGame().directions:
                 self.putattack(
                     coord+direction, Attack("Wind", "wnd", -10, 5, []))
             theGame().addMessage("Sort de vent activé!", "blue", 1)
-        elif self.hero.level < 3:
+        elif theGame().hero.level < 3:
             theGame().addMessage("Tu n'as pas le niveau requis pour utiliser ce sort! Niveau requis: 3")
         else:
             theGame().addMessage(
-                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/7")
+                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {theGame().hero.mp}/7")
 
     def attackfire(self, coord: Coord, facing: Coord) -> None:
-        if self.hero.level >= 4 and self.hero.mp >= 10:
-            self.hero.mp -= 10
+        if theGame().hero.level >= 4 and theGame().hero.mp >= 10:
+            theGame().hero.mp -= 10
             theta = facing.getangle() - math.pi / 12
             ch = coord
             while theta <= facing.getangle() + math.pi / 12:
                 r = 1
                 cv = Coord(0, 0)
                 while (
-                    r <= self.hero.distvision
+                    r <= theGame().hero.distvision
                     and (ch + cv in self)
                     and (
                         (self[ch + cv] in Floor.listgrounds)
@@ -1316,7 +1304,6 @@ class Floor():
                     )
                     r += 0.2
                     cv = Coord(r, theta, True)
-                    print("jhfsqik")
                 cv = Coord(r + 0.5, theta, True)
                 if r < 6 and ch + cv in self:
                     self.putattack(
@@ -1326,11 +1313,33 @@ class Floor():
                     )
                 theta += math.pi / 32
             theGame().addMessage("Sort de feu activé!", "blue", 1)
-        elif self.hero.level < 2:
+        elif theGame().hero.level < 2:
             theGame().addMessage("Tu n'as pas le niveau requis pour utiliser ce sort! Niveau requis: 4")
         else:
             theGame().addMessage(
-                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {self.hero.mp}/10")
+                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {theGame().hero.mp}/10")
+
+    def wallline(self,c1:Coord,c2:Coord):
+        """puts walls(using randwall) in the horizontal line between c1 and c2"""
+        if c1.abs > c2.abs:
+            c1, c2 = c2, c1
+        for x in range(c1.abs, c2.abs+1):
+            self.putWall(Coord(x, c1.ord))
+
+    def randWall(self) -> str:
+        "Returns a copy from an element of a dictionnary in the form {rarity<int> : List[Element],...}"
+        x = random.expovariate(1 / self.number_floor)
+        n = int(x)
+        collection=theGame().walls
+        while not (n in collection):
+            n -= 1
+        return random.choice(collection[n])
+
+    def putWall(self, coord: Coord) -> None:
+        "puts a wall at the coord"
+        if coord in self:
+            self._mat[coord.ord][coord.abs] = self.randWall()
+
 
     def fillrectangle(self, c1: Coord, c2: Coord, thing=empty) -> None:
         "Fills a rectangle of Coords with a given object. For a list, the object will be chosen randomly"
@@ -1353,9 +1362,10 @@ class Floor():
         if isinstance(room, SpeRoom):
             self.filltriangle(room)
         else:
-            self.fillrectangle(room.c1+Coord(-1, 1),
-                               room.c2+Coord(1, 1), Floor.wall)
+            # self.fillrectangle(room.c1+Coord(-1, 1),
+            #                    room.c2+Coord(1, 1), Floor.wall)
             self.fillrectangle(room.c1, room.c2, Floor.listground)
+            self.wallline(room.c1+Coord(0,-1), room.c2+Coord(0,-1))
 
     def findRoom(self, coord: Coord) -> Any:
         "Finds the first Room of the map containing the Coord, returns False if none."
@@ -1448,6 +1458,16 @@ class Floor():
         c = random.choice(theGame().directions)
         self.put(salle_down.center() + c, Stairs("Descendre", "<", up=False))
 
+    def randWall(self) -> str:
+        "Returns a copy from an element of a dictionnary in the form {rarity<int> : List[Element],...}"
+        x = random.expovariate(1 / self.number_floor)
+        n = int(x)
+        collection=theGame().walls
+        while not (n in collection):
+            n -= 1
+        return random.choice(collection[n])
+
+
     def moveAllMonsters(self) -> None:
         """Moves all creatures from the map, except the Hero."""
         for i in self._elem:
@@ -1458,32 +1478,32 @@ class Floor():
                 if i.action > 0:
                     i.action -= 1
                     if isinstance(i, Archer):
-                        if self._elem[i].distance(self._elem[self.hero]) < 3:
+                        if self._elem[i].distance(self._elem[theGame().hero]) < 3:
                             Archer.tir(self)
                     pass
                 else:
                     for _ in range(i.vitesse):
-                        if self._elem[i].distance(self._elem[self.hero]) <= 1 or (
+                        if self._elem[i].distance(self._elem[theGame().hero]) <= 1 or (
                             (
-                                self._elem[i].cosinus(self._elem[self.hero])
+                                self._elem[i].cosinus(self._elem[theGame().hero])
                                 == (1 / math.sqrt(2) or -1 / math.sqrt(2))
                             )
-                            and self._elem[i].distance(self._elem[self.hero])
+                            and self._elem[i].distance(self._elem[theGame().hero])
                             <= math.sqrt(2)
                         ):
-                            self.hero.meet(i)
-                        elif self._elem[i].distance(self._elem[self.hero]) < 6:
+                            theGame().hero.meet(i)
+                        elif self._elem[i].distance(self._elem[theGame().hero]) < 6:
                             posmonstre = self.pos(i)
-                            poshero = self.pos(self.hero)
+                            poshero = self.pos(theGame().hero)
                             new = posmonstre - poshero
                             way1 = Coord(-utils.sign(new.abs), -utils.sign(new.ord))
                             # diagonale 'imparfaite'
                             if ((way1.abs and way1.ord) != 0) and (
-                                self._elem[i].cosinus(self._elem[self.hero])
+                                self._elem[i].cosinus(self._elem[theGame().hero])
                                 != (1 / math.sqrt(2) or -1 / math.sqrt(2))
                             ):
                                 way2 = self._elem[i].direction(
-                                    self._elem[self.hero])
+                                    self._elem[theGame().hero])
                                 # creation de way3 et way4
                                 if way2.ord == 0:
                                     way3 = Coord(way2.abs, -way1.ord)
@@ -1674,29 +1694,31 @@ class Game():
         \nPlease use theGame() to remain in the same game..."""
 
     _actions = {
-        "z": lambda hero: theGame().floor.move(hero, Coord(0, -1)),
-        "a": lambda hero: theGame().floor.move(hero, Coord(-1, -1)),
-        "q": lambda hero: theGame().floor.move(hero, Coord(-1, 0)),
-        "w": lambda hero: theGame().floor.move(hero, Coord(-1, 1)),
-        "x": lambda hero: theGame().floor.move(hero, Coord(0, 1)),
-        "c": lambda hero: theGame().floor.move(hero, Coord(1, 1)),
-        "d": lambda hero: theGame().floor.move(hero, Coord(1, 0)),
-        "e": lambda hero: theGame().floor.move(hero, Coord(1, -1)),
-        "i": lambda hero: theGame().addMessage(hero.fullDescription()),
-        "r": lambda hero: hero.sleep(),
-        "1": lambda hero: theGame().floor.attackpoison(
-            theGame()[hero]+hero.facing
+        "esc" : lambda _ : theGame().quit(),
+        "z": lambda _: theGame().floor.move(theGame().hero, Coord(0, -1)),
+        "a": lambda _: theGame().floor.move(theGame().hero, Coord(-1, -1)),
+        "q": lambda _: theGame().floor.move(theGame().hero, Coord(-1, 0)),
+        "w": lambda _: theGame().floor.move(theGame().hero, Coord(-1, 1)),
+        "x": lambda _: theGame().floor.move(theGame().hero, Coord(0, 1)),
+        "c": lambda _: theGame().floor.move(theGame().hero, Coord(1, 1)),
+        "d": lambda _: theGame().floor.move(theGame().hero, Coord(1, 0)),
+        "e": lambda _: theGame().floor.move(theGame().hero, Coord(1, -1)),
+        "i": lambda _: theGame().addMessage(theGame().hero.fullDescription()),
+        "r": lambda _: theGame().hero.sleep(),
+        "1": lambda _: theGame().floor.attackpoison(
+            theGame()[theGame().hero]+theGame().hero.facing
         ),
-        "2": lambda hero: theGame().floor.attackwind(theGame()[hero]),
-        "3": lambda hero: theGame().floor.attackfire(
-            theGame().floor.pos(hero), hero.facing
+        "2": lambda _: theGame().floor.attackwind(theGame()[theGame().hero]),
+        "3": lambda _: theGame().floor.attackfire(
+            theGame().floor.pos(theGame().hero), theGame().hero.facing
         ),
-        "k": lambda hero: hero.kill(),
-        "<space>": lambda hero: theGame().tour(),
-        "u": lambda hero: theGame().select(hero.inventory),
-        "j": lambda hero: hero.throw(theGame().select(hero.inventory)),
-        "<Escape>": lambda hero: theGame().fenetre.destroy,
+        "k": lambda _: theGame().hero.kill(),
+        "<space>": lambda _: theGame().tour(),
+        "u": lambda _: theGame().select(theGame().hero.inventory),
+        "j": lambda _: theGame().hero.throw(theGame().select(theGame().hero.inventory)),
+        "<Escape>": lambda _: theGame().fenetre.destroy,
     }
+    walls={0:["|1","|2"],1:["|3"],3:["|4"]}
     monsters = {
         0: [
             Creature("Sad emotivo", 4, "G"),
@@ -1842,10 +1864,8 @@ class Game():
     ]
     sorts = {2: "sort de poison", 3: "sort de vent", 4: "sort de feu"}
 
-    def __init__(self, hero=None, sizemap=50, stage=10):
+    def __init__(self, sizemap=50, stage=10):
         self.hero = Hero()
-        if hero != None:
-            self.hero = hero
         self.floor = None
         self._message = []
         self.seenmap = [
@@ -1923,7 +1943,7 @@ class Game():
         "Returns a random Creature using randElement"
         return self.randElement(self.monsters)
 
-    def randMonsterKey(self, map) -> None:
+    def randMonsterKey(self, map: "Floor") -> None:
         """Gives a key to a random monster and adds it to the map."""
         monster = self.randMonster()
         r = random.choice(map._rooms)
@@ -1964,8 +1984,8 @@ class Game():
             #             command=lambda z=i: theGame().hero.use(z),
             #         )
             #     )
-        for j in range(len(self.buttons)):
-            self.buttons[j].place(x=355, y=38 + 79 * j)
+        for index,button in enumerate(self.buttons):
+            button.place(x=355, y=38 + 79 * index)
 
     def deselect(self):
         """Erase inventory buttons"""
@@ -1976,443 +1996,8 @@ class Game():
 
     def initgraph(self) -> None:
         "Creates the dictionary of images,and binds actions to the Tk window, then creates the mainloop."
-        genPATH = __file__
-        imgPATH = genPATH[0: -len(nomprogramme)] + "images/"
-        hero_fi = tkinter.PhotoImage(file=imgPATH + "hero_face_i.png").zoom(2)
-        hero_ri = tkinter.PhotoImage(file=imgPATH + "hero_right_i.png").zoom(2)
-        hero_bi = tkinter.PhotoImage(file=imgPATH + "hero_back_i.png").zoom(2)
-        hero_li = tkinter.PhotoImage(file=imgPATH + "hero_left_i.png").zoom(2)
-        hero_fw1 = tkinter.PhotoImage(
-            file=imgPATH + "hero_face_w1.png").zoom(2)
-        hero_rw1 = tkinter.PhotoImage(
-            file=imgPATH + "hero_right_w1.png").zoom(2)
-        hero_bw1 = tkinter.PhotoImage(
-            file=imgPATH + "hero_back_w1.png").zoom(2)
-        hero_lw1 = tkinter.PhotoImage(
-            file=imgPATH + "hero_left_w1.png").zoom(2)
-        hero_fw2 = tkinter.PhotoImage(
-            file=imgPATH + "hero_face_w2.png").zoom(2)
-        hero_rw2 = tkinter.PhotoImage(
-            file=imgPATH + "hero_right_w2.png").zoom(2)
-        hero_bw2 = tkinter.PhotoImage(
-            file=imgPATH + "hero_back_w2.png").zoom(2)
-        hero_lw2 = tkinter.PhotoImage(
-            file=imgPATH + "hero_left_w2.png").zoom(2)
-        hero_tf = tkinter.PhotoImage(
-            file=imgPATH + "hero_tombe_face.png").zoom(2)
-        hero_tr = tkinter.PhotoImage(
-            file=imgPATH + "hero_tombe_droite.png").zoom(2)
-        hero_tb = tkinter.PhotoImage(
-            file=imgPATH + "hero_tombe_dos.png").zoom(2)
-        hero_tl = tkinter.PhotoImage(
-            file=imgPATH + "hero_tombe_gauche.png").zoom(2)
-
-        # elements pour afficher les points de magie
-        magic = tkinter.PhotoImage(file=imgPATH + "magic.png")
-
-        # images hero/equipement Arou
-        hero_f = tkinter.PhotoImage(file=imgPATH + "herofoulard.png").zoom(2)
-        hero_c = tkinter.PhotoImage(file=imgPATH + "herobadge.png").zoom(2)
-        hero_p1 = tkinter.PhotoImage(file=imgPATH + "heroplaid1.png").zoom(2)
-        hero_p2 = tkinter.PhotoImage(file=imgPATH + "heroplaid2.png").zoom(2)
-        hero_p3 = tkinter.PhotoImage(file=imgPATH + "heroplaid3.png").zoom(2)
-        hero_fp1 = tkinter.PhotoImage(
-            file=imgPATH + "herofoulardplaid1.png").zoom(2)
-        hero_fp2 = tkinter.PhotoImage(
-            file=imgPATH + "herofoulardplaid2.png").zoom(2)
-        hero_fp3 = tkinter.PhotoImage(
-            file=imgPATH + "herofoulardplaid3.png").zoom(2)
-        hero_cp1 = tkinter.PhotoImage(
-            file=imgPATH + "herobagdeplaid1.png").zoom(2)
-        hero_cp2 = tkinter.PhotoImage(
-            file=imgPATH + "herobagdeplaid2.png").zoom(2)
-        hero_cp3 = tkinter.PhotoImage(
-            file=imgPATH + "herobagdeplaid3.png").zoom(2)
-
-        sol_img1 = tkinter.PhotoImage(file=imgPATH + "sol_1.png").zoom(2)
-        sol_img2 = tkinter.PhotoImage(file=imgPATH + "sol_2.png").zoom(2)
-        sol_img3 = tkinter.PhotoImage(file=imgPATH + "sol_3.png").zoom(2)
-        sol_img4 = tkinter.PhotoImage(file=imgPATH + "sol_4.png").zoom(2)
-        wetsol_img1 = tkinter.PhotoImage(
-            file=imgPATH + "sol-mouille1.png").zoom(2)
-        wetsol_img2 = tkinter.PhotoImage(
-            file=imgPATH + "sol-mouille2.png").zoom(2)
-        wetsol_img3 = tkinter.PhotoImage(
-            file=imgPATH + "sol-mouille3.png").zoom(2)
-        wetsol_img4 = tkinter.PhotoImage(
-            file=imgPATH + "sol-mouille4.png").zoom(2)
-        wall = tkinter.PhotoImage(file=imgPATH + "wall.png").zoom(2)
-        pot_img1 = tkinter.PhotoImage(file=imgPATH + "fiole_1.png").zoom(2)
-        pot_img3 = tkinter.PhotoImage(file=imgPATH + "fiole_3.png").zoom(2)
-        bequille_img = tkinter.PhotoImage(
-            file=imgPATH + "bequille.png").zoom(2)
-        chew_img = tkinter.PhotoImage(file=imgPATH + "chewing-gum.png").zoom(2)
-        gum_img = tkinter.PhotoImage(file=imgPATH + "gum.png").zoom(2)
-        sucette1_img = tkinter.PhotoImage(file=imgPATH + "sucette_1.png")
-        sucette2_img = tkinter.PhotoImage(file=imgPATH + "sucette_2.png")
-        sucette3_img = tkinter.PhotoImage(file=imgPATH + "sucette_3.png")
-        cookie_img = tkinter.PhotoImage(file=imgPATH + "cookie.png")
-        happypills_img = tkinter.PhotoImage(file=imgPATH + "happy_pills.png")
-        foulard_img = tkinter.PhotoImage(file=imgPATH + "foulard.png")
-        coffre_img = tkinter.PhotoImage(file=imgPATH + "coffre.png")
-        plaid3_img = tkinter.PhotoImage(file=imgPATH + "plaid3.png").zoom(2)
-
-        boul_img = tkinter.PhotoImage(file=imgPATH + "boulimie.png").zoom(2)
-        tireur_img = tkinter.PhotoImage(file=imgPATH + "archer.png").zoom(2)
-        sad_img = tkinter.PhotoImage(file=imgPATH + "tristesse.png").zoom(2)
-        fear_img = tkinter.PhotoImage(file=imgPATH + "fear.png").zoom(2)
-        colere_img = tkinter.PhotoImage(file=imgPATH + "colere.png").zoom(2)
-        ted_img = tkinter.PhotoImage(file=imgPATH + "ourson_1.png").zoom(2)
-        ghost_img = tkinter.PhotoImage(file=imgPATH + "ghost.png").zoom(2)
-        sad_img = tkinter.PhotoImage(file=imgPATH + "tristesse_1.png").zoom(2)
-        ar_img = tkinter.PhotoImage(file=imgPATH + "araignee.png").zoom(2)
-        or1_img = tkinter.PhotoImage(file=imgPATH + "or1.png").zoom(2)
-        bourse = tkinter.PhotoImage(file=imgPATH + "or1.png")
-        or2_img = tkinter.PhotoImage(file=imgPATH + "or2.png").zoom(2)
-        or5_img = tkinter.PhotoImage(file=imgPATH + "or5.png").zoom(2)
-        or10_img = tkinter.PhotoImage(file=imgPATH + "or10.png").zoom(2)
-        marchand_f = tkinter.PhotoImage(
-            file=imgPATH + "marchand_de_face.png").zoom(2)
-        marchand_f = tkinter.PhotoImage(
-            file=imgPATH + "marchand_de_face2.png").zoom(2)
-        marchand_d = tkinter.PhotoImage(
-            file=imgPATH + "marchand_vers_droite.png").zoom(2)
-        marchand_g = tkinter.PhotoImage(
-            file=imgPATH + "marchand_vers_gauche.png").zoom(2)
-        marchand_sf = tkinter.PhotoImage(
-            file=imgPATH + "marchand_sucette_de_face.png").zoom(2)
-        bedup = tkinter.PhotoImage(
-            file=imgPATH + "lit_vert_haut_final.png").zoom(2)
-        beddown = tkinter.PhotoImage(
-            file=imgPATH + "lit_vert_bas_final.png").zoom(2)
-        wheelchair = tkinter.PhotoImage(file=imgPATH + "fauteuil.png").zoom(2)
-        flowerpot = tkinter.PhotoImage(file=imgPATH + "arbuste.png").zoom(2)
-        hole = tkinter.PhotoImage(file=imgPATH + "trou.png").zoom(2)
-        docteurM_img = tkinter.PhotoImage(
-            file=imgPATH + "medecin1.png").zoom(2)
-        docteurF_img = tkinter.PhotoImage(
-            file=imgPATH + "medecin2.png").zoom(2)
-        infirmiere1_img = tkinter.PhotoImage(
-            file=imgPATH + "infirmiere1.png").zoom(2)
-
-        badgemedecin_img = tkinter.PhotoImage(
-            file=imgPATH + "badgemedecin.png")
-
-        img_stonelance = tkinter.PhotoImage(
-            file=imgPATH + "lancepierre.png").zoom(2)
-
-        esc_up = tkinter.PhotoImage(file=imgPATH + "escalier_up.png").zoom(2)
-        esc_down = tkinter.PhotoImage(
-            file=imgPATH + "escalier_down.png").zoom(2)
-        vide = tkinter.PhotoImage(file=imgPATH + "empty.png").zoom(2)
-        hotbar = tkinter.PhotoImage(file=imgPATH + "hotbar.png").zoom(2)
-        faim100 = tkinter.PhotoImage(file=imgPATH + "faim100.png").zoom(2)
-        faim75 = tkinter.PhotoImage(file=imgPATH + "faim75.png").zoom(2)
-        faim50 = tkinter.PhotoImage(file=imgPATH + "faim50.png").zoom(2)
-        faim25 = tkinter.PhotoImage(file=imgPATH + "faim25.png").zoom(2)
-        faim0 = tkinter.PhotoImage(file=imgPATH + "faim0.png").zoom(2)
-        red = tkinter.PhotoImage(file=imgPATH + "red.png")
-        dred = tkinter.PhotoImage(file=imgPATH + "darkred.png")
-        gre = tkinter.PhotoImage(file=imgPATH + "green.png")
-        dgre = tkinter.PhotoImage(file=imgPATH + "darkgreen.png")
-        blu = tkinter.PhotoImage(file=imgPATH + "blue.png")
-        dblu = tkinter.PhotoImage(file=imgPATH + "darkblue.png")
-        yel = tkinter.PhotoImage(file=imgPATH + "yellow.png")
-        dyel = tkinter.PhotoImage(file=imgPATH + "darkyellow.png")
-        lig = tkinter.PhotoImage(file=imgPATH + "lightblue.png")
-        dlig = tkinter.PhotoImage(file=imgPATH + "darklightblue.png")
-        ora = tkinter.PhotoImage(file=imgPATH + "orange.png")
-        dora = tkinter.PhotoImage(file=imgPATH + "darkorange.png")
-        black = tkinter.PhotoImage(file=imgPATH + "black.png")
-        vie = tkinter.PhotoImage(file=imgPATH + "health.png")
-        cle_img = tkinter.PhotoImage(file=imgPATH + "cle.png")
-        multi_img = tkinter.PhotoImage(file=imgPATH + "multipass.png")
-        # equipement(objets sans zoom pour quand on a besoin) Arou
-        equip_bequille = tkinter.PhotoImage(file=imgPATH + "bequille.png")
-
-        herobox0 = tkinter.PhotoImage(file=imgPATH + "box0.png").zoom(3)
-        herobox10 = tkinter.PhotoImage(file=imgPATH + "box10.png").zoom(3)
-        herobox20 = tkinter.PhotoImage(file=imgPATH + "box20.png").zoom(3)
-        herobox30 = tkinter.PhotoImage(file=imgPATH + "box30.png").zoom(3)
-        herobox40 = tkinter.PhotoImage(file=imgPATH + "box40.png").zoom(3)
-        herobox50 = tkinter.PhotoImage(file=imgPATH + "box50.png").zoom(3)
-        herobox60 = tkinter.PhotoImage(file=imgPATH + "box60.png").zoom(3)
-        herobox70 = tkinter.PhotoImage(file=imgPATH + "box70.png").zoom(3)
-        herobox80 = tkinter.PhotoImage(file=imgPATH + "box80.png").zoom(3)
-        herobox90 = tkinter.PhotoImage(file=imgPATH + "box90.png").zoom(3)
-
-        dialoguebox = tkinter.PhotoImage(file=imgPATH + "dialogue.png")
-
-        img_psn1 = tkinter.PhotoImage(file=imgPATH + "poison1.png").zoom(2)
-        img_psn2 = tkinter.PhotoImage(file=imgPATH + "poison2.png").zoom(2)
-        img_psn3 = tkinter.PhotoImage(file=imgPATH + "poison3.png").zoom(2)
-        img_feu1 = tkinter.PhotoImage(file=imgPATH + "feu1.png").zoom(2)
-        img_feu2 = tkinter.PhotoImage(file=imgPATH + "feu2.png").zoom(2)
-        img_feu3 = tkinter.PhotoImage(file=imgPATH + "feu3.png").zoom(2)
-        img_ice1 = tkinter.PhotoImage(file=imgPATH + "ice1.png").zoom(2)
-        img_ice2 = tkinter.PhotoImage(file=imgPATH + "ice2.png").zoom(2)
-        img_ice3 = tkinter.PhotoImage(file=imgPATH + "ice3.png").zoom(2)
-        img_wnd1 = tkinter.PhotoImage(file=imgPATH + "wind1.png").zoom(2)
-        img_wnd2 = tkinter.PhotoImage(file=imgPATH + "wind2.png").zoom(2)
-        img_wnd3 = tkinter.PhotoImage(file=imgPATH + "wind3.png").zoom(2)
-        joie9 = tkinter.PhotoImage(file=imgPATH + "joie9.png")
-        joie8 = tkinter.PhotoImage(file=imgPATH + "joie8.png")
-        joie7 = tkinter.PhotoImage(file=imgPATH + "joie7.png")
-        joie6 = tkinter.PhotoImage(file=imgPATH + "joie6.png")
-        joie5 = tkinter.PhotoImage(file=imgPATH + "joie5.png")
-        joie4 = tkinter.PhotoImage(file=imgPATH + "joie4.png")
-        joie3 = tkinter.PhotoImage(file=imgPATH + "joie3.png")
-        joie2 = tkinter.PhotoImage(file=imgPATH + "joie2.png")
-        joie1 = tkinter.PhotoImage(file=imgPATH + "joie1.png")
-        sad9 = tkinter.PhotoImage(file=imgPATH + "sad9.png")
-        sad8 = tkinter.PhotoImage(file=imgPATH + "sad8.png")
-        sad7 = tkinter.PhotoImage(file=imgPATH + "sad7.png")
-        sad6 = tkinter.PhotoImage(file=imgPATH + "sad6.png")
-        sad5 = tkinter.PhotoImage(file=imgPATH + "sad5.png")
-        sad4 = tkinter.PhotoImage(file=imgPATH + "sad4.png")
-        sad3 = tkinter.PhotoImage(file=imgPATH + "sad3.png")
-        sad2 = tkinter.PhotoImage(file=imgPATH + "sad2.png")
-        sad1 = tkinter.PhotoImage(file=imgPATH + "sad1.png")
-        peur9 = tkinter.PhotoImage(file=imgPATH + "peur9.png")
-        peur8 = tkinter.PhotoImage(file=imgPATH + "peur8.png")
-        peur7 = tkinter.PhotoImage(file=imgPATH + "peur7.png")
-        peur6 = tkinter.PhotoImage(file=imgPATH + "peur6.png")
-        peur5 = tkinter.PhotoImage(file=imgPATH + "peur5.png")
-        peur4 = tkinter.PhotoImage(file=imgPATH + "peur4.png")
-        peur3 = tkinter.PhotoImage(file=imgPATH + "peur3.png")
-        peur2 = tkinter.PhotoImage(file=imgPATH + "peur2.png")
-        peur1 = tkinter.PhotoImage(file=imgPATH + "peur1.png")
-        angry9 = tkinter.PhotoImage(file=imgPATH + "angry9.png")
-        angry8 = tkinter.PhotoImage(file=imgPATH + "angry8.png")
-        angry7 = tkinter.PhotoImage(file=imgPATH + "angry7.png")
-        angry6 = tkinter.PhotoImage(file=imgPATH + "angry6.png")
-        angry5 = tkinter.PhotoImage(file=imgPATH + "angry5.png")
-        angry4 = tkinter.PhotoImage(file=imgPATH + "angry4.png")
-        angry3 = tkinter.PhotoImage(file=imgPATH + "angry3.png")
-        angry2 = tkinter.PhotoImage(file=imgPATH + "angry2.png")
-        angry1 = tkinter.PhotoImage(file=imgPATH + "angry1.png")
-        equipBar = tkinter.PhotoImage(file=imgPATH + "equipBar.png")
-        gameover_img = tkinter.PhotoImage(file=imgPATH + "gameover.png")
-        marchandepage_img = tkinter.PhotoImage(
-            file=imgPATH + "marchandepage.png")
-
-        self.dicimages = {
-            "C": coffre_img,
-            "cle": cle_img,
-            "mul": multi_img,
-            "G": sad_img,
-            "W": fear_img,
-            "O": colere_img,
-            "B": ted_img,
-            "D": boul_img,
-            "Ar": ar_img,
-            "magic": magic,
-            "showcase": hero_fi.zoom(3),
-            ".": sol_img1,
-            ",": sol_img2,
-            "`": sol_img3,
-            "´": sol_img4,
-            ".m": wetsol_img1,
-            ",m": wetsol_img2,
-            "`m": wetsol_img3,
-            "´m": wetsol_img4,
-            "|": wall,
-            "@": [hero_fi, hero_bi, hero_li, hero_ri],
-            "@*": [hero_tf, hero_tb, hero_tl, hero_tr],
-            "!": pot_img3,
-            "fv": ghost_img,
-            "s": bequille_img,
-            "a": img_stonelance,
-            "c": pot_img3,
-            "b": or1_img,
-            "j": or2_img,
-            "p": or5_img,
-            "P": or10_img,
-            "M": marchand_f,
-            "inventory": hotbar,
-            "faim100": faim100,
-            "faim75": faim75,
-            "faim50": faim50,
-            "faim25": faim25,
-            "faim0": faim0,
-            "empty": vide,
-            "health": vie,
-            "dialogue": dialoguebox.zoom(5),
-            ">": esc_up,
-            "<": esc_down,
-            "u": chew_img,
-            "g": gum_img,
-            "Be1": bedup,
-            "Be2": beddown,
-            "Fa": wheelchair,
-            "Po": flowerpot,
-            "Tr": hole,
-            "s1": sucette1_img,
-            "s2": sucette2_img,
-            "s3": sucette3_img,
-            "herobox0": herobox0,
-            "herobox10": herobox10,
-            "herobox20": herobox20,
-            "herobox30": herobox30,
-            "herobox40": herobox40,
-            "herobox50": herobox50,
-            "herobox60": herobox60,
-            "herobox70": herobox70,
-            "herobox80": herobox80,
-            "herobox90": herobox90,
-            "cc": cookie_img,
-            "HP": happypills_img,
-            "pl": plaid3_img,
-            "T": tireur_img,
-            "foulard": foulard_img,
-            "docM": docteurM_img,
-            "docF": docteurF_img,
-            "inf": infirmiere1_img,
-        }
-        self.dicanim = {
-            "@": [
-                hero_fw1,
-                hero_bw1,
-                hero_lw1,
-                hero_rw1,
-                hero_fw2,
-                hero_bw2,
-                hero_lw2,
-                hero_rw2,
-            ],
-            "@*": [
-                hero_tf,
-                hero_tf,
-                hero_tf,
-                hero_tr,
-                hero_tr,
-                hero_tr,
-                hero_tb,
-                hero_tb,
-                hero_tb,
-                hero_tl,
-                hero_tl,
-                hero_tl,
-            ],
-        }
-
-        self.dicappear = {
-            "hero_foulard": hero_f.zoom(3),
-            "hero_badge": hero_c.zoom(3),
-            "hero_plaid": hero_p1.zoom(3),
-            "hero_foulardplaid": hero_fp1.zoom(3),
-            "hero_badgeplaid": hero_cp1.zoom(3),
-        }
-
-        self.dicequipement = {
-            "s": equip_bequille,
-            "Cd": badgemedecin_img,
-            "foulard": foulard_img,
-            "pl": plaid3_img,
-        }
-
-        # dictionnaire pour avoir les images en zoom dans l'inventaire
-        self.dicinventory = {
-            "equipBar": equipBar,
-            "@": hero_fi,
-            "!": pot_img3,
-            "a": img_stonelance,
-            "s": bequille_img,
-            "c": pot_img3,
-            "b": or1_img,
-            "j": or2_img,
-            "p": or5_img,
-            "P": or10_img,
-            "g": gum_img,
-            "s1": sucette1_img.zoom(2),
-            "s2": sucette2_img.zoom(2),
-            "s3": sucette3_img.zoom(2),
-            "Cd": badgemedecin_img.zoom(2),
-            "cc": cookie_img.zoom(2),
-            "bourse": bourse,
-            "HP": happypills_img.zoom(2),
-            "pl": plaid3_img,
-            "cle": cle_img,
-        }
-
-        self.dicinventoryM = {
-            "!": pot_img3.zoom(2),
-            "a": img_stonelance.zoom(2),
-            "s": bequille_img.zoom(2),
-            "g": gum_img.zoom(2),
-            "s1": sucette1_img.zoom(4),
-            "s2": sucette2_img.zoom(4),
-            "s3": sucette3_img.zoom(4),
-            "Cd": badgemedecin_img.zoom(4),
-            "cc": cookie_img.zoom(4),
-            "bourse": bourse,
-            "HP": happypills_img.zoom(4),
-        }
-        self.dicseen = {
-            "dy": dyel,
-            "do": dora,
-            "dl": dlig,
-            "db": dblu,
-            "dg": dgre,
-            "dr": dred,
-        }
-        self.dicviewable = {
-            "ye": yel,
-            "or": ora,
-            "li": lig,
-            "bl": blu,
-            "gr": gre,
-            "re": red,
-        }
-        self.dicatk = {
-            "psn": [img_psn1, img_psn2, img_psn3],
-            "feu": [img_feu1, img_feu2, img_feu3],
-            "ice": [img_ice1, img_ice2, img_ice3],
-            "wnd": [img_wnd1, img_wnd2, img_wnd3],
-        }
-
-        self.dicemotion = {
-            "joy1": joie1,
-            "joy2": joie2,
-            "joy3": joie3,
-            "joy4": joie4,
-            "joy5": joie5,
-            "joy6": joie6,
-            "joy7": joie7,
-            "joy8": joie8,
-            "joy9": joie9,
-            "sad1": sad1,
-            "sad2": sad2,
-            "sad3": sad3,
-            "sad4": sad4,
-            "sad5": sad5,
-            "sad6": sad6,
-            "sad7": sad7,
-            "sad8": sad8,
-            "sad9": sad9,
-            "peur1": peur1,
-            "peur2": peur2,
-            "peur3": peur3,
-            "peur4": peur4,
-            "peur5": peur5,
-            "peur6": peur6,
-            "peur7": peur7,
-            "peur8": peur8,
-            "peur9": peur9,
-            "angry1": angry1,
-            "angry2": angry2,
-            "angry3": angry3,
-            "angry4": angry4,
-            "angry5": angry5,
-            "angry6": angry6,
-            "angry7": angry7,
-            "angry8": angry8,
-            "angry9": angry9,
-        }
-
-        self.dicother = {"gameover": gameover_img,
-                         "marchandepage": marchandepage_img, "black": black}
         self.canvas.config(width=1000, height=800)
+        self.dicimages,self.dicanim,self.dicappear,self.dicequipement,self.dicinventory,self.dicinventoryM,self.dicseen,self.dicviewable,self.dicatk,self.dicemotion,self.dicother=images.get_dictionaries()
         self.seeMap()
         self.updategraph()
         [self.fenetre.bind(i, self.gameturn) for i in self._actions]
@@ -2423,7 +2008,7 @@ class Game():
         "Makes an action according to the bind result"
         poshero = self.floor.pos(self.hero)
         if isinstance(event, tkinter.Event) and event.char in self._actions:
-            self._actions[event.char](self.floor.hero)
+            self._actions[event.char](theGame().hero)
         [self.fenetre.bind(i, None) for i in self._actions]
         self.hero.food()
         self.hero.creaturn(self.floor)
@@ -2442,7 +2027,7 @@ class Game():
     def makeAction(self, action: str) -> None:
         "Makes an action"
         print(action)
-        self._actions[action](self.floor.hero)
+        self._actions[action](theGame().hero)
 
     def callseller(self, seller):
         self.canvas.create_image(400, 500, image=self.dicother["black"])
@@ -2605,7 +2190,7 @@ class Game():
             for i in range(4):
                 if theGame().hero.equips[i] != None:
                     picture = self.dicequipement[theGame(
-                    ).floor.hero.equips[i].abbrv]
+                    ).hero.equips[i].abbrv]
                     self.canvas.create_image(811 + 40 * i, 300, image=picture)
                     if theGame().hero.equips[i].name == "plaid":
                         plaid = True
@@ -2772,7 +2357,7 @@ class Game():
         self.viewablemap = [
             [" " for i in range(self.sizemap + 2)] for k in range(self.sizemap + 2)
         ]
-        ch = self.floor[self.floor.hero]
+        ch = self.floor[theGame().hero]
         while theta <= 2 * math.pi:
             r = 0
             cv = Coord(0, 0)
@@ -2784,7 +2369,7 @@ class Game():
                         self.floor[ch + cv] in Floor.listground
                         or self.floor[ch + cv] in Floor.listgroundwet
                     )
-                    or self.floor[self.floor.hero] == ch + cv
+                    or self.floor[theGame().hero] == ch + cv
                     or (
                         isinstance(self.floor[ch + cv], Element)
                         and self.floor[ch + cv].transparent == True
