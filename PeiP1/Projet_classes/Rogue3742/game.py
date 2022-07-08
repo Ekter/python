@@ -3,13 +3,14 @@
 # Roguelike project, by Nino Mulac, Ilane Pelletier, Arwen Duee-Moreau, Hugo Durand, Vaiki Martelli, and Kylian Girard
 import time
 import random
-from typing import Any, Callable, List, Union
+from typing import Any, Callable, List, Union, Optional
 import tkinter
 import copy
 import math
 import constants
 import utils
 import images
+
 
 class Coord():
     """Vec2D object, created by rectangular or polar coordinates(with int coords in normal
@@ -253,7 +254,7 @@ class Creature(Element):
         level: int = 1,
         action: int = 0,
         power:List[Status]=None,
-        special:Union[Callable[["Creature"],None],None]=None,
+        special:Optional[Callable[["Creature"],None]]=None,
         distantstrenght:int=0,
     ):
         super().__init__(self, name, abbrv, transparent=True)
@@ -305,7 +306,7 @@ class Creature(Element):
             return other.gainxp(self)
         return False
 
-    def statuslose(self, status: Status) -> None:
+    def statuslose(self, status: Status) -> bool:
         "Make the Creature be affected by its statuses"
         if status.target in self.__dict__:
             if random.random() < status.prb:
@@ -313,6 +314,8 @@ class Creature(Element):
             status.turns -= 1
             if status.turns > 0:
                 return False
+        else:
+            theGame().addMessage("")
         return True
 
     def creaturn(self, mapp: "Floor") -> None:
@@ -423,7 +426,7 @@ class Flying(Creature):
         level: int = 1,
         action: int = 0,
         power:List[Status]=None,
-        special:Union[Callable[["Creature"],None],None]=None,
+        special:Optional[Callable[["Creature"],None]]=None,
         distantstrenght:int=0,
     ):
         super().__init__(
@@ -442,6 +445,7 @@ class Flying(Creature):
             special,
             distantstrenght,
         )
+
 
 class Archer(Creature):
     "An creature attacking the hero from far away"
@@ -1378,7 +1382,6 @@ class Floor():
         if coord in self:
             self._mat[coord.ord][coord.abs] = self.randWall()
 
-
     def fillrectangle(self, c1: Coord, c2: Coord, thing=empty) -> None:
         "Fills a rectangle of Coords with a given object. For a list, the object will be chosen randomly"
         for i in range(c1.abs, c2.abs + 1):
@@ -1504,7 +1507,6 @@ class Floor():
         while not (n in collection):
             n -= 1
         return random.choice(collection[n])
-
 
     def moveAllMonsters(self) -> None:
         """Moves all creatures from the map, except the Hero."""
@@ -1635,12 +1637,6 @@ class Floor():
                                 or isinstance(self.get(self._creatures[i] + way5), Used)
                             ) and isinstance(way5, Coord):
                                 self.move(i, way5)
-
-                        """else: #si le monstre est trop loin du hero, il a 25%  de chance de faire un deplacement completement aleatoire)
-                            if random.randint(0,3)==0:
-                                rdway = Coord(random.randint(-1,1),random.randint(-1,1))
-                                if ((self._creatures[i]+rdway) in self and (self.get(self._creatures[i]+rdway) in self.listground or self.get(self._creatures[i]+rdway) in self.listgroundwet )  or isinstance(self.get(self._creatures[i]+rdway),Used)):
-                                    self.move(i,rdway)"""
 
     def checkCoord(self, coord) -> None:
         "Method to check if an object is a Coord in the Map. Raises errors."
