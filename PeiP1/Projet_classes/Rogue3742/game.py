@@ -95,7 +95,7 @@ class Coord():
         return len(self) >= other
 
     def __iter__(self):
-        for i in (self.abs,self.ord):
+        for i in (self.abs, self.ord):
             yield i
 
     def __hash__(self) -> int:
@@ -199,7 +199,7 @@ class Status():
 class Element():
     """Basic Element of the roguelike."""
 
-    def __init__(self, name, abbrv=None, transparent=False, f=False):
+    def __init__(self, name: str, abbrv: str = None, transparent: bool = False, f: bool = False):
         self.name = name
         self.transparent = transparent
         self.abbrv = name[0] if abbrv is None else abbrv
@@ -222,7 +222,7 @@ class Element():
             {self} can't meet {other} at distance {distant}""")
 
     def accord(self):
-        "returns {e name} if is_f else just { name} (for un accords)"
+        "returns {e name} if is_f else just { name} (pour les accords 'un'/'une')"
         return f"e {self.name}" if self.is_f else f" {self.name}"
 
 
@@ -253,11 +253,11 @@ class Creature(Element):
         vitesse: int = 1,
         level: int = 1,
         action: int = 0,
-        power:List[Status]=None,
-        special:Optional[Callable[["Creature"],None]]=None,
-        distantstrenght:int=0,
+        power: List[Status] = None,
+        special: Optional[Callable[["Creature"], None]] = None,
+        distantstrenght: int = 0,
     ):
-        super().__init__(self, name, abbrv, transparent=True)
+        super().__init__(self, name, abbrv)#,( transparent=True)
         self.hp = int(hp * (1.5 ** level))
         self.hpmax = self.hp
         self.level = level
@@ -425,9 +425,9 @@ class Flying(Creature):
         vitesse: int = 1,
         level: int = 1,
         action: int = 0,
-        power:List[Status]=None,
-        special:Optional[Callable[["Creature"],None]]=None,
-        distantstrenght:int=0,
+        power: List[Status] = None,
+        special: Optional[Callable[["Creature"], None]] = None,
+        distantstrenght: int = 0,
     ):
         super().__init__(
             name,
@@ -912,7 +912,6 @@ class Room():
         self.c1 = c1
         self.c2 = c2
 
-
     def __contains__(self, coord: Coord) -> bool:
         "Check if a Coord is in the Room"
         return self.c1.abs <= coord.abs <= self.c2.abs and self.c1.ord <= coord.ord <= self.c2.ord
@@ -971,7 +970,7 @@ class Room():
             coord = self.randCoord()
         return coord
 
-    def decorate(self, map : "Floor", seller=True) -> None:
+    def decorate(self, map: "Floor", seller=True) -> None:
         "Adds random elements in the Room in the Map"
         map.put(self.randEmptyCoord(map), theGame().randEquipment())
         map.put(self.randEmptyCoord(map), theGame().randMonster())
@@ -1104,14 +1103,15 @@ class Floor():
     listgrounds = listground+listgroundwet
     empty = " "
 
-    def __init__(self, number_floor=1, size:int=None, nbrooms=10, menage=True, coffre=None):
+    def __init__(self, number_floor=1, size: int = None, nbrooms=10, menage=True, coffre=None):
         self.nbrooms = nbrooms
         self.size = constants.SIZEMAP if size is None else size
         self.number_floor = number_floor
         self._rooms = []
         self._roomsToReach = []
         self.menage = menage
-        self._mat = [[self.empty for i in range(self.size)] for k in range(self.size)]
+        self._mat = [[self.empty for i in range(
+            self.size)] for k in range(self.size)]
         self._creatures = {}
         self._attacks = {}
         self.generateRooms(self.nbrooms)
@@ -1125,7 +1125,8 @@ class Floor():
         self.__len__ = (50, 50)
         self.put(self._rooms[0].center(), theGame().hero)
         for i in self._creatures.keys():
-            self._mat[self._creatures.get(i).ord][self._creatures.get(i).abs] = i.abbrv
+            self._mat[self._creatures.get(
+                i).ord][self._creatures.get(i).abs] = i.abbrv
         for r in self._rooms:
             print(self)
             k = r.randEmptyCoord(self)
@@ -1165,7 +1166,7 @@ class Floor():
 
     def containsmieux(self, c: Coord) -> bool:
         for val in c:
-            if val>self.size:
+            if val > self.size:
                 return False
         return True
 
@@ -1249,7 +1250,7 @@ class Floor():
         if type(object) is Coord:
             self.checkCoord(object)
             self._creatures = {key: val for key,
-                          val in self._creatures.items() if not val == object}
+                               val in self._creatures.items() if not val == object}
             self.groundize(object)
         else:
             self.groundize(self.pos(self._creatures.pop(object)))
@@ -1264,7 +1265,7 @@ class Floor():
             creature.facing = way
         if isinstance(creature, Hero):
             creature.abbrv = "@"
-        if coordarr in self or (self[coordarr] == self.empty and isinstance(creature,Flying)):
+        if coordarr in self or (self[coordarr] == self.empty and isinstance(creature, Flying)):
             if not coordarr in self._creatures.values() and (
                 self._mat[coordarr.ord][coordarr.abs] in Floor.listground
                 or self._mat[coordarr.ord][coordarr.abs] in Floor.listgroundwet
@@ -1361,7 +1362,7 @@ class Floor():
             theGame().addMessage(
                 f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {theGame().hero.mp}/10")
 
-    def wallline(self,c1:Coord,c2:Coord):
+    def wallline(self, c1: Coord, c2: Coord):
         """puts walls(using randwall) in the horizontal line between c1 and c2"""
         if c1.abs > c2.abs:
             c1, c2 = c2, c1
@@ -1372,7 +1373,7 @@ class Floor():
         "Returns a copy from an element of a dictionnary in the form {rarity<int> : List[Element],...}"
         x = random.expovariate(1 / self.number_floor)
         n = int(x)
-        collection=theGame().walls
+        collection = theGame().walls
         while not (n in collection):
             n -= 1
         return random.choice(collection[n])
@@ -1406,7 +1407,7 @@ class Floor():
             # self.fillrectangle(room.c1+Coord(-1, 1),
             #                    room.c2+Coord(1, 1), Floor.wall)
             self.fillrectangle(room.c1, room.c2, Floor.listground)
-            self.wallline(room.c1+Coord(0,-1), room.c2+Coord(0,-1))
+            self.wallline(room.c1+Coord(0, -1), room.c2+Coord(0, -1))
 
     def findRoom(self, coord: Coord) -> Any:
         "Finds the first Room of the map containing the Coord, returns False if none."
@@ -1503,7 +1504,7 @@ class Floor():
         "Returns a copy from an element of a dictionnary in the form {rarity<int> : List[Element],...}"
         x = random.expovariate(1 / self.number_floor)
         n = int(x)
-        collection=theGame().walls
+        collection = theGame().walls
         while not (n in collection):
             n -= 1
         return random.choice(collection[n])
@@ -1525,7 +1526,8 @@ class Floor():
                     for _ in range(i.vitesse):
                         if self._creatures[i].distance(self._creatures[theGame().hero]) <= 1 or (
                             (
-                                self._creatures[i].cosinus(self._creatures[theGame().hero])
+                                self._creatures[i].cosinus(
+                                    self._creatures[theGame().hero])
                                 == (1 / math.sqrt(2) or -1 / math.sqrt(2))
                             )
                             and self._creatures[i].distance(self._creatures[theGame().hero])
@@ -1536,10 +1538,12 @@ class Floor():
                             posmonstre = self.pos(i)
                             poshero = self.pos(theGame().hero)
                             new = posmonstre - poshero
-                            way1 = Coord(-utils.sign(new.abs), -utils.sign(new.ord))
+                            way1 = Coord(-utils.sign(new.abs), -
+                                         utils.sign(new.ord))
                             # diagonale 'imparfaite'
                             if ((way1.abs and way1.ord) != 0) and (
-                                self._creatures[i].cosinus(self._creatures[theGame().hero])
+                                self._creatures[i].cosinus(
+                                    self._creatures[theGame().hero])
                                 != (1 / math.sqrt(2) or -1 / math.sqrt(2))
                             ):
                                 way2 = self._creatures[i].direction(
@@ -1727,7 +1731,7 @@ class Game():
         \nPlease use theGame() to remain in the same game..."""
 
     _actions = {
-        "esc" : lambda _ : theGame().quit(),
+        "esc": lambda _: theGame().quit(),
         "z": lambda _: theGame().floor.move(theGame().hero, Coord(0, -1)),
         "a": lambda _: theGame().floor.move(theGame().hero, Coord(-1, -1)),
         "q": lambda _: theGame().floor.move(theGame().hero, Coord(-1, 0)),
@@ -1751,10 +1755,10 @@ class Game():
         "j": lambda _: theGame().hero.throw(theGame().select(theGame().hero.inventory)),
         "<Escape>": lambda _: theGame().fenetre.destroy,
     }
-    walls={0:["|1","|2"],1:["|3"],3:["|4"]}
+    walls = {0: ["|1", "|2"], 1: ["|3"], 3: ["|4"]}
     monsters = {
         0: [
-            Creature("Sad emotivo", 4, "G"),
+            # Creature("Sad emotivo", 4, "G"),
             Creature("Fear emotivo", 2, "W", vitesse=2),
         ],
         1: [
@@ -2017,7 +2021,7 @@ class Game():
             #             command=lambda z=i: theGame().hero.use(z),
             #         )
             #     )
-        for index,button in enumerate(self.buttons):
+        for index, button in enumerate(self.buttons):
             button.place(x=355, y=38 + 79 * index)
 
     def deselect(self):
@@ -2030,7 +2034,7 @@ class Game():
     def initgraph(self) -> None:
         "Creates the dictionary of images,and binds actions to the Tk window, then creates the mainloop."
         self.canvas.config(width=1000, height=800)
-        self.dicimages,self.dicanim,self.dicappear,self.dicequipement,self.dicinventory,self.dicinventoryM,self.dicseen,self.dicviewable,self.dicatk,self.dicemotion,self.dicother=images.get_dictionaries()
+        self.dicimages, self.dicanim, self.dicappear, self.dicequipement, self.dicinventory, self.dicinventoryM, self.dicseen, self.dicviewable, self.dicatk, self.dicemotion, self.dicother = images.get_dictionaries()
         self.seeMap()
         self.updategraph()
         [self.fenetre.bind(i, self.gameturn) for i in self._actions]
@@ -2256,9 +2260,9 @@ class Game():
 
         # minimap
         y = 500
-        for i1,i2 in zip(self.seenmap,self.viewablemap):
+        for i1, i2 in zip(self.seenmap, self.viewablemap):
             x = 800
-            for layers in zip(i1,i2):
+            for layers in zip(i1, i2):
                 for k in layers:
                     if k != Floor.empty:
                         self.canvas.create_image(
