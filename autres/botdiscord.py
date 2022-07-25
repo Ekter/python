@@ -8,14 +8,18 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from discord import Member
 from discord.ext import commands
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-urllib.request.URLopener.version = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
+# urllib.request.URLopener.version = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
+# urllib.request.URLopener.addheader('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
+# load_dotenv("../../globals.env")
 
-load_dotenv("../../globals.env")
-with open("../../globals.env", "r") as f:
-    TOKEN = f.readline()
-TOKEN = os.getenv("DISCORD_TOKEN")
+try:
+    with open("../../globals.env", "r") as f:
+        TOKEN = f.readline()
+    TOKEN = os.getenv("DISCORD_TOKEN")
+except:
+    TOKEN="NjkwNjMwMTE4ODc1MzMyNjcw.GKPcfT.PIVou2UtZnVgBumBCn67USkbM2XPzUIMHN-iss" #svp le copiez pas j'ai la flemme de le lire bien et dotenv marche pas
 RESPONSES = [
     "PLIK37",
     "#Évangile n°1 : Plik a raison",
@@ -199,27 +203,24 @@ async def rainbow(ctx: commands.Context,name_member:Member=None):
 
 @bot.command(name="manga", help="affiche une page précise d'un manga")
 async def manga(ctx: commands.Context, manga: str="one-piece",chapter:int=1, page: int = 1):
-    # print(f'{host}{manga}/chapters/{chapter}/0{page}.png')
-    # print(f'{host}{manga}/chapters/{chapter}/vfr/0{page}.jpg')
-    # await ctx.send("Essai 1:")
-    # await ctx.send(f'{host}{manga}/chapters/{chapter}/0{page}.png')
-    # await ctx.send("Essai 2:")
-    # await ctx.send(f'{host}{manga}/chapters/{chapter}/vfr/0{page}.jpg')
     url = f"http://www.scan-fr.cc/manga/{manga}/{chapter}/{page}"
     print(url)
-    with urllib.request.urlopen(url) as response:
-        webpage = response.read()
-        soup = BeautifulSoup(webpage, 'html.parser')
-        page = soup.find("img", {"class": "img-responsive scan-page"})
-        print(page)
-        res=page.get("src").strip().replace(" ", "%20")
-        await ctx.send(res)
+    try:
+        with urllib.request.urlopen(url) as response:
+            webpage = response.read()
+            soup = BeautifulSoup(webpage, 'html.parser')
+            img = soup.find("img", {"class": "img-responsive scan-page"})
+            print(img)
+            res=img.get("src").strip().replace(" ", "%20")
+            await ctx.send(res)
+    except Exception as e:
+        await ctx.send(f"ça n'a pas marché pour {manga} {chapter} {page}, report svp avec report_manga pour que je puisse l'améliorer")
 
-@bot.command(name="report_manga", help="affiche une page précise d'un manga",aliases=["report"])
+@bot.command(name="report_manga", help="report une page précise d'un manga",aliases=["report"])
 async def report(ctx: commands.Context, manga: str="one-piece",chapter:int=1, page: int = 1):
     url = f"http://www.scan-fr.cc/manga/{manga}/{chapter}/{page}"
     print(url)
-    await ctx.send(f"url: {url} a été report, merci") 
+    await ctx.send(f"url: {url} a été report, merci")
 
 
 
