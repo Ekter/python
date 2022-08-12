@@ -208,6 +208,7 @@ class Element():
         else:
             self.abbrv = abbrv
         self.is_f = f
+        del self
 
     def __repr__(self) -> str:
         return self.abbrv
