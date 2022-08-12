@@ -6,11 +6,13 @@ from typing import List, Tuple, Union
 
 import cv2 as cv
 import numpy as np
+from sympy import Triangle
+
 
 
 class Coord2():
     """Vec2D object, created by rectangular or polar coordinates"""
-
+    PREC=0.001
     def __init__(self, abscisse: float, ordonnee: float, angle=False):
         if not angle:
             self.abs = abscisse
@@ -23,11 +25,12 @@ class Coord2():
         return "<" + str(self.abs) + "," + str(self.ord) + ">"
 
     def __eq__(self, other: "Coord2") -> bool:
-        return (
-            self.abs == other.abs and self.ord == other.ord
-            if isinstance(other, Coord2)
-            else len(self) == other
-        )
+        return self.distance(other)<Coord2.PREC
+        # return (
+        #     self.abs == other.abs and self.ord == other.ord
+        #     if isinstance(other, Coord2)
+        #     else len(self) == other
+        # )
 
     def __ne__(self, other: "Coord2") -> bool:
         return not self == other
@@ -133,7 +136,10 @@ class Coord2():
 
 class Segment2(Coord2):
     """A segment is a line between two points"""
-    PREC=0.01
+    PREC=0.00001
+    MAX_COORD=1000
+    MIN_COORD=-1000
+    nb_under=0
 
     def __init__(self, point1: Coord2, point2: Coord2):
         if point1.abs==point2.abs:
@@ -181,20 +187,23 @@ class Segment2(Coord2):
         return self.point1.distance(self.point2)
 
     def under(self, point: Coord2) -> bool:
+        Segment2.nb_under+=1
         return self.function(point.abs) <= point.ord
 
-    def intersect(self,other:"Segment2",xmin=-1000,xmax=1000,temp=None) -> Tuple(Union[Coord2,None],bool):
+
+    def intersect(self,other:"Segment2",xmin=MIN_COORD,xmax=MAX_COORD,first:bool=None) -> Tuple[Coord2,bool]:
+        milieu=(xmin+xmax)/2
         if xmax-xmin<Segment2.PREC:
-            return Coord2((xmin+xmax)/2,self.function((xmin+xmax)/2))
-        if temp is None:
-            if self.under(Coord2((xmin,self.function(xmin))))==self.under(Coord2((xmax,self.function(xmax)))):
-                
-        if self.under(Coord2((xmin+xmax)/2,self.function((xmin+xmax)/2))):
-            return self.intersect(other,)
-        if int(self.under(other.point1))+int(self.under(other.point2))==1 and int(other.under(self.point1))+int(other.under(self.point2)):
-            return Coord2(0,0)
+            return (Coord2(milieu,self.function(milieu)),True)
+        if first is None:
+            if self.under(Coord2(xmin,other.function(xmin)))==self.under(Coord2(xmax,other.function(xmax))):
+                return (Coord2(milieu,self.function(milieu)),False)
+            else:
+                return self.intersect(other,min([self.point1.abs,self.point2.abs,other.point1.abs,other.point2.abs]),max([self.point1.abs,self.point2.abs,other.point1.abs,other.point2.abs]),False)
+        if self.under(Coord2(milieu,other.function(milieu)))==self.under(Coord2(xmin,other.function(xmin))):
+            return self.intersect(other,milieu,xmax,False)
         else:
-            return None
+            return self.intersect(other,xmin,milieu,False)
 
 
 class Triangle2():
@@ -336,9 +345,9 @@ if __name__ == "__main__":
 
     print(p1 in tri)
 
-    sizemax = 100
-    sizetri = 100
-    num = 50
+    sizemax = 10
+    sizetri = 10
+    num = 5
     num2=10
     delay = 0.05
     tott = 0
@@ -371,3 +380,14 @@ if __name__ == "__main__":
         tott += (time.time()-t)/num  # t-num*delay
     print(tott/num2)
     print(time.time()-ttot)
+    print(Segment2.nb_under)
+    ttot = time.time()
+    for _ in range(1000):
+        triangleeee=Triangle2.randomTriangle()
+        l=triangleeee.segments()
+        if l[1].intersect(l[2])[0] in triangleeee.points():
+            print(True)
+        else:
+            print(triangleeee)
+    print(Segment2.nb_under)
+    print(time.time()-ttot,(time.time()-ttot)/1000)
