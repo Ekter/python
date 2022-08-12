@@ -197,7 +197,7 @@ class Status():
 
 
 class Element():
-    """Basic Element of the roguelike."""
+    """Basic Element of the roguelike. Childs must implement meet(Creature)."""
 
     def __init__(self, name: str, abbrv: str = None, transparent: bool = False, f: bool = False):
         self.name = name
