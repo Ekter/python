@@ -15,11 +15,11 @@ from discord.ext import commands
 # load_dotenv("../../globals.env")
 
 try:
-    with open("../../globals.env", "r") as f:
+    with open("../../token.txt", "r") as f:
         TOKEN = f.readline()
-    TOKEN = os.getenv("DISCORD_TOKEN")
+    # TOKEN = os.getenv("DISCORD_TOKEN")
 except:
-    TOKEN="NjkwNjMwMTE4ODc1MzMyNjcw.GKPcfT.PIVou2UtZnVgBumBCn67USkbM2XPzUIMHN-iss" #svp le copiez pas j'ai la flemme de le lire bien et dotenv marche pas
+    pass
 RESPONSES = [
     "PLIK37",
     "#Évangile n°1 : Plik a raison",
