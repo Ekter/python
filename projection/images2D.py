@@ -12,7 +12,8 @@ from sympy import Triangle
 
 class Coord2():
     """Vec2D object, created by rectangular or polar coordinates"""
-    PREC=0.001
+    # PREC=
+    PREC=0.000001
     def __init__(self, abscisse: float, ordonnee: float, angle=False):
         if not angle:
             self.abs = abscisse
@@ -136,7 +137,8 @@ class Coord2():
 
 class Segment2(Coord2):
     """A segment is a line between two points"""
-    PREC=0.00001
+    PREC=0.00000001
+    # PREC=1
     MAX_COORD=1000
     MIN_COORD=-1000
     nb_under=0
@@ -213,10 +215,10 @@ class Triangle2():
         self.point1 = point1
         self.point2 = point2
         self.point3 = point3
-        self.rangex = range(min(self.point1.abs, self.point2.abs, self.point3.abs), max(
-            self.point1.abs, self.point2.abs, self.point3.abs))
-        self.rangey = range(min(self.point1.ord, self.point2.ord, self.point3.ord), max(
-            self.point1.ord, self.point2.ord, self.point3.ord))
+        self.rangex = range(int(min(self.point1.abs, self.point2.abs, self.point3.abs)), int(max(
+            self.point1.abs, self.point2.abs, self.point3.abs)))
+        self.rangey = range(int(min(self.point1.ord, self.point2.ord, self.point3.ord)), int(max(
+            self.point1.ord, self.point2.ord, self.point3.ord)))
 
     def __repr__(self) -> str:
         return "Triangle[" + str(self.point1) + "," + str(self.point2) + "," + str(self.point3) + "]"
@@ -312,26 +314,25 @@ class Triangle2():
 
         return matrice
 
-    def drawpoints(self, col=(255, 0, 0), mat=None):
-        matrice = [[(0, 0, 0) for _ in range(500)]
-                   for _ in range(500)] if mat is None else mat.copy()
-        for point in self.points:
+    def drawpoints(self, col=(255, 0, 0), mat=None,size=500):
+        matrice = [[(0, 0, 0) for _ in range(size)]
+                   for _ in range(size)] if mat is None else mat.copy()
+        for point in self.points():
             for i in range(-2, 3, 1):
                 try:
-                    matrice[point.abs+i][point.ord] = col
-                except:
+                    matrice[int(point.abs+i)][int(point.ord)] = col
+                except IndexError:
                     print("limite")
                 try:
-                    matrice[point.abs][point.ord+i] = col
-                except:
+                    matrice[int(point.abs)][int(point.ord+i)] = col
+                except IndexError:
                     print("limite")
             try:
-                matrice[point.abs][point.ord] = col
-            except:
+                matrice[int(point.abs)][int(point.ord)] = col
+            except IndexError:
                 print("limite")
         return matrice
 
-print(type(Triangle2.randomTriangle))
 if __name__ == "__main__":
     p1 = Coord2(10, 10)
     print(p1)
@@ -344,9 +345,23 @@ if __name__ == "__main__":
     print(tri.rangex)
 
     print(p1 in tri)
-
-    sizemax = 10
-    sizetri = 10
+    """
+    ttot = time.time()
+    for j in range(num2):
+        t = time.time()
+        for _ in range(num):
+            ar = np.array(Triangle2.randomTriangle(
+                sizetri, sizetri).draw_shaders(sizemax, sizemax))
+            cv.imwrite(f"triangle.png", ar)
+            time.sleep(delay)
+            matrice = [[(0, 0, 0) for _ in range(sizemax)]
+                       for _ in range(sizemax)]
+            b = np.array(matrice)
+        tott += (time.time()-t)/num  # t-num*delay
+    print(tott/num2)
+    print(time.time()-ttot)
+    sizemax = 100
+    sizetri = 100
     num = 5
     num2=10
     delay = 0.05
@@ -365,7 +380,7 @@ if __name__ == "__main__":
         tott += (time.time()-t)/num  # t-num*delay
     print(tott/num2)
     print(time.time()-ttot)
-
+    
     ttot = time.time()
     for j in range(num2):
         t = time.time()
@@ -379,15 +394,22 @@ if __name__ == "__main__":
             b = np.array(matrice)
         tott += (time.time()-t)/num  # t-num*delay
     print(tott/num2)
-    print(time.time()-ttot)
+    print(time.time()-ttot)"""
     print(Segment2.nb_under)
     ttot = time.time()
-    for _ in range(1000):
+    count=0
+    for _ in range(100):
         triangleeee=Triangle2.randomTriangle()
         l=triangleeee.segments()
-        if l[1].intersect(l[2])[0] in triangleeee.points():
-            print(True)
+        c=l[1].intersect(l[2])[0]
+        if c in triangleeee.points():
+            count+=1
         else:
             print(triangleeee)
+            # ar = np.array(triangleeee.drawpoints(mat=np.array(triangleeee.draw(1000, 1000))))
+            # print(c)
+            # ar[max(0,min(int(c.abs),999))][max(0,min(int(c.ord),999))]=(255,255,0)
+            # cv.imwrite(f"triangle.png", ar)
+    print(count/100)
     print(Segment2.nb_under)
-    print(time.time()-ttot,(time.time()-ttot)/1000)
+    print(time.time()-ttot,(time.time()-ttot)/100)
