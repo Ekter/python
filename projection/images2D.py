@@ -6,6 +6,7 @@ from typing import List, Tuple, Union
 
 import cv2 as cv
 import numpy as np
+from sklearn.feature_selection import SelectorMixin
 from sympy import Triangle
 
 
@@ -133,23 +134,39 @@ class Coord2():
     @staticmethod
     def randomCoord2(x: int = 1000, y: int = 1000):
         return Coord2(random.randint(0, x), random.randint(0, y))
+    
+    def copy(self):
+        return Coord2(self.abs, self.ord)
 
 
 class Segment2(Coord2):
     """A segment is a line between two points"""
-    PREC=0.00000001
+    PREC=1
     # PREC=1
     MAX_COORD=1000
     MIN_COORD=-1000
     nb_under=0
 
     def __init__(self, point1: Coord2, point2: Coord2):
-        if point1.abs==point2.abs:
-            point2.abs+=0.000001
         self.point1 = point1
         self.point2 = point2
-        self.coeff = (point2.ord-point1.ord)/(point2.abs-point1.abs)
-        self.function = lambda x: self.coeff*x+point1.ord-self.coeff*point1.abs
+        casse=2
+        self.rangex=range(int(min(point1.abs,point2.abs)),int(max(point1.abs,point2.abs)))
+        self.rangey=range(int(min(point1.ord,point2.ord)),int(max(point1.ord,point2.ord)))
+        if point1.abs==point2.abs:
+            def function_under(c:Coord2)->float:
+                return c.abs-self.point1.abs
+            def function_position(c:Coord2)->Coord2:
+                return Coord2(self.point1.abs,c.ord)
+        else:
+            coeff = (point2.ord-point1.ord)/(point2.abs-point1.abs)
+            def function_under(c:Coord2)->float:
+                return coeff*c.abs+self.point1.ord-coeff*self.point1.abs
+            function_position=function_under
+        self.function=function_under
+        self.position=function_position
+        # self.function = lambda x: self.coeff*x+point1.ord-self.coeff*point1.abs
+        # self.function= lambda x : point1.abs/(1-1)
 
     def __repr__(self) -> str:
         return "Segment2(" + str(self.point1) + "," + str(self.point2) + ")"
@@ -160,6 +177,14 @@ class Segment2(Coord2):
             if isinstance(other, Segment2)
             else False
         )
+
+    def __iter__(self):
+        l=self.len_()
+        for i in range(0,int(l)+1):
+            yield self[i/l]
+
+    def __getitem__(self, key:float) -> Coord2:
+        return self.point1+(self.point2-self.point1)*key
 
     def __ne__(self, other: "Segment2") -> bool:
         return not self == other
@@ -185,16 +210,15 @@ class Segment2(Coord2):
     def __abs__(self):
         return Segment2(abs(self.point1), abs(self.point2))
 
-    def __len__(self) -> float:
+    def len_(self) -> float:
         return self.point1.distance(self.point2)
 
     def under(self, point: Coord2) -> bool:
-        Segment2.nb_under+=1
-        return self.function(point.abs) <= point.ord
+        return self.function(point) <= point.ord
 
 
     def intersect(self,other:"Segment2",xmin=MIN_COORD,xmax=MAX_COORD,first:bool=None) -> Tuple[Coord2,bool]:
-        milieu=(xmin+xmax)/2
+        milieu=(xmin+xmax)/2#TODO switch to %
         if xmax-xmin<Segment2.PREC:
             return (Coord2(milieu,self.function(milieu)),True)
         if first is None:
@@ -311,10 +335,9 @@ class Triangle2():
                 a4, b4, c4 = matrice[i][j+1] if j+1<heigth else (0,0,0)
                 a5, b5, c5 = matrice[i][j]
                 mat2[i][j]=[(a1*0.1+a2*0.1+a3*0.2+a4*0.2+a5*0.4),(b1*0.1+b2*0.1+b3*0.2+b4*0.2+b5*0.4),(c1*0.1+c2*0.1+c3*0.2+c4*0.2+c5*0.4)]
-
         return matrice
 
-    def drawpoints(self, col=(255, 0, 0), mat=None,size=500):
+    def draw_points(self, col=(255, 0, 0), mat=None,size=500):
         matrice = [[(0, 0, 0) for _ in range(size)]
                    for _ in range(size)] if mat is None else mat.copy()
         for point in self.points():
@@ -331,6 +354,14 @@ class Triangle2():
                 matrice[int(point.abs)][int(point.ord)] = col
             except IndexError:
                 print("limite")
+        return matrice
+
+    def draw_segments(self, length: int, heigth: int, col=(255, 255, 255), mat=None):
+        matrice = [[(0, 0, 0) for _ in range(length)]
+                   for _ in range(heigth)] if mat is None else mat.copy()
+        for segment in self.segments():
+            for point in segment:
+                matrice[int(point.abs)][int(point.ord)] = col
         return matrice
 
 if __name__ == "__main__":
