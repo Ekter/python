@@ -323,7 +323,7 @@ class Triangle2():
                    for _ in range(heigth)] if mat is None else mat.copy()
         for i in self.rangex:
             for j in self.rangey:
-                a, b, c = matrice[i][j]
+                a, b, c = matrice[i][j] #comment
                 if Coord2(i, j) in self:
                     matrice[i][j] = col
         mat2=matrice.copy()
