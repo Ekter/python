@@ -1,4 +1,5 @@
 from time import time
+
 t_timeeee=time()
 from random import randint
 from typing import Union
@@ -7,8 +8,10 @@ import cv2 as cv
 import numpy as np
 
 from images2D import Coord2,Triangle2
+from image import Image
 print(f"imports: {time()-t_timeeee:.4f}s")
 t_timeeee=time()
+
 class Coord3():
     def __init__(self, abs, ord, hei) -> None:
         self.abs = abs
@@ -21,7 +24,7 @@ class Coord3():
     def __eq__(self, __o: "Coord3") -> bool:
         return self.abs == __o.abs and self.ord == __o.abs and self.hei == __o.hei
 
-    def __ne__(self, __o: object) -> bool:
+    def __ne__(self, __o: "Coord3") -> bool:
         return not(self == __o)
 
     def __len__(self):
@@ -36,7 +39,7 @@ class Coord3():
     def __sub__(self, __o: "Coord3") -> "Coord3":
         return Coord3(self.abs-__o.abs, self.ord-__o.ord, self.hei-__o.hei)
 
-    def __mul__(self, k: int) -> "Coord3":
+    def __mul__(self, k: float) -> "Coord3":
         return Coord3(self.abs*k, self.ord*k, self.hei*k)
 
 print(f"Coord3: {time()-t_timeeee:.4f}s")
@@ -75,9 +78,7 @@ class Triangle3():
     def __neg__(self):
         return Triangle3(-self.point1, -self.point2, -self.point3)
 
-    def __mul__(self, other: "int"):
-        if isinstance(other, Triangle3):
-            return Triangle3(self.point1 * other.point1, self.point2 * other.point2, self.point3 * other.point3)
+    def __mul__(self, other: float):
         return Triangle3(self.point1 * other, self.point2 * other, self.point3 * other)
 
     def __sub__(self, other: "Triangle3"):
@@ -97,10 +98,10 @@ class Plan():
         #    => z=(abs*x+ord*y+const)/hei
         self.point=Coord3(x,y,z)
         self.cst=const
-        self.project=lambda c: Coord2(c.abs+0.7*c.hei+50,c.ord-0.3*c.hei+50) #example
+        self.project=lambda c: Coord2(10*c.abs+1*c.ord+8*c.hei+50,10*c.ord+3*c.hei+50) #example
 
     def __contains__(self,c:Union[Coord3,Coord2]):
-        return math.abs(self.relation(c))<=Plan.EP if type(c) is Coord3 else math.abs(self.relation(Coord3(c.abs,c.ord,0)))<=Plan.EP
+        return abs(self.relation(c))<=Plan.PREC if type(c) is Coord3 else abs(self.relation(Coord3(c.abs,c.ord,0)))<=Plan.PREC
 
     def project_Coord3(self,c:Coord3) -> Coord2:
         return self.project(c)
@@ -116,18 +117,31 @@ if __name__=="__main__":
     p=Plan(1,1,1,0)
     origine=Coord3(0,0,0)
     list_triangles3=[
-    Triangle3(Coord3(100,0,0),Coord3(100,100,0), Coord3(0,100,0)),
-    Triangle3(origine,Coord3(100,0,0),Coord3(0,100,0)),
-    Triangle3(Coord3(100,100,0),Coord3(0,100,0),Coord3(100,100,100)),
-    Triangle3(Coord3(0,100,100),Coord3(0,100,0),Coord3(100,100,100)),
-    Triangle3(Coord3(0,100,100),Coord3(0,100,0),origine),
-    Triangle3(Coord3(0,100,100),Coord3(0,0,100),origine),
-    Triangle3(Coord3(0,0,100),Coord3(100,0,0),origine),
-    Triangle3(Coord3(0,0,100),Coord3(100,0,0),Coord3(100,0,100)),
-    Triangle3(Coord3(100,100,0),Coord3(100,0,0),Coord3(100,0,100)),
-    Triangle3(Coord3(100,100,0),Coord3(100,100,100),Coord3(100,0,100)),
-    Triangle3(Coord3(100,0,100),Coord3(100,100,100),Coord3(0,0,100)),
-    Triangle3(Coord3(0,100,100),Coord3(100,100,100),Coord3(0,0,100)),
+    Triangle3(Coord3(10,0,0),Coord3(10,10,0), Coord3(0,10,0)),
+    Triangle3(origine,Coord3(10,0,0),Coord3(0,10,0)),
+    Triangle3(Coord3(10,10,0),Coord3(0,10,0),Coord3(10,10,10)),
+    Triangle3(Coord3(0,10,10),Coord3(0,10,0),Coord3(10,10,10)),
+    Triangle3(Coord3(0,10,10),Coord3(0,10,0),origine),
+    Triangle3(Coord3(0,10,10),Coord3(0,0,10),origine),
+    Triangle3(Coord3(0,0,10),Coord3(10,0,0),origine),
+    Triangle3(Coord3(0,0,10),Coord3(10,0,0),Coord3(10,0,10)),
+    Triangle3(Coord3(10,10,0),Coord3(10,0,0),Coord3(10,0,10)),
+    Triangle3(Coord3(10,10,0),Coord3(10,10,10),Coord3(10,0,10)),
+    Triangle3(Coord3(10,0,10),Coord3(10,10,10),Coord3(0,0,10)),
+    Triangle3(Coord3(0,10,10),Coord3(10,10,10),Coord3(0,0,10)),
+
+    Triangle3(Coord3(22,0,0),Coord3(22,10,0), Coord3(12,10,0)),
+    Triangle3(Coord3(12,0,0),Coord3(22,0,0),Coord3(12,10,0)),
+    Triangle3(Coord3(22,10,0),Coord3(12,10,0),Coord3(22,10,10)),
+    Triangle3(Coord3(12,10,10),Coord3(12,10,0),Coord3(22,10,10)),
+    Triangle3(Coord3(12,10,10),Coord3(12,10,0),Coord3(12,0,0)),
+    Triangle3(Coord3(12,10,10),Coord3(12,0,10),Coord3(12,0,0)),
+    Triangle3(Coord3(12,0,10),Coord3(22,0,0),Coord3(12,0,0)),
+    Triangle3(Coord3(12,0,10),Coord3(22,0,0),Coord3(22,0,10)),
+    Triangle3(Coord3(22,10,0),Coord3(22,0,0),Coord3(22,0,10)),
+    Triangle3(Coord3(22,10,0),Coord3(22,10,10),Coord3(22,0,10)),
+    Triangle3(Coord3(22,0,10),Coord3(22,10,10),Coord3(12,0,10)),
+    Triangle3(Coord3(12,10,10),Coord3(22,10,10),Coord3(12,0,10)),
     ]
     origine=Coord3(0,10,0)
     print(f"main: triangles3:{time()-t_timeeee:.4f}s")
@@ -135,17 +149,27 @@ if __name__=="__main__":
     list_triangles2=[p.project_Triangle3(t3) for t3 in list_triangles3]
     print(f"main: triangles2:{time()-t_timeeee:.4f}s")
     t_timeeee=time()
-    ar=np.array(list_triangles2[0].draw(300,300,(0,0,0)))
+    img=Image(300,400)
+    print(f"main: creation img:{time()-t_timeeee:.4f}s")
+    tttt=time()
+    timeee1=0
+    timeee2=0
+    timeee3=0
     for t2 in list_triangles2:
-        ar+=np.array(t2.draw(300,300,(60,60,60)))
-        # ar+=np.array(t2.draw_points(size=300))
-        # ar+=np.array(t2.draw_segments(300,300,col=(0,0,255)))
-    print(f"main: draw:{time()-t_timeeee:.4f}s")
+        t2.draw_better(img,(255,255,255))
+        timeee1+=time()-t_timeeee
+        t_timeeee=time()
+        t2.draw_points(img)
+        timeee2+=time()-t_timeeee
+        t_timeeee=time()
+        t2.draw_segments(img,col=(0,0,255))
+        timeee3+=time()-t_timeeee
+        t_timeeee=time()
+    print(f"main: draw:{timeee1:.4f}s")
+    print(f"main: draw_points:{timeee2:.4f}s")
+    print(f"main: draw_segments:{timeee3:.4f}s")
+    print(f"main: draw_total:{time()-tttt:.4f}s")
     t_timeeee=time()
-    # t2=p.project_Triangle3(t3)
-    # t2_=p.project_Triangle3(t3_)
-    # ar=np.array(t2.draw(200,200,(255,0,0)))
-    # ar+=np.array(t2_.draw(200,200,(0,255,0)))
-    cv.imwrite(f"triangle.png", ar)
+    img.to_image("triangle.png")
     print(f"main: write:{time()-t_timeeee:.4f}s")
     print("main: fin")

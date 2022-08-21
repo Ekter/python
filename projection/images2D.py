@@ -2,12 +2,14 @@
 import math
 import random
 import time
-from typing import List, Tuple, Union
+from typing import Iterable, List, Tuple, Union
 
 import cv2 as cv
 import numpy as np
 from sklearn.feature_selection import SelectorMixin
 from sympy import Triangle
+
+from image import Image
 
 
 
@@ -28,11 +30,6 @@ class Coord2():
 
     def __eq__(self, other: "Coord2") -> bool:
         return self.distance(other)<Coord2.PREC
-        # return (
-        #     self.abs == other.abs and self.ord == other.ord
-        #     if isinstance(other, Coord2)
-        #     else len(self) == other
-        # )
 
     def __ne__(self, other: "Coord2") -> bool:
         return not self == other
@@ -45,9 +42,7 @@ class Coord2():
     def __neg__(self):
         return Coord2(-self.abs, -self.ord)
 
-    def __mul__(self, other: "Coord2"):
-        if isinstance(other, Coord2):
-            return Coord2(self.abs * other.abs, self.ord * other.ord)
+    def __mul__(self, other: float):
         return Coord2(self.abs * other, self.ord * other)
 
     def __sub__(self, other: "Coord2"):
@@ -58,14 +53,10 @@ class Coord2():
     def __abs__(self):
         return Coord2(abs(self.abs), abs(self.ord))
 
-    def __floordiv__(self, other: "Coord2"):
-        if isinstance(other, Coord2):
-            return Coord2(self.abs / other.abs, self.ord / other.ord)
+    def __floordiv__(self, other: int):
         return Coord2(self.abs / other, self.ord / other)
 
-    def __truediv__(self, other: "Coord2"):
-        if isinstance(other, Coord2):
-            return Coord2(self.abs / other.abs, self.ord / other.ord)
+    def __truediv__(self, other: int):
         return Coord2(self.abs / other, self.ord / other)
 
     def __len__(self) -> float:
@@ -162,7 +153,9 @@ class Segment2(Coord2):
             coeff = (point2.ord-point1.ord)/(point2.abs-point1.abs)
             def function_under(c:Coord2)->float:
                 return coeff*c.abs+self.point1.ord-coeff*self.point1.abs
-            function_position=function_under
+            # function_position=function_under
+            def function_position(c:Coord2)->Coord2:
+                return Coord2(c.abs,coeff*c.abs+self.point1.ord-coeff*self.point1.abs)
         self.function=function_under
         self.position=function_position
         # self.function = lambda x: self.coeff*x+point1.ord-self.coeff*point1.abs
@@ -180,6 +173,8 @@ class Segment2(Coord2):
 
     def __iter__(self):
         l=self.len_()
+        if l==0:
+            return self.point1
         for i in range(0,int(l)+1):
             yield self[i/l]
 
@@ -198,8 +193,6 @@ class Segment2(Coord2):
         return Segment2(-self.point1, -self.point2)
 
     def __mul__(self, other: float):
-        if isinstance(other, Segment2):
-            return Segment2(self.point1 * other.point1, self.point2 * other.point2)
         return Segment2(self.point1 * other, self.point2 * other)
 
     def __sub__(self, other: "Segment2"):
@@ -216,17 +209,25 @@ class Segment2(Coord2):
     def under(self, point: Coord2) -> bool:
         return self.function(point) <= point.ord
 
+    # def first_half(self) -> "Segment2":
+    #     return Segment2(self.point1, self.point1 + (self.point2 - self.point1) / 2)
 
-    def intersect(self,other:"Segment2",xmin=MIN_COORD,xmax=MAX_COORD,first:bool=None) -> Tuple[Coord2,bool]:
+    # def second_half(self) -> "Segment2":
+    #     return Segment2(self.point1 + (self.point2 - self.point1) / 2, self.point2)
+
+    def intersect(self,other:"Segment2",xmin:float=MIN_COORD,xmax:float=MAX_COORD,first:bool=False) -> Tuple[Coord2,bool]:
         milieu=(xmin+xmax)/2#TODO switch to %
+        point_milieu=self[(milieu-self.point1.abs)/(self.point2.abs-self.point1.abs)]
+        point_min=self[(xmin-self.point1.abs)/(self.point2.abs-self.point1.abs)]
+        point_max=self[(xmax-self.point1.abs)/(self.point2.abs-self.point1.abs)]
         if xmax-xmin<Segment2.PREC:
-            return (Coord2(milieu,self.function(milieu)),True)
+            return (Coord2(milieu,self.function(point_milieu)),True)
         if first is None:
-            if self.under(Coord2(xmin,other.function(xmin)))==self.under(Coord2(xmax,other.function(xmax))):
-                return (Coord2(milieu,self.function(milieu)),False)
+            if self.under(Coord2(xmin,other.function(point_min)))==self.under(Coord2(xmax,other.function(point_max))):
+                return (Coord2(milieu,self.function(point_milieu)),False)
             else:
                 return self.intersect(other,min([self.point1.abs,self.point2.abs,other.point1.abs,other.point2.abs]),max([self.point1.abs,self.point2.abs,other.point1.abs,other.point2.abs]),False)
-        if self.under(Coord2(milieu,other.function(milieu)))==self.under(Coord2(xmin,other.function(xmin))):
+        if self.under(Coord2(milieu,other.function(point_milieu)))==self.under(Coord2(xmin,other.function(point_min))):
             return self.intersect(other,milieu,xmax,False)
         else:
             return self.intersect(other,xmin,milieu,False)
@@ -272,8 +273,6 @@ class Triangle2():
         return Triangle2(-self.point1, -self.point2, -self.point3)
 
     def __mul__(self, other: float):
-        if isinstance(other, Triangle2):
-            return Triangle2(self.point1 * other.point1, self.point2 * other.point2, self.point3 * other.point3)
         return Triangle2(self.point1 * other, self.point2 * other, self.point3 * other)
 
     def __sub__(self, other: "Triangle2"):
@@ -293,7 +292,7 @@ class Triangle2():
         "Returns the three points of the triangle"
         return [self.point3, self.point1, self.point2]
 
-    def enumerate(self) -> Tuple[Segment2, Coord2]:
+    def enumerate(self) -> Iterable[Tuple[Segment2, Coord2]]:
         "Yields the three points of the triangle, with their segments"
         yield (Segment2(self.point1, self.point2), self.point3)
         yield (Segment2(self.point2, self.point3), self.point1)
@@ -304,23 +303,24 @@ class Triangle2():
         # and min(self.point1.abs,self.point2.abs,self.point3.abs)<=point.abs<=max(self.point1.abs,self.point2.abs,self.point3.abs)
         return sum([segment.under(point) == segment.under(pointtri) for segment, pointtri in self.enumerate()]) == 3
 
+    def __iter__(self):
+        for _point1, _point2 in zip(Segment2(self.point1, self.point2),Segment2(self.point1,self.point3)):
+            for point in Segment2(_point1, _point2):
+                yield point
+
     @staticmethod
     def randomTriangle(x: int = 1000, y: int = 1000):
         return Triangle2(Coord2.randomCoord2(x, y), Coord2.randomCoord2(x, y), Coord2.randomCoord2(x, y))
 
-    def draw(self, length: int, heigth: int, col=(255, 255, 255), mat=None):
-        matrice = [[(0, 0, 0) for _ in range(length)]
-                   for _ in range(length)] if mat is None else mat.copy()
+    def draw(self, img:Image, col=(255, 255, 255)):
         for i in self.rangex:
             for j in self.rangey:
-                a, b, c = matrice[i][j]
                 if Coord2(i, j) in self:
-                    matrice[i][j] = col
-        return matrice
+                    img[Coord2(i,j)] = col
 
-    def draw_shaders(self, length: int, heigth: int, col=(255, 255, 255), mat=None):
+    def draw_shaders(self, length: int=500, heigth: int=500, col=(255, 255, 255)):
         matrice = [[(0, 0, 0) for _ in range(length)]
-                   for _ in range(heigth)] if mat is None else mat.copy()
+                   for _ in range(heigth)]
         for i in self.rangex:
             for j in self.rangey:
                 a, b, c = matrice[i][j] #comment
@@ -337,32 +337,30 @@ class Triangle2():
                 mat2[i][j]=[(a1*0.1+a2*0.1+a3*0.2+a4*0.2+a5*0.4),(b1*0.1+b2*0.1+b3*0.2+b4*0.2+b5*0.4),(c1*0.1+c2*0.1+c3*0.2+c4*0.2+c5*0.4)]
         return matrice
 
-    def draw_points(self, col=(255, 0, 0), mat=None,size=500):
-        matrice = [[(0, 0, 0) for _ in range(size)]
-                   for _ in range(size)] if mat is None else mat.copy()
+    def draw_points(self,img:Image, col=(255, 0, 0)):
         for point in self.points():
             for i in range(-2, 3, 1):
                 try:
-                    matrice[int(point.abs+i)][int(point.ord)] = col
+                    img[point+Coord2(i,0)] = col
                 except IndexError:
                     print("limite")
                 try:
-                    matrice[int(point.abs)][int(point.ord+i)] = col
+                    img[point+Coord2(0,i)] = col
                 except IndexError:
                     print("limite")
             try:
-                matrice[int(point.abs)][int(point.ord)] = col
+                img[point] = col
             except IndexError:
                 print("limite")
-        return matrice
 
-    def draw_segments(self, length: int, heigth: int, col=(255, 255, 255), mat=None):
-        matrice = [[(0, 0, 0) for _ in range(length)]
-                   for _ in range(heigth)] if mat is None else mat.copy()
+    def draw_segments(self, img:Image, col=(0, 255, 0)):
         for segment in self.segments():
             for point in segment:
-                matrice[int(point.abs)][int(point.ord)] = col
-        return matrice
+                img[point] = col
+
+    def draw_better(self,img:Image, col=(255, 255, 255)):
+        for point in self:
+            img[point] = col
 
 if __name__ == "__main__":
     p1 = Coord2(10, 10)
