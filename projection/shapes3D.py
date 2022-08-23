@@ -41,6 +41,16 @@ class Coord3():
 
     def __mul__(self, k: float) -> "Coord3":
         return Coord3(self.abs*k, self.ord*k, self.hei*k)
+    
+    def replace(self, __o: "Coord3") -> None:
+        self.abs = __o.abs
+        self.ord = __o.ord
+        self.hei = __o.hei
+    
+    def new(self, abs, ord, hei) -> None:
+        self.abs = abs
+        self.ord = ord
+        self.hei = hei
 
 print(f"Coord3: {time()-t_timeeee:.4f}s")
 t_timeeee=time()
@@ -48,6 +58,7 @@ t_timeeee=time()
 class Triangle3():
     def __init__(self, point1: Coord3, point2: Coord3, point3: Coord3):
         self.point1 = point1
+        print(f"point1:is self...{point1 is self.point1}")
         self.point2 = point2
         self.point3 = point3
 
@@ -98,7 +109,7 @@ class Plan():
         #    => z=(abs*x+ord*y+const)/hei
         self.point=Coord3(x,y,z)
         self.cst=const
-        self.project=lambda c: Coord2(10*c.abs+1*c.ord+8*c.hei+50,10*c.ord+3*c.hei+50) #example
+        self.project=lambda c: Coord2(10*c.abs+0*c.ord+5*c.hei+50,10*c.ord+10*c.hei+50) #example
 
     def __contains__(self,c:Union[Coord3,Coord2]):
         return abs(self.relation(c))<=Plan.PREC if type(c) is Coord3 else abs(self.relation(Coord3(c.abs,c.ord,0)))<=Plan.PREC
@@ -116,6 +127,7 @@ if __name__=="__main__":
     print("main: debut")
     p=Plan(1,1,1,0)
     origine=Coord3(0,0,0)
+    t3=Triangle3(origine,Coord3(10,0,0),Coord3(0,10,0))
     list_triangles3=[
     Triangle3(Coord3(10,0,0),Coord3(10,10,0), Coord3(0,10,0)),
     Triangle3(origine,Coord3(10,0,0),Coord3(0,10,0)),
@@ -143,13 +155,14 @@ if __name__=="__main__":
     Triangle3(Coord3(22,0,10),Coord3(22,10,10),Coord3(12,0,10)),
     Triangle3(Coord3(12,10,10),Coord3(22,10,10),Coord3(12,0,10)),
     ]
-    origine=Coord3(0,10,0)
+    origine.replace(Coord3(0,0,30))
+    print(t3.point1 is origine)
     print(f"main: triangles3:{time()-t_timeeee:.4f}s")
     t_timeeee=time()
     list_triangles2=[p.project_Triangle3(t3) for t3 in list_triangles3]
     print(f"main: triangles2:{time()-t_timeeee:.4f}s")
     t_timeeee=time()
-    img=Image(300,400)
+    img=Image(600,400)
     print(f"main: creation img:{time()-t_timeeee:.4f}s")
     tttt=time()
     timeee1=0
