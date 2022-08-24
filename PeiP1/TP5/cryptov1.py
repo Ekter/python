@@ -17,3 +17,6 @@ def cesar(chaine,rang):
 
 #exemples:
 print(cesar(cesar("plik",37),-37%26))
+
+for i in range(26):
+    print(cesar("GPQQXITMEDHTPVGTTXCIPRI".lower(),i))
