@@ -16,7 +16,7 @@ from urllib.request import urlopen
 
 def extract_img(file, chap, page):
     # with urlopen(f"http://www.scan-fr.cc/manga/one-piece/{chap}/{page}") as response:
-    with urlopen(f"http://www.scan-fr.cc/manga/one-piece/22/{page}") as response:
+    with urlopen(f"http://www.scan-fr.cc/manga/one-piece/22/{page+1}") as response:
         print(f"http://www.scan-fr.cc/manga/one-piece/{chap}/{page}")
         webpage = response.read()
         soup = BeautifulSoup(webpage, 'html.parser')

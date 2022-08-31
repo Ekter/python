@@ -8,18 +8,19 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from discord import Member
 from discord.ext import commands
-# from dotenv import load_dotenv
-
 # urllib.request.URLopener.version = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
 # urllib.request.URLopener.addheader('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
-# load_dotenv("../../globals.env")
-
 try:
-    with open("../../token.txt", "r") as f:
-        TOKEN = f.readline()
-    # TOKEN = os.getenv("DISCORD_TOKEN")
+    from dotenv import load_dotenv
+    TOKEN = os.getenv("DISCORD_TOKEN")
+    load_dotenv("../../globals.env")
 except:
-    pass
+    try:
+        with open("../../token.txt", "r") as f:
+            TOKEN = f.readline()
+    except:
+        print("No token found")
+        exit()
 RESPONSES = [
     "PLIK37",
     "#Évangile n°1 : Plik a raison",
@@ -223,5 +224,5 @@ async def report(ctx: commands.Context, manga: str="one-piece",chapter:int=1, pa
     await ctx.send(f"url: {url} a été report, merci")
 
 
-
+print(TOKEN)
 bot.run(TOKEN)
