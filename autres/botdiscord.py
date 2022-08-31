@@ -11,6 +11,7 @@ from discord.ext import commands
 # urllib.request.URLopener.version = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
 # urllib.request.URLopener.addheader('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
 try:
+    print(0/0)
     from dotenv import load_dotenv
     TOKEN = os.getenv("DISCORD_TOKEN")
     load_dotenv("../../globals.env")
