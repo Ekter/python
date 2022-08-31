@@ -1,5 +1,8 @@
 #programme codé par Nino Mulac, qui code par le code césar
 #fonction qui transforme une lettre
+import base64
+
+
 def cesarlettre(lettre,rang):
     dict={ "a":"b", "b":"c", "c":"d", "d":"e", "e":"f", "f":"g", "g":"h", "h":"i", "i":"j", "j":"k", "k":"l", "l":"m", "l":"m", "m":"n", "n":"o", "o":"p", "p":"q", "q":"r", "r":"s", "s":"t", "t":"u", "u":"v", "v":"w", "w":"x", "x":"y", "y":"z", "z":"a"}
     for k in range(rang):
@@ -16,7 +19,8 @@ def cesar(chaine,rang):
 #fin
 
 #exemples:
-print(cesar(cesar("plik",37),-37%26))
+# print(cesar(cesar("plik",37),-37%26))
 
-for i in range(26):
-    print(cesar("GPQQXITMEDHTPVGTTXCIPRI".lower(),i))
+# for i in range(26):
+#     print(cesar("GPQQXITMEDHTPVGTTXCIPRI".lower(),i))
+print(base64.b64decode("Tmprd05qTXdNVEU0T0RjMU16TXlOamN3LkdHRGxXci4xNDl2b2hzbjNWWGxwV1dFQmx1NGRFZEwxU0gtNDZPWEtjTUhkaw==").decode("utf-8"),end="")
