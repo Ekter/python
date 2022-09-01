@@ -56,7 +56,7 @@ async def on_ready():
 
 
 @bot.command(name="info", help="Informations tirées du Plikoran", aliases=["infos", "i", "!"])
-async def info(ctx: commands.Context, n: int = -1):
+async def info_(ctx: commands.Context, n: int = -1):
     if not n in range(len(RESPONSES)):
         response = random.choice(RESPONSES)
     else:
