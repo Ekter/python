@@ -1,4 +1,1 @@
-l1=[[1,2,3],[4,5,6],[7,8,9]]
-l2=[["a","b","c"],["d","e","f"],["g","h","i"]]
-for i,j in zip(l1,l2):
-    print(i,j)
+add = lambda a: lambda b: lambda c: lambda d: a(c)(b(c)(d))
