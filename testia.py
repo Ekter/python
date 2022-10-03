@@ -3,11 +3,11 @@ import random
 from typing import Callable, List
 
 dic_result = {(False, False): False, (False, True): True,
-              (True, False): True, (True, True): True}
+              (True, False): True, (True, True): False}
 
 functions = [lambda x, y:True, lambda x, y:False, lambda x, y:x, lambda x, y:y,
              lambda x, y:x or y, lambda x, y: not x, lambda x, y: not y, lambda x, y:x and y]
-resal = [1]
+resal = [2,2,1]
 ia=[[random.choice(functions) for _ in range(n)] for n in resal]
 
 # ia = [[lambda x, y:x or y, lambda x, y:x and y], [
@@ -21,7 +21,7 @@ def calculus(x, y, IA):
 
 
 def test(x: bool, y: bool, IA):
-    return dic_result[(x, y)] == calculus(x, y, ia)
+    return dic_result[(x, y)] == calculus(x, y, IA)
 
 
 def full_test(IA):
@@ -29,12 +29,8 @@ def full_test(IA):
     for x in [True, False]:
         for y in [True, False]:
             # print(x,y," -> ",calculus(x,y))
-            b=test(x, y, IA)
-            l.append(b)
-            if b:
-                print(x, y, " -> ", calculus(x, y, IA))
+            l.append(test(x, y, IA))
     return sum(l) == len(l)
-
 
 def main():
     n = 1
@@ -46,6 +42,8 @@ def main():
         print(full_test(ia))
         print(n)
         n += 1
+    for x,y in dic_result.keys():
+        print(x,y," -> ",calculus(x,y,ia))
 
 
 if __name__ == "__main__":
