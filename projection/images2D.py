@@ -11,6 +11,24 @@ from sympy import Triangle
 
 from image import Image
 
+def zip2(iterable, iterable2):
+    """zip two iterables"""
+    l1=len(iterable)
+    l2=len(iterable2)
+    if l1>l2:
+        for i in range(l2):
+            yield iterable[i], iterable2[i]
+        for i in range(l2, l1):
+            yield iterable[i], iterable2[-1]
+
+    elif l1<l2:
+        for i in range(l1):
+            yield iterable[i], iterable2[i]
+        for i in range(l1, l2):
+            yield iterable[-1], iterable2[i]
+    else:
+        for i in range(l1):
+            yield iterable[i], iterable2[i]
 
 
 class Coord2():
@@ -141,7 +159,6 @@ class Segment2(Coord2):
     def __init__(self, point1: Coord2, point2: Coord2):
         self.point1 = point1
         self.point2 = point2
-        casse=2
         self.rangex=range(int(min(point1.abs,point2.abs)),int(max(point1.abs,point2.abs)))
         self.rangey=range(int(min(point1.ord,point2.ord)),int(max(point1.ord,point2.ord)))
         if point1.abs==point2.abs:
@@ -304,7 +321,7 @@ class Triangle2():
         return sum([segment.under(point) == segment.under(pointtri) for segment, pointtri in self.enumerate()]) == 3
 
     def __iter__(self):
-        for _point1, _point2 in zip(Segment2(self.point1, self.point2),Segment2(self.point1,self.point3)):
+        for _point1, _point2 in zip2(list(Segment2(self.point1, self.point2).__iter__()),list(Segment2(self.point1,self.point3).__iter__())):
             for point in Segment2(_point1, _point2):
                 yield point
 
