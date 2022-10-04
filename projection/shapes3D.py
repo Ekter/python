@@ -86,3 +86,5 @@ class Plan3():
 
     def __contains__(self,c:Union["Coord3","Coord2"]):
         return math.abs(self.relation(c))<=Plan3.EP if type(c) is Coord3 else math.abs(self.relation(Coord3(c.abs,c.ord,0)))<=Plan3.EP
+
+    
