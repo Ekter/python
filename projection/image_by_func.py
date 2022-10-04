@@ -1,4 +1,3 @@
-from calendar import c
 from time import sleep, time
 import cv2 as cv
 import numpy as np
@@ -33,21 +32,21 @@ def degrade(lenght: int, weight: int,func=lambda x:premier(2*x+1)*255):
     for i in range(lenght):
         for j in range(weight):
             p = func(lenght*i+j)
-            matrice[i][j] = p
+            matrice[i][j] = (p,p,p)
         print(i)
     return matrice
 
-# n=1000
-# t=time()
-# # l=degradev2(100,100)
-# cv.imwrite(f"degradefunc.png", np.array(degrade(n,n,func=lambda x:x%5*37+x%37)))
-# print(time()-t)
+n=1000
+t=time()
+# l=degradev2(100,100)
+cv.imwrite(f"degradefunc.png", np.array(degrade(n,n,func=lambda x:x%5*37+x%37)))
+print(time()-t)
 
-if __name__=="__main__":
-    while True:
-        a=ri(2,10)
-        b=ri(2,50)
-        c=ri(2,10)
-        d=ri(2,50)
-        cv.imwrite("degradefunc.png",np.array(degrade(720,1080,func=lambda x:x%a*b+x%c*d)))
-        sleep(10)
+# if __name__=="__main__":
+#     while True:
+#         a=ri(2,10)
+#         b=ri(2,50)
+#         c=ri(2,10)
+#         d=ri(2,50)
+#         cv.imwrite("degradefunc.png",np.array(degrade(720,1080,func=lambda x:x%a*b+x%c*d)))
+#         sleep(10)
