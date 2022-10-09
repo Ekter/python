@@ -6,9 +6,6 @@ from typing import Iterable, List, Tuple, Union
 
 import cv2 as cv
 import numpy as np
-from sklearn.feature_selection import SelectorMixin
-from sympy import Triangle
-
 from image import Image
 
 def zip2(iterable, iterable2):
