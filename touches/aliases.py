@@ -7,14 +7,15 @@ last_key = [keyboard.Key.space]
 
 def on_press(key, last_key=last_key):
     ct = keyboard.Controller()
-    ct.press(keyboard.Key.f18)
-    time.sleep(0.1)
-    ct.release(keyboard.Key.f18)
-    time.sleep(0.1)
+    # ct.press(keyboard.Key.f18)
+    # time.sleep(0.1)
+    # ct.release(keyboard.Key.f18)
+    # time.sleep(0.1)
     # C'EST TROP PUISSANT PUTAIN
     try:
         print(f"alphanumeric key {key.char} pressed")
         if key.char == "l" and last_key[0].char == "n":
+            print("newline")
             ct.press(keyboard.Key.backspace)
             ct.release(keyboard.Key.backspace)
             ct.press(keyboard.Key.backspace)
