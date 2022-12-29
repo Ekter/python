@@ -274,3 +274,4 @@ if __name__ == "__main__":
         parelo.drawlines(img)
     img.to_image("parelo.png")
     print(f"main: parallelepipedon:{time()-t:.4f}s")
+    
