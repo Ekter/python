@@ -1,5 +1,8 @@
 import tkinter as tk
-def get_dictionaries():
+from tkinter import PhotoImage
+from typing import Union
+
+def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], dict[str, list[PhotoImage]], dict[str, PhotoImage], dict[str, PhotoImage], dict[str, PhotoImage], dict[str, PhotoImage], dict[str, PhotoImage], dict[str, PhotoImage], dict[str, list[PhotoImage]], dict[str, PhotoImage], dict[str, PhotoImage]]:
     genPATH = __file__
     nomprogramme = __file__.split("/")[-1]
     imgPATH = genPATH[0: -len(nomprogramme)] + "images/"
@@ -7,30 +10,18 @@ def get_dictionaries():
     hero_ri = tk.PhotoImage(file=imgPATH + "hero_right_i.png").zoom(2)
     hero_bi = tk.PhotoImage(file=imgPATH + "hero_back_i.png").zoom(2)
     hero_li = tk.PhotoImage(file=imgPATH + "hero_left_i.png").zoom(2)
-    hero_fw1 = tk.PhotoImage(
-        file=imgPATH + "hero_face_w1.png").zoom(2)
-    hero_rw1 = tk.PhotoImage(
-        file=imgPATH + "hero_right_w1.png").zoom(2)
-    hero_bw1 = tk.PhotoImage(
-        file=imgPATH + "hero_back_w1.png").zoom(2)
-    hero_lw1 = tk.PhotoImage(
-        file=imgPATH + "hero_left_w1.png").zoom(2)
-    hero_fw2 = tk.PhotoImage(
-        file=imgPATH + "hero_face_w2.png").zoom(2)
-    hero_rw2 = tk.PhotoImage(
-        file=imgPATH + "hero_right_w2.png").zoom(2)
-    hero_bw2 = tk.PhotoImage(
-        file=imgPATH + "hero_back_w2.png").zoom(2)
-    hero_lw2 = tk.PhotoImage(
-        file=imgPATH + "hero_left_w2.png").zoom(2)
-    hero_tf = tk.PhotoImage(
-        file=imgPATH + "hero_tombe_face.png").zoom(2)
-    hero_tr = tk.PhotoImage(
-        file=imgPATH + "hero_tombe_droite.png").zoom(2)
-    hero_tb = tk.PhotoImage(
-        file=imgPATH + "hero_tombe_dos.png").zoom(2)
-    hero_tl = tk.PhotoImage(
-        file=imgPATH + "hero_tombe_gauche.png").zoom(2)
+    hero_fw1 = tk.PhotoImage(file=imgPATH + "hero_face_w1.png").zoom(2)
+    hero_rw1 = tk.PhotoImage(file=imgPATH + "hero_right_w1.png").zoom(2)
+    hero_bw1 = tk.PhotoImage(file=imgPATH + "hero_back_w1.png").zoom(2)
+    hero_lw1 = tk.PhotoImage(file=imgPATH + "hero_left_w1.png").zoom(2)
+    hero_fw2 = tk.PhotoImage(file=imgPATH + "hero_face_w2.png").zoom(2)
+    hero_rw2 = tk.PhotoImage(file=imgPATH + "hero_right_w2.png").zoom(2)
+    hero_bw2 = tk.PhotoImage(file=imgPATH + "hero_back_w2.png").zoom(2)
+    hero_lw2 = tk.PhotoImage(file=imgPATH + "hero_left_w2.png").zoom(2)
+    hero_tf = tk.PhotoImage(file=imgPATH + "hero_tombe_face.png").zoom(2)
+    hero_tr = tk.PhotoImage(file=imgPATH + "hero_tombe_droite.png").zoom(2)
+    hero_tb = tk.PhotoImage(file=imgPATH + "hero_tombe_dos.png").zoom(2)
+    hero_tl = tk.PhotoImage(file=imgPATH + "hero_tombe_gauche.png").zoom(2)
 
     # elements pour afficher les points de magie
     magic = tk.PhotoImage(file=imgPATH + "magic.png")
@@ -41,31 +32,21 @@ def get_dictionaries():
     hero_p1 = tk.PhotoImage(file=imgPATH + "heroplaid1.png").zoom(2)
     hero_p2 = tk.PhotoImage(file=imgPATH + "heroplaid2.png").zoom(2)
     hero_p3 = tk.PhotoImage(file=imgPATH + "heroplaid3.png").zoom(2)
-    hero_fp1 = tk.PhotoImage(
-        file=imgPATH + "herofoulardplaid1.png").zoom(2)
-    hero_fp2 = tk.PhotoImage(
-        file=imgPATH + "herofoulardplaid2.png").zoom(2)
-    hero_fp3 = tk.PhotoImage(
-        file=imgPATH + "herofoulardplaid3.png").zoom(2)
-    hero_cp1 = tk.PhotoImage(
-        file=imgPATH + "herobagdeplaid1.png").zoom(2)
-    hero_cp2 = tk.PhotoImage(
-        file=imgPATH + "herobagdeplaid2.png").zoom(2)
-    hero_cp3 = tk.PhotoImage(
-        file=imgPATH + "herobagdeplaid3.png").zoom(2)
+    hero_fp1 = tk.PhotoImage(file=imgPATH + "herofoulardplaid1.png").zoom(2)
+    hero_fp2 = tk.PhotoImage(file=imgPATH + "herofoulardplaid2.png").zoom(2)
+    hero_fp3 = tk.PhotoImage(file=imgPATH + "herofoulardplaid3.png").zoom(2)
+    hero_cp1 = tk.PhotoImage(file=imgPATH + "herobagdeplaid1.png").zoom(2)
+    hero_cp2 = tk.PhotoImage(file=imgPATH + "herobagdeplaid2.png").zoom(2)
+    hero_cp3 = tk.PhotoImage(file=imgPATH + "herobagdeplaid3.png").zoom(2)
 
     sol_img1 = tk.PhotoImage(file=imgPATH + "sol_1.png").zoom(2)
     sol_img2 = tk.PhotoImage(file=imgPATH + "sol_2.png").zoom(2)
     sol_img3 = tk.PhotoImage(file=imgPATH + "sol_3.png").zoom(2)
     sol_img4 = tk.PhotoImage(file=imgPATH + "sol_4.png").zoom(2)
-    wetsol_img1 = tk.PhotoImage(
-        file=imgPATH + "sol-mouille1.png").zoom(2)
-    wetsol_img2 = tk.PhotoImage(
-        file=imgPATH + "sol-mouille2.png").zoom(2)
-    wetsol_img3 = tk.PhotoImage(
-        file=imgPATH + "sol-mouille3.png").zoom(2)
-    wetsol_img4 = tk.PhotoImage(
-        file=imgPATH + "sol-mouille4.png").zoom(2)
+    wetsol_img1 = tk.PhotoImage(file=imgPATH + "sol-mouille1.png").zoom(2)
+    wetsol_img2 = tk.PhotoImage(file=imgPATH + "sol-mouille2.png").zoom(2)
+    wetsol_img3 = tk.PhotoImage(file=imgPATH + "sol-mouille3.png").zoom(2)
+    wetsol_img4 = tk.PhotoImage(file=imgPATH + "sol-mouille4.png").zoom(2)
     wall = tk.PhotoImage(file=imgPATH + "wall.png").zoom(2)
     wall_img1 = tk.PhotoImage(file=imgPATH + "wall1.png").zoom(2)
     wall_img2 = tk.PhotoImage(file=imgPATH + "wall2.png").zoom(2)
@@ -73,8 +54,7 @@ def get_dictionaries():
     wall_img4 = tk.PhotoImage(file=imgPATH + "wall4.png").zoom(2)
     pot_img1 = tk.PhotoImage(file=imgPATH + "fiole_1.png").zoom(2)
     pot_img3 = tk.PhotoImage(file=imgPATH + "fiole_3.png").zoom(2)
-    bequille_img = tk.PhotoImage(
-        file=imgPATH + "bequille.png").zoom(2)
+    bequille_img = tk.PhotoImage(file=imgPATH + "bequille.png").zoom(2)
     chew_img = tk.PhotoImage(file=imgPATH + "chewing-gum.png").zoom(2)
     gum_img = tk.PhotoImage(file=imgPATH + "gum.png").zoom(2)
     sucette1_img = tk.PhotoImage(file=imgPATH + "sucette_1.png")
@@ -100,39 +80,26 @@ def get_dictionaries():
     or2_img = tk.PhotoImage(file=imgPATH + "or2.png").zoom(2)
     or5_img = tk.PhotoImage(file=imgPATH + "or5.png").zoom(2)
     or10_img = tk.PhotoImage(file=imgPATH + "or10.png").zoom(2)
-    marchand_f = tk.PhotoImage(
-        file=imgPATH + "marchand_de_face.png").zoom(2)
-    marchand_f = tk.PhotoImage(
-        file=imgPATH + "marchand_de_face2.png").zoom(2)
-    marchand_d = tk.PhotoImage(
-        file=imgPATH + "marchand_vers_droite.png").zoom(2)
-    marchand_g = tk.PhotoImage(
-        file=imgPATH + "marchand_vers_gauche.png").zoom(2)
-    marchand_sf = tk.PhotoImage(
-        file=imgPATH + "marchand_sucette_de_face.png").zoom(2)
-    bedup = tk.PhotoImage(
-        file=imgPATH + "lit_vert_haut_final.png").zoom(2)
-    beddown = tk.PhotoImage(
-        file=imgPATH + "lit_vert_bas_final.png").zoom(2)
+    marchand_f = tk.PhotoImage(file=imgPATH + "marchand_de_face.png").zoom(2)
+    marchand_f = tk.PhotoImage(file=imgPATH + "marchand_de_face2.png").zoom(2)
+    marchand_d = tk.PhotoImage(file=imgPATH + "marchand_vers_droite.png").zoom(2)
+    marchand_g = tk.PhotoImage(file=imgPATH + "marchand_vers_gauche.png").zoom(2)
+    marchand_sf = tk.PhotoImage(file=imgPATH + "marchand_sucette_de_face.png").zoom(2)
+    bedup = tk.PhotoImage(file=imgPATH + "lit_vert_haut_final.png").zoom(2)
+    beddown = tk.PhotoImage(file=imgPATH + "lit_vert_bas_final.png").zoom(2)
     wheelchair = tk.PhotoImage(file=imgPATH + "fauteuil.png").zoom(2)
     flowerpot = tk.PhotoImage(file=imgPATH + "arbuste.png").zoom(2)
     hole = tk.PhotoImage(file=imgPATH + "trou.png").zoom(2)
-    docteurM_img = tk.PhotoImage(
-        file=imgPATH + "medecin1.png").zoom(2)
-    docteurF_img = tk.PhotoImage(
-        file=imgPATH + "medecin2.png").zoom(2)
-    infirmiere1_img = tk.PhotoImage(
-        file=imgPATH + "infirmiere1.png").zoom(2)
+    docteurM_img = tk.PhotoImage(file=imgPATH + "medecin1.png").zoom(2)
+    docteurF_img = tk.PhotoImage(file=imgPATH + "medecin2.png").zoom(2)
+    infirmiere1_img = tk.PhotoImage(file=imgPATH + "infirmiere1.png").zoom(2)
 
-    badgemedecin_img = tk.PhotoImage(
-        file=imgPATH + "badgemedecin.png")
+    badgemedecin_img = tk.PhotoImage(file=imgPATH + "badgemedecin.png")
 
-    img_stonelance = tk.PhotoImage(
-        file=imgPATH + "lancepierre.png").zoom(2)
+    img_stonelance = tk.PhotoImage(file=imgPATH + "lancepierre.png").zoom(2)
 
     esc_up = tk.PhotoImage(file=imgPATH + "escalier_up.png").zoom(2)
-    esc_down = tk.PhotoImage(
-        file=imgPATH + "escalier_down.png").zoom(2)
+    esc_down = tk.PhotoImage(file=imgPATH + "escalier_down.png").zoom(2)
     vide = tk.PhotoImage(file=imgPATH + "empty.png").zoom(2)
     hotbar = tk.PhotoImage(file=imgPATH + "hotbar.png").zoom(2)
     faim100 = tk.PhotoImage(file=imgPATH + "faim100.png").zoom(2)
@@ -222,8 +189,7 @@ def get_dictionaries():
     angry1 = tk.PhotoImage(file=imgPATH + "angry1.png")
     equipBar = tk.PhotoImage(file=imgPATH + "equipBar.png")
     gameover_img = tk.PhotoImage(file=imgPATH + "gameover.png")
-    marchandepage_img = tk.PhotoImage(
-        file=imgPATH + "marchandepage.png")
+    marchandepage_img = tk.PhotoImage(file=imgPATH + "marchandepage.png")
 
     dicimages = {
         "C": coffre_img,
@@ -436,6 +402,11 @@ def get_dictionaries():
         "angry8": angry8,
         "angry9": angry9,
     }
-    dicother = {"gameover": gameover_img,
-                     "marchandepage": marchandepage_img, "black": black}
+    dicother = {
+        "gameover": gameover_img,
+        "marchandepage": marchandepage_img,
+        "black": black}
     return dicimages,dicanim,dicappear,dicequipement,dicinventory,dicinventoryM,dicseen,dicviewable,dicatk,dicemotion,dicother
+
+
+#  /bin/python3 -m pip install -U autopep8

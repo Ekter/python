@@ -1,12 +1,15 @@
-from time import sleep
+from time import sleep, time
 from pynput.mouse import Controller
 
 mouse = Controller()
 
+_time=time()
 # sleep(1)
 # mouse.press(Button.right)
 # sleep(100)
 # mouse.release(Button.left)
-for i in range(100):
+while time()-_time<60*60:
     mouse.move(-10, 0)
-    sleep(0.03)
+    sleep(0.3)
+    mouse.move(10, 0)
+    sleep(0.3)

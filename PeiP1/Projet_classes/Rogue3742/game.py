@@ -7,7 +7,7 @@ from typing import Any, Callable, List, Union, Optional
 import tkinter
 import copy
 import math
-import constants
+import gameconstants
 import utils
 import images
 
@@ -1106,7 +1106,7 @@ class Floor():
 
     def __init__(self, number_floor=1, size: int = None, nbrooms=10, menage=True, coffre=None):
         self.nbrooms = nbrooms
-        self.size = constants.SIZEMAP if size is None else size
+        self.size = gameconstants.SIZEMAP if size is None else size
         self.number_floor = number_floor
         self._rooms = []
         self._roomsToReach = []
@@ -1295,8 +1295,8 @@ class Floor():
         self.move(element, self.pos(element) - dest)
 
     def attackpoison(self, coord: Coord) -> None:
-        if theGame().hero.level >= constants.LEVEL_POISON and theGame().hero.mp >= constants.MP_POISON:
-            theGame().hero.mp -= constants.MP_POISON
+        if theGame().hero.level >= gameconstants.LEVEL_POISON and theGame().hero.mp >= gameconstants.MP_POISON:
+            theGame().hero.mp -= gameconstants.MP_POISON
             self.putattack(
                 coord, Attack("Poison", "psn", 0, 10, [
                               Status("Poison", 5, -3, prb=1)])
@@ -1304,10 +1304,10 @@ class Floor():
             theGame().addMessage("Sort de poison activé!", "blue", 1)
         elif theGame().hero.level < 2:
             theGame().addMessage("Tu n'as pas le niveau requis pour utiliser ce sort! Niveau requis: " +
-                                 str(constants.LEVEL_POISON))
+                                 str(gameconstants.LEVEL_POISON))
         else:
             theGame().addMessage(
-                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {theGame().hero.mp}/{constants.MP_POISON}")
+                f"Tu n'as pas assez de MP pour utiliser ce sort! Tu en as {theGame().hero.mp}/{gameconstants.MP_POISON}")
 
     def attackwind(self, coord: Coord) -> None:
         if theGame().hero.level >= 3 and theGame().hero.mp >= 7:
@@ -1942,7 +1942,7 @@ class Game():
         "Adds a message to be printed on the screen."
 
         self._message.append(
-            [msg if msg[-1] in constants.PONCT else msg + ".", color, life])
+            [msg if msg[-1] in gameconstants.PONCT else msg + ".", color, life])
         print(msg)
 
     def readMessages(self) -> str:
@@ -2059,7 +2059,7 @@ class Game():
             print("TURN")
             self.updategraph(i, [self.floor.pos(self.hero), poshero], i == 2)
             print(poshero, self.floor.pos(self.hero))
-            time.sleep(constants.DELAIANIM)
+            time.sleep(gameconstants.DELAIANIM)
         [self.fenetre.bind(i, self.gameturn) for i in self._actions]
 
     def makeAction(self, action: str) -> None:
@@ -2298,7 +2298,7 @@ class Game():
                 print(message)
                 while len(message) > 69:
                     n = 69
-                    while not (message[n] in constants.PONCT + " "):
+                    while not (message[n] in gameconstants.PONCT + " "):
                         n -= 1
                     self.canvas.create_text(
                         540,
