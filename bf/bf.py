@@ -1,12 +1,13 @@
 #[ to make it more beautiful
 
-pile=[0 for i in range(30000)]
+pile=[0 for i in range(300)]
 cursor=0
-with open("tests.b") as file:
+with open("test2.b") as file:
     prg=file.read()
     print(prg)
     reader=0
     while reader<len(prg):
+        print(reader)
         i=prg[reader]
         if i=="+":
             pile[cursor]+=1
