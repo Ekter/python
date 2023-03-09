@@ -7,6 +7,7 @@ import random
 import math
 from numba import jit, cuda, vectorize
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 # matrice = cv.imread("Lena.png")
 # print(matrice.shape)
@@ -16,7 +17,7 @@ import matplotlib.pyplot as plt
 
 # @vectorize(["boolean(int16)"], target='cpu')
 
-@jit(nopython=True,nogil=True,parallel=True)
+@jit(nopython=True,nogil=True)
 def premier(n:int)-> bool:
     m=2
     r = math.sqrt(n)
@@ -52,22 +53,22 @@ def degrade(lenght: int, weight: int, col1: Tuple[int, int, int] = (0, 0, 0), co
 # @vectorize(["(int32, int32)"], target='cuda')
 def degradev2(lenght: int, weight: int):
     matrice = [[(0, 0, 0) for _ in range(weight)] for _ in range(lenght)]
-    for i in range(lenght):
+    for i in tqdm(range(lenght)):
         for j in range(weight):
             p = premier((weight*i+j)*2+1)*255
             matrice[i][j] = p
-        print(i)
+        # print(i)
     return matrice
 
 
 def degradev3(lenght: int, weight: int):
     matrice = [[(0, 0, 0) for _ in range(weight)] for _ in range(lenght)]
-    for i in range(lenght):
+    for i in tqdm(range(lenght)):
         for j in range(weight):
             p = premier2(weight*i+j)*255
             matrice[i][j] = p
             
-        print(i)
+        # print(i)
     return matrice
 
 # cv.waitKey(0)
@@ -77,15 +78,15 @@ def degradev3(lenght: int, weight: int):
 #        degrade(100, 100, (i, i, i), (i+25, i+25, i+25))))
 
 t=time()
-# l=degradev2(100,100)
-cv.imwrite(f"test2degrade.png", np.array(degradev2(10000,10000)))
-plt.imshow(degradev2(1000,1000))
-plt.show()
+l=degradev2(1000,1000)
+cv.imwrite(f"test2degrade.png", np.array(l))
 a=time()-t
+plt.imshow(l)
+plt.show()
 
 t=time()
 # l=degradev3(100,100)
-cv.imwrite(f"test3degrade.png", np.array(degradev3(100,100)))
+cv.imwrite(f"test3degrade.png", np.array(degradev3(1000,1000)))
 print(a)
 print(time()-t)
 
