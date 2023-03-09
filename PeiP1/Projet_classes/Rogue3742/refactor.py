@@ -20,12 +20,13 @@ for dic,name_dic in lines_dics:
             name,id=ll.split(": ")
             print(name,id)
             for l in lines:
-                if id in l:
+                if id in l and "[" not in l and "]" not in l:
                     l2=l.split("\"")
                     os.system(f"mv PeiP1/Projet_classes/Rogue3742/images/{l2[1]} PeiP1/Projet_classes/Rogue3742/images/{name_dic}/{l2[1][:-4]}_{name}.png")
                     # mv l2[1] "name_dic/l2[1]_name"
                     l2[1]=name+"/"+l2[1]+"_"+name+"\n"
-                    l2="\"".join(l)
+                    l2="\"".join(l2)
                     output.write(l2+"\n")
+                    break
         i+=1
         line = lines[dic+i].strip()

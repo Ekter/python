@@ -2240,24 +2240,24 @@ class Game():
             # affichage du hero avec les equipements
             if (plaid and badge) == True:
                 self.canvas.create_image(
-                    875, 185, image=self.dicappear["hero_badgeplaid"]
+                    875, 185, image=self.dicappear["hero_badgeplaid"].zoom(3)
                 )
             elif (plaid and foulard) == True:
                 self.canvas.create_image(
-                    875, 185, image=self.dicappear["hero_foulardplaid"]
+                    875, 185, image=self.dicappear["hero_foulardplaid"].zoom(3)
                 )
             elif plaid == True:
                 self.canvas.create_image(
-                    875, 185, image=self.dicappear["hero_plaid"])
+                    875, 185, image=self.dicappear["hero_plaid"].zoom(3))
             elif badge == True:
                 self.canvas.create_image(
-                    875, 185, image=self.dicappear["hero_badge"])
+                    875, 185, image=self.dicappear["hero_badge"].zoom(3))
             elif foulard == True:
                 self.canvas.create_image(
-                    875, 185, image=self.dicappear["hero_foulard"])
+                    875, 185, image=self.dicappear["hero_foulard"].zoom(3))
             else:
                 self.canvas.create_image(
-                    875, 185, image=self.dicimages["showcase"])
+                    875, 185, image=self.dicimages["showcase"].zoom(3))
 
         # minimap
         y = 500

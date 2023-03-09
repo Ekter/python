@@ -24,11 +24,11 @@ def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], d
     hero_tl = tk.PhotoImage(file=imgPATH + "hero_tombe_gauche.png").zoom(2)
 
     # elements pour afficher les points de magie
-    magic = tk.PhotoImage(file=imgPATH + "magic.png")
+    magic_img = tk.PhotoImage(file=imgPATH + "magic.png")
 
     # images hero/equipement Arou
-    hero_f = tk.PhotoImage(file=imgPATH + "herofoulard.png").zoom(2)
-    hero_c = tk.PhotoImage(file=imgPATH + "herobadge.png").zoom(2)
+    hero_fb = tk.PhotoImage(file=imgPATH + "herofoulard.png").zoom(2)
+    hero_cb = tk.PhotoImage(file=imgPATH + "herobadge.png").zoom(2)
     hero_p1 = tk.PhotoImage(file=imgPATH + "heroplaid1.png").zoom(2)
     hero_p2 = tk.PhotoImage(file=imgPATH + "heroplaid2.png").zoom(2)
     hero_p3 = tk.PhotoImage(file=imgPATH + "heroplaid3.png").zoom(2)
@@ -47,7 +47,7 @@ def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], d
     wetsol_img2 = tk.PhotoImage(file=imgPATH + "sol-mouille2.png").zoom(2)
     wetsol_img3 = tk.PhotoImage(file=imgPATH + "sol-mouille3.png").zoom(2)
     wetsol_img4 = tk.PhotoImage(file=imgPATH + "sol-mouille4.png").zoom(2)
-    wall = tk.PhotoImage(file=imgPATH + "wall.png").zoom(2)
+    wall_default = tk.PhotoImage(file=imgPATH + "wall.png").zoom(2)
     wall_img1 = tk.PhotoImage(file=imgPATH + "wall1.png").zoom(2)
     wall_img2 = tk.PhotoImage(file=imgPATH + "wall2.png").zoom(2)
     wall_img3 = tk.PhotoImage(file=imgPATH + "wall3.png").zoom(2)
@@ -74,7 +74,7 @@ def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], d
     ted_img = tk.PhotoImage(file=imgPATH + "ourson_1.png").zoom(2)
     ghost_img = tk.PhotoImage(file=imgPATH + "ghost.png").zoom(2)
     sad_img = tk.PhotoImage(file=imgPATH + "tristesse_1.png").zoom(2)
-    ar_img = tk.PhotoImage(file=imgPATH + "araignee.png").zoom(2)
+    araig = tk.PhotoImage(file=imgPATH + "araignee.png").zoom(2)
     or1_img = tk.PhotoImage(file=imgPATH + "or1.png").zoom(2)
     bourse = tk.PhotoImage(file=imgPATH + "or1.png")
     or2_img = tk.PhotoImage(file=imgPATH + "or2.png").zoom(2)
@@ -107,20 +107,20 @@ def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], d
     faim50 = tk.PhotoImage(file=imgPATH + "faim50.png").zoom(2)
     faim25 = tk.PhotoImage(file=imgPATH + "faim25.png").zoom(2)
     faim0 = tk.PhotoImage(file=imgPATH + "faim0.png").zoom(2)
-    red = tk.PhotoImage(file=imgPATH + "red.png")
+    rede = tk.PhotoImage(file=imgPATH + "red.png")
     dred = tk.PhotoImage(file=imgPATH + "darkred.png")
-    gre = tk.PhotoImage(file=imgPATH + "green.png")
+    gree = tk.PhotoImage(file=imgPATH + "green.png")
     dgre = tk.PhotoImage(file=imgPATH + "darkgreen.png")
-    blu = tk.PhotoImage(file=imgPATH + "blue.png")
+    blue = tk.PhotoImage(file=imgPATH + "blue.png")
     dblu = tk.PhotoImage(file=imgPATH + "darkblue.png")
-    yel = tk.PhotoImage(file=imgPATH + "yellow.png")
+    yell = tk.PhotoImage(file=imgPATH + "yellow.png")
     dyel = tk.PhotoImage(file=imgPATH + "darkyellow.png")
-    lig = tk.PhotoImage(file=imgPATH + "lightblue.png")
+    ligt = tk.PhotoImage(file=imgPATH + "lightblue.png")
     dlig = tk.PhotoImage(file=imgPATH + "darklightblue.png")
-    ora = tk.PhotoImage(file=imgPATH + "orange.png")
+    oran = tk.PhotoImage(file=imgPATH + "orange.png")
     dora = tk.PhotoImage(file=imgPATH + "darkorange.png")
     black = tk.PhotoImage(file=imgPATH + "black.png")
-    vie = tk.PhotoImage(file=imgPATH + "health.png")
+    health = tk.PhotoImage(file=imgPATH + "health.png")
     cle_img = tk.PhotoImage(file=imgPATH + "cle.png")
     multi_img = tk.PhotoImage(file=imgPATH + "multipass.png")
     # equipement(objets sans zoom pour quand on a besoin) Arou
@@ -200,9 +200,9 @@ def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], d
         "O": colere_img,
         "B": ted_img,
         "D": boul_img,
-        "Ar": ar_img,
-        "magic": magic,
-        "showcase": hero_fi.zoom(3),
+        "Ar": araig,
+        "magic": magic_img,
+        "showcase": hero_fi,
         ".": sol_img1,
         ",": sol_img2,
         "`": sol_img3,
@@ -211,7 +211,7 @@ def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], d
         ",m": wetsol_img2,
         "`m": wetsol_img3,
         "´m": wetsol_img4,
-        "|": wall,
+        "|": wall_default,
         "|1": wall_img1,
         "|2": wall_img2,
         "|3": wall_img3,
@@ -235,8 +235,8 @@ def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], d
         "faim25": faim25,
         "faim0": faim0,
         "empty": vide,
-        "health": vie,
-        "dialogue": dialoguebox.zoom(5),
+        "health": health,
+        "dialogue": dialoguebox,
         ">": esc_up,
         "<": esc_down,
         "u": chew_img,
@@ -295,11 +295,11 @@ def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], d
         ],
     }
     dicappear = {
-        "hero_foulard": hero_f.zoom(3),
-        "hero_badge": hero_c.zoom(3),
-        "hero_plaid": hero_p1.zoom(3),
-        "hero_foulardplaid": hero_fp1.zoom(3),
-        "hero_badgeplaid": hero_cp1.zoom(3),
+        "hero_foulard": hero_fb,
+        "hero_badge": hero_cb,
+        "hero_plaid": hero_p1,
+        "hero_foulardplaid": hero_fp1,
+        "hero_badgeplaid": hero_cp1,
     }
     dicequipement = {
         "s": equip_bequille,
@@ -351,12 +351,12 @@ def get_dictionaries() -> tuple[dict[str, Union[PhotoImage,list[PhotoImage]]], d
         "dr": dred,
     }
     dicviewable = {
-        "ye": yel,
-        "or": ora,
-        "li": lig,
-        "bl": blu,
-        "gr": gre,
-        "re": red,
+        "ye": yell,
+        "or": oran,
+        "li": ligt,
+        "bl": blue,
+        "gr": gree,
+        "re": rede,
     }
     dicatk = {
         "psn": [img_psn1, img_psn2, img_psn3],

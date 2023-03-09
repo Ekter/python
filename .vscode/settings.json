@@ -43,5 +43,9 @@
     "**/.*/**",
     "**/.vscode",
     "**/.vscode/**"
+  ],
+  "cSpell.words": [
+    "decimul",
+    "ndarray"
   ]
 }
