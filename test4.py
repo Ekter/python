@@ -1,33 +1,64 @@
-#*******
-#* Read input from STDIN
-#* Use print to output your result to STDOUT.
-#* Use sys.stderr.write() to display debugging information to STDERR
-#* ***/
-import sys
-lines = []
-for line in sys.stdin:
-	lines.append(line.rstrip('\n'))
+from threading import Thread
+import time
 
-e1=(int(lines[0].split(" ")[0]),int(lines[0].split(" ")[1]))
-e2=(int(lines[1].split(" ")[0]),int(lines[1].split(" ")[1]))
-e3=(int(lines[2].split(" ")[0]),int(lines[2].split(" ")[1]))
-d1=(e2[0]-e1[0],e2[1]-e1[1])
-d2=(e3[0]-e1[0],e3[1]-e1[1])
-l=[]
+string = "La commu Rust ne cesse de m'impressionner"
 
-for line in lines[4:]:
-    print(line)
-    l.append((int(line.split(" ")[0]),int(line.split(" ")[1])))
+def print_async(l=[0,""]):
+    print(string[l[0]],end = "\n")
+    l[1] += string[l[0]]
+    l[0] += 1
+    # print(l[1])
 
-found=True
 
-for e in l:
-    print(e,(e[0]+d1[0],e[1]+d1[1]))
-    if (e[0]+d1[0],e[1]+d1[1]) in l and (e[0]+d2[0],e[1]+d2[1]) in l:
-        print(f"{e[0]} {e[1]}")
-        print(f"{e[0]+d1[0]} {e[1]+d1[1]}")
-        print(f"{e[0]+d2[0]} {e[1]+d2[1]}")
-        found=False
-        break
-if found:
-    print("NOT FOUND")
+
+t = Thread(target=print_async)
+for i in range(len(string)):
+    t = Thread(target=print_async)
+    t.start()
+
+a="""L
+a
+ 
+ 
+c
+o
+m
+u
+u
+ 
+R
+u
+s
+t
+u
+n
+n
+ 
+e
+c
+ 
+e
+e
+e
+ 
+ 
+s
+s
+ 
+m
+m
+e
+d
+e
+'
+i
+m
+
+r
+e
+p
+r""".split('\n')
+time.sleep(1)
+print(''.join(a))
+
+
