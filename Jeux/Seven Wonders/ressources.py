@@ -15,3 +15,11 @@ class Ressources():
 
     def __eq__(self, other) -> bool:
         return type(self) == type(other) and self.name == other.name
+
+# test
+if __name__ == "__main__":
+    print("test")
+    ressources = [Ressources(name) for name in Ressources.LISTNAMESRESSOURCES]
+    print(ressources)
+    print(ressources[0] == ressources[1])
+    print(ressources[0] == ressources[0])
