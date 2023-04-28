@@ -17,7 +17,7 @@ keyboard = Controller()
 
 
 while True:
-    keyboard.press("d")
-    sleep(5)
-    keyboard.release("d")
- 
+    keyboard.press("v")
+    sleep(0.1)
+    keyboard.release("v")
+
