@@ -4,7 +4,6 @@ import random
 import time
 from typing import Iterable, List, Tuple, Union
 
-import cv2 as cv
 import numpy as np
 from image import Image
 
@@ -326,11 +325,14 @@ class Triangle2():
     def randomTriangle(x: int = 1000, y: int = 1000):
         return Triangle2(Coord2.randomCoord2(x, y), Coord2.randomCoord2(x, y), Coord2.randomCoord2(x, y))
 
-    def draw(self, img:Image, col=(255, 255, 255)):
-        for i in self.rangex:
-            for j in self.rangey:
-                if Coord2(i, j) in self:
-                    img[Coord2(i,j)] = col
+    def draw(self, img: Image, col=(255, 255, 255)):
+        if isinstance(img, Image):
+            for i in self.rangex:
+                for j in self.rangey:
+                    if Coord2(i, j) in self:
+                        img[Coord2(i,j)] = col
+        else:
+            img.fill_triangle(self.point1.abs, self.point1.ord, self.point2.abs, self.point2.ord, self.point3.abs, self.point3.ord, col)
 
     def draw_shaders(self, length: int=500, heigth: int=500, col=(255, 255, 255)):
         matrice = [[(0, 0, 0) for _ in range(length)]
@@ -368,9 +370,12 @@ class Triangle2():
                 print("limite")
 
     def draw_segments(self, img:Image, col=(0, 255, 0)):
-        for segment in self.segments():
-            for point in segment:
-                img[point] = col
+        if type(img) is Image:
+            for segment in self.segments():
+                for point in segment:
+                    img[point] = col
+        else:
+            img.line(self.point1.abs, self.point1.ord, self.point2.abs, self.point2.ord, col)
 
     def draw_better(self,img:Image, col=(255, 255, 255)):
         for point in self:
