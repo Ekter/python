@@ -1,17 +1,25 @@
 from images2D import Coord2, Triangle2
 from image import Image
-import numpy as np
-import cv2 as cv
 import math
 from typing import List, Union
 from random import randint
 from time import time
+import abc
 
 t_timeeee = time()
 
 print(f"imports: {time()-t_timeeee:.4f}s")
 t_timeeee = time()
 
+
+class Drawable(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def draw(self, plan: "Plan"):
+        return
+
+    def draw_lines(self, plan : "Plan"):
+        return
 
 class Coord3():
     def __init__(self, abs, ord, hei) -> None:
@@ -26,9 +34,9 @@ class Coord3():
         return self.abs == __o.abs and self.ord == __o.abs and self.hei == __o.hei
 
     def __ne__(self, __o: "Coord3") -> bool:
-        return not(self == __o)
+        return not (self == __o)
 
-    def __len__(self):
+    def len(self) -> float:
         return math.sqrt(self.abs**2+self.ord**2+self.hei**2)
 
     def __add__(self, __o: "Coord3") -> "Coord3":
@@ -43,6 +51,14 @@ class Coord3():
     def __mul__(self, k: float) -> "Coord3":
         return Coord3(self.abs*k, self.ord*k, self.hei*k)
 
+    def cross(self, __o: "Coord3") -> "Coord3":
+        return Coord3(self.ord*__o.hei-self.hei*__o.ord, self.hei *
+                      __o.abs-self.abs *
+                      __o.hei, self.abs*__o.ord-self.ord*__o.abs)
+
+    def dot(self, __o: "Coord3") -> float:
+        return self.abs*__o.abs+self.ord*__o.ord+self.hei*__o.hei
+
     def replace(self, __o: "Coord3") -> None:
         self.abs = __o.abs
         self.ord = __o.ord
@@ -53,9 +69,21 @@ class Coord3():
         self.ord = ord
         self.hei = hei
 
+    def falseAdd(self, offset) -> "Coord3":
+        return Coord3(self.abs+offset, self.ord+offset, self.hei+offset)
+
+    def getNormalized(self) -> "Coord3":
+        l = self.len()
+        return Coord3(self.abs/l, self.ord/l, self.hei/l)
+
     @staticmethod
     def randomCoord3(min, max) -> "Coord3":
         return Coord3(randint(min, max), randint(min, max), randint(min, max))
+
+
+class Vector3(Coord3):
+    def __init__(self, abs, ord, hei) -> None:
+        super().__init__(abs, ord, hei)
 
 
 print(f"Coord3: {time()-t_timeeee:.4f}s")
@@ -123,16 +151,31 @@ class Plan():
             1*c.abs+0*c.ord+.5*c.hei+50, 1*c.ord+1*c.hei+50)  # example
 
     def __contains__(self, c: Union[Coord3, Coord2]):
-        return abs(self.relation(c)) <= Plan.PREC if type(c) is Coord3 else abs(self.relation(Coord3(c.abs, c.ord, 0))) <= Plan.PREC
+        return abs(self.relation(c)) <= Plan.PREC if type(
+            c) is Coord3 else abs(self.relation(Coord3(
+                c.abs, c.ord, 0))) <= Plan.PREC
 
     def project_Coord3(self, c: Coord3) -> Coord2:
         return self.project(c)
 
     def project_Triangle3(self, t: Triangle3) -> Triangle2:
-        return Triangle2(self.project(t.point1), self.project(t.point2), self.project(t.point3))
+        return Triangle2(self.project(t.point1), self.project(
+            t.point2), self.project(t.point3))
 
 
-class Parallelepidedon():
+class OrthoPlan(Plan):
+    def __init__(self, c: Coord3, v1: Vector3, v2: Vector3) -> None:
+        assert v1.getNormalized() != v2.getNormalized()
+        self.point = c
+        self.v1 = v1
+        self.v2 = v2
+        self.relation = lambda c1: (c1-self.point).dot(v1.cross(v2))
+        self.cst = self.relation(c)
+        self.project = lambda c1: Coord2(
+            (c1-self.point).dot(v1), (c1-self.point).dot(v2))
+
+
+class Parallelepidedon(Drawable):
     def __init__(self, point1: Coord3, point2: Coord3) -> None:
         self.point1 = point1
         self.point2 = point2
@@ -177,20 +220,27 @@ class Parallelepidedon():
     def project2(self, plan: Plan) -> List[Triangle2]:
         return [plan.project_Triangle3(t) for t in self.triangles]
 
-    def drawlines(self,img):
-        for t in self.project2(Plan(0,0,1,0)):
-            t.draw_segments(img, col=(0, 0, 255))
+    def draw_lines(self, img, plan: Plan = Plan(0, 0, 1, 0), color="black"):
+        for t in self.project2(plan):
+            t.draw_segments(img, col=color)
+
+    def draw(self, img, plan: Plan = Plan(0, 0, 1, 0), color="grey"):
+        for t in self.project2(plan):
+            t.draw(img, col=color)
 
     @staticmethod
     def randomOne():
-        return Parallelepidedon(Coord3.randomCoord3(0,200), Coord3.randomCoord3(0,200))
+        return Parallelepidedon(Coord3.randomCoord3(0, 200), Coord3.randomCoord3(0, 200))
 
 
+class Cube(Parallelepidedon):
+    def __init__(self, point1: Coord3, length) -> None:
+        super().__init__(point1, point1.falseAdd(length))
 
-print(f"Plan: {time()-t_timeeee:.4f}s")
-t_timeeee = time()
 
 if __name__ == "__main__":
+    print(f"Plan: {time()-t_timeeee:.4f}s")
+    t_timeeee = time()
     print("main: debut")
     p = Plan(1, 1, 1, 0)
     c_origin = Coord3(0, 0, 0)
@@ -263,15 +313,13 @@ if __name__ == "__main__":
     print(f"main: write:{time()-t_timeeee:.4f}s")
     print("main: fin")
 
-
     # test Parallelepidedon
-    t= time()
-    parelo = Parallelepidedon(Coord3(0,0,0),Coord3(10,10,10))
+    t = time()
+    parelo = Parallelepidedon(Coord3(0, 0, 0), Coord3(10, 10, 10))
     img = Image(600, 400)
-    parelo.drawlines(img)
+    parelo.draw_lines(img)
     for i in range(10000):
         parelo = Parallelepidedon.randomOne()
-        parelo.drawlines(img)
+        parelo.draw_lines(img)
     img.to_image("parelo.png")
     print(f"main: parallelepipedon:{time()-t:.4f}s")
-    

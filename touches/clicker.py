@@ -3,14 +3,17 @@ from pynput.mouse import Button, Controller
 from pynput.keyboard import Listener as KL, Key
 
 mouse = Controller()
-kc=KL()
+sleep(5)
+
 
 def on_press(key):
-    if key==Key.home:
-        for i in range(100):
-            mouse.click(Button.left, 1)
-            sleep(0.01)
+    if key == Key.home:
+        for i in range(1):
+            mouse.click(Button.right, 1000)
+            # sleep(0.0001)
             print("a")
-kc=KL(on_press=on_press)
+
+
+kc = KL(on_press=on_press)
 with kc:
     kc.join()

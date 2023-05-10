@@ -1,5 +1,4 @@
 import numpy as np
-import cv2 as cv
 
 class Image():
     def __init__(self,width,height):
