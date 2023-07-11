@@ -2,9 +2,8 @@
 import math
 import random
 import time
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, List, Tuple
 
-import numpy as np
 from image import Image
 
 def zip2(iterable, iterable2):
@@ -26,7 +25,10 @@ def zip2(iterable, iterable2):
         for i in range(l1):
             yield iterable[i], iterable2[i]
 
-
+def transform(*points):
+    for p in points:
+        yield p.abs + 1200
+        yield p.ord + 700
 class Coord2():
     """Vec2D object, created by rectangular or polar coordinates"""
     # PREC=
@@ -332,7 +334,7 @@ class Triangle2():
                     if Coord2(i, j) in self:
                         img[Coord2(i,j)] = col
         else:
-            img.fill_triangle(self.point1.abs, self.point1.ord, self.point2.abs, self.point2.ord, self.point3.abs, self.point3.ord, col)
+            img.fill_triangle(*list(transform(self.point1, self.point2, self.point3)), col)
 
     def draw_shaders(self, length: int=500, heigth: int=500, col=(255, 255, 255)):
         matrice = [[(0, 0, 0) for _ in range(length)]
@@ -375,7 +377,7 @@ class Triangle2():
                 for point in segment:
                     img[point] = col
         else:
-            img.line(self.point1.abs, self.point1.ord, self.point2.abs, self.point2.ord, col)
+            img.line(*list(transform(self.point1, self.point2)), col)
 
     def draw_better(self,img:Image, col=(255, 255, 255)):
         for point in self:

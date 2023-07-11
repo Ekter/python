@@ -1,47 +1,56 @@
-from random import shuffle
+import re
+from numpy import nan
+import copy
 
-lista=["K","E","O","N","G"]
-
-for _ in range(5):
-    shuffle(lista)
-    print("".join(lista))
-
-
-print(print.__doc__)
-
-print(len([0x0for x in {1,2,1}]))
-print(0x0for x in {1,2,1})
-"""Test program"""
-#is 5+2=5 true?
-#what is the Plik constant?
-
-import math
-import sys
-
-def add(a,b):
-    if b==0:
-        return a
-    else:
-        return 1+add(a,b-1)
+exSerieList = []
+intermediateList = []
+A0 = 0
+serList =  ['Série 1', 'Série 2', 'Série 3', 'Série 4', 'Série 1', 'Série 2', 'Série 3', 'Série 4', 'Série 1', 'Série 2', 'Série 3', 'Série 4', 'Série 1', 'Série 2', 'Série 3', 'Série 4', nan, 'Série 1', 'Série 2', 'Série 3', 'Série 4', 'Série 1', 'Série 2', 'Série 3', 'Série 4', 'Série 1', 'Série 2', 'Série 3', 'Série 4', 'Série 1', 'Série 2', 'Série 3', 'Série 4', 'Série 1', 'Série 2', 'Série 3', 'Série 4', 'Série 1', 'Série 2', 'Série 3', 'Série 4', nan]
 
 
-def multiply(a,b):
-    if b==1:
-        return a
-    else:
-        return add(a,multiply(a,b-1))
+#transformer les nan en SEPARE
+
+"""for index,serie in enumerate(serList):
+    if str(serie) == "nan":
+        serList[index] = "SEPARE"""
+
+"""print(serList)
+
+for serie in serList:
+    a = int(re.search(r'\d+', serie).group())"""
+
     
 
-def pow2(a,b):
-    if b==1:
-        return a
+for serie in serList:
+
+    if str(serie)!="nan":
+        a = int(re.search(r'\d+', serie).group())
+        if a > A0:
+            intermediateList.append(serie)
+            A0 = a
+        else:
+            intermediateList.insert(0, serie)
+            exSerieList.append(intermediateList)
+            intermediateList = []
+            A0 = 0
     else:
-        return multiply(a,pow(a,b-1))
+        intermediateList.append("SEPARE")
+        exSerieList.append(copy.copy(intermediateList))
+        # intermediateList = []
+        #exSerieList.append("SEPARE")"""
 
-# print(sys.getrecursionlimit())
-# sys.setrecursionlimit(10000)
-# print(sys.getrecursionlimit())
-# pow(10,10)
-# print("a")
+exSerieList[0].pop(0)
+#exSerieList.pop(len(exSerieList)-1)
+exSerieList[-1].insert(0, "Série 1")
+# print(exSerieList)
 
-print(math.log(pow(3278,419),2))
+
+import pandas as pd
+
+df= pd.read_excel("Sport2.xlsx")
+
+index = []
+for name in df["Exercices"]:
+    index.append(name)
+df["Séries"].fillna(inplace=True)
+print(df)

@@ -5,6 +5,7 @@ from typing import List, Union
 from random import randint
 from time import time
 import abc
+from typing import Callable
 
 t_timeeee = time()
 
@@ -18,8 +19,14 @@ class Drawable(metaclass=abc.ABCMeta):
     def draw(self, plan: "Plan"):
         return
 
+    @abc.abstractmethod
     def draw_lines(self, plan : "Plan"):
         return
+
+
+class ContainsDrawable(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def get_verticles
 
 class Coord3():
     def __init__(self, abs, ord, hei) -> None:
@@ -90,7 +97,7 @@ print(f"Coord3: {time()-t_timeeee:.4f}s")
 t_timeeee = time()
 
 
-class Triangle3():
+class Triangle3(Drawable):
     def __init__(self, point1: Coord3, point2: Coord3, point3: Coord3):
         self.point1 = point1
         # print(f"point1:is self...{point1 is self.point1}")
@@ -147,7 +154,7 @@ class Plan():
         #    => z=(abs*x+ord*y+const)/hei
         self.point = Coord3(x, y, z)
         self.cst = const
-        self.project = lambda c: Coord2(
+        self.project : Callable[[Coord3],Coord2] = lambda c: Coord2(
             1*c.abs+0*c.ord+.5*c.hei+50, 1*c.ord+1*c.hei+50)  # example
 
     def __contains__(self, c: Union[Coord3, Coord2]):
@@ -171,12 +178,12 @@ class OrthoPlan(Plan):
         self.v2 = v2
         self.relation = lambda c1: (c1-self.point).dot(v1.cross(v2))
         self.cst = self.relation(c)
-        self.project = lambda c1: Coord2(
-            (c1-self.point).dot(v1), (c1-self.point).dot(v2))
+        self.project : Callable[[Coord3],Coord2]= lambda c1: Coord2(
+            (c1-self.point).dot(v1) , (c1-self.point).dot(v2))
 
 
 class Parallelepidedon(Drawable):
-    def __init__(self, point1: Coord3, point2: Coord3) -> None:
+    def __init__(self, point1: Coord3, point2: Coord3, color = "gray") -> None:
         self.point1 = point1
         self.point2 = point2
         self.distx = abs(point1.abs - point2.abs)

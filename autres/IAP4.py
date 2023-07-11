@@ -1,3 +1,36 @@
+import enum
+
+class P4(object):
+    class Player(enum.Enum):
+        player1 = 1
+        player2 = 2
+    def __init__(self) -> None:
+        self.grid: list[list[P4.Player]] = [[0 for _ in range(7)] for _ in range(6)]
+        self._player: P4.Player = P4.Player.player1
+
+    def __str__(self) -> str:
+        tmp:str = "---------------"
+        for k1 in self.grid:
+            tmp+="\n|"+"|".join([str(k2) for k2 in k1])+"|"
+        tmp+="\n---------------"
+        return tmp
+
+    def play(self,column: int) -> None:
+        if self.grid[0][column]==0:
+            k1:int = 0
+            while k1<5 and self.grid[k1+1][column]==0:
+                k1+=1
+            self.grid[k1][column] = self._player
+            self._player = P4.Player.player1 if self._player == P4.Player.player2 else P4.Player.player2
+        else:
+            raise TypeError("full colummn")
+
+    def test_winner(self):
+        
+
+
+
+
 def testgagnelong(a):
     for x in range(6):
         for y in range(7):
@@ -110,7 +143,7 @@ def testgagnerapide(a,x,y,j):
             return "gagné"
         else:
             return "pas gagné"
-def joueren(a,colonne,j):
+def play(a,colonne,j):
     if j and a[0][colonne]==0:
         k1=0
         while a[k1+1][colonne]==0 and k1<4:
@@ -133,7 +166,7 @@ def printp4(a):
 def testcoupssuivantgagne(a,j):
     listecoupsgagnants=[]
     for col in range(7):
-        ilfsdjg=joueren(a,col,j)
+        ilfsdjg=play(a,col,j)
         if not type(ilfsdjg) is str:
             a1,y=ilfsdjg
         if testgagnerapide(a1,col,y,j)=="gagné":
@@ -142,7 +175,7 @@ def testcoupssuivantgagne(a,j):
 def joueurjoue(a,j)-> int:
     lcoups=[]
     for k in range(7):
-        ilfsdjg=joueren(a,k,j)
+        ilfsdjg=play(a,k,j)
         if not type(ilfsdjg) is str:
             a1,y=ilfsdjg
             if testgagnerapide(a1,k,y,j)=="gagné":
@@ -170,7 +203,7 @@ k=[[0 ,0 ,0 ,0 ,0 ,0 ,0 ],
 print("début")
 for i in range(10):
     printp4(k)
-    joueren(k,1,1)
+    play(k,1,1)
 #printp4(k)
 #print(testgagnelong(k))
 print(testgagnerapide(k,0,0,1))
