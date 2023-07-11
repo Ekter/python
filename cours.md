@@ -142,16 +142,28 @@ ligne"""
 
 -> "" pour les docstrings, commentaires intégrés à python
 
+Entrées / Sorties : 
+```py
+s=input("mettre une chaine de caractères svp : ")
+print(s)
+```
+
+
 
 Entiers: `int`
 
 pas grand chose à dire
 
-on peut faire des calculs
+on peut faire des calculs(+, -, *, //, %)
 
 on peut changer de base
 
 taille infinie contrairement à int32_t par ex
+
+```py
+n=int(input("mettre un entier svp : "))
+print(n)
+```
 
 flottants: `float`
 
@@ -212,6 +224,25 @@ print(5!=2)
 print(5>2)
 print("a" in "ananas")
 ```
+Conditions : `if` / `elif` / `else`
+
+```py
+n=int(input("mettre un entier svp : "))
+if n>0:
+    print("positif")
+elif n<0:
+    print("négatif")
+else:
+    print("nul")
+```
+
+
+
+exos:
+programme qui affiche le reste de division euclidienne de 2 nombres donnés en input
+
+programme qui affiche "pair" ou "impair" selon un nombre donné en input
+
 
 
 si on arrive jusque là : 
@@ -229,6 +260,7 @@ l.remove(4)
 l.insert(2, 4)
 ```
 
+
 boucles : `for` / `while`
 
 ```py
@@ -241,3 +273,18 @@ while i>0:
     print(i)
     i-=1
 ```
+
+exos:
+
+programme qui affiche le nombre de voyelles dans une chaine de caractères donnée en input
+
+programme qui dit si un nombre donné en input est premier ou non
+
+questions : réfléchir à :
+```py
+l=[1,2,3,4,5]
+l2=l
+l2[2]=42
+print(l)
+```
+
