@@ -57,7 +57,7 @@ def plot_cylindrical_coords(l : np.ndarray[int]) -> None:
     plt.show()
 
 number_it = 25
-t = time()
+t: float = time()
 l1=list_primes(number_it, premier)
 print(time()-t)
 t = time()

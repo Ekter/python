@@ -1,0 +1,1 @@
+(lambda:((lambda n:((lambda:((print(i),(lambda:(print("caca")if i==5 else ()))())for i in range(n))))()))(10))()
