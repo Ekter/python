@@ -1,6 +1,5 @@
 # from typing import Literal
 import random
-from typing import Callable, List
 
 dic_result = {(False, False): False, (False, True): True,
               (True, False): True, (True, True): False}

@@ -12,6 +12,8 @@ dictionnaire = {"cle1": "valeur1", "cle2": "valeur2"}
 
 Les clés et les valeurs peuvent être de n'importe quel type, et peuvent être mélangées.
 
+
+
 ```py
 dictionnaire = {"cle1": "valeur1", 2: "valeur2", "cle3": 3}
 ```
@@ -117,8 +119,8 @@ La clé est toujours la première lettre du paramètre, et la valeur est le rest
 Donc il va falloir utiliser des sous-chaines de caractères.
 
 Pour ce faire, il faut utiliser les crochets directement sur la chaine de caractères, comme pour les listes et les dictionnaires.
-
-```py
+            -1
+```py     0123
 chaine = "abcd"
 print(chaine[0]) # a
 print(chaine[1]) # b
@@ -162,3 +164,16 @@ print(liste[1:3]) # [2, 3]
 ```
 
 Une fois la clé et la valeur séparées, il faut les ajouter au dictionnaire, et c'est bon, on a réussi à transformer une ligne de gcode en un dictionnaire.
+
+
+```py
+n=37
+
+c = 3
+while c < n:
+    print(c)
+    c = c + 2
+
+for c in range(3, n, 2):
+    print(c)
+```

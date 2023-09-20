@@ -1,0 +1,3 @@
+Bonjour,
+Je suis un fichier texte de trois lignes.
+La constante de Plik est 37 très exactement.
