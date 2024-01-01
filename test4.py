@@ -1,64 +1,41 @@
-from threading import Thread
-import time
+from tkinter import *
+fenetre = Tk()
 
-string = "La commu Rust ne cesse de m'impressionner"
-
-def print_async(l=[0,""]):
-    print(string[l[0]],end = "\n")
-    l[1] += string[l[0]]
-    l[0] += 1
-    # print(l[1])
+fenetre.title('FEUILLE DE CALCUL')
+fenetre.geometry('800x400+400+200')  # Largeur, Hauteur, décalage X, décalage Y
+fenetre.resizable(False, False)
 
 
+label = Label(fenetre, text="Nombre 1", padx=10).grid(column=0, row=0, padx=20)  # texte = Nombre1, colonne 1, ligne 1
 
-t = Thread(target=print_async)
-for i in range(len(string)):
-    t = Thread(target=print_async)
-    t.start()
+# saisie du nombre 1 (width = largeur fenêtre)
+#value1 = StringVar()
+n1 = Entry(fenetre,  width=22).grid(column=1, row=0)  # fenêtre, colonne 2, ligne 1
+#value1.set(n1)
 
-a="""L
-a
- 
- 
-c
-o
-m
-u
-u
- 
-R
-u
-s
-t
-u
-n
-n
- 
-e
-c
- 
-e
-e
-e
- 
- 
-s
-s
- 
-m
-m
-e
-d
-e
-'
-i
-m
+label2 = Label(fenetre, text="Nombre 2", padx=10).grid(column=0, row=1, padx=20)  # texte = Nombre 2, colonne 1, ligne 2
 
-r
-e
-p
-r""".split('\n')
-time.sleep(1)
-print(''.join(a))
+# saisie du nombre 2
+#value2 = StringVar()
+n2 = Entry(fenetre,  width=22).grid(column=1, row=1)  # fenêtre : colonne 2, ligne 2
+#value2.set(n2)
+
+#r = "n1 + n2"
+#print(n1)
+label4 = Label(fenetre, text=" ").grid(column=1, row=2)  # Résultat : colonne 2, ligne 2
 
 
+def ajouter(event=None):
+    nombre1 = int(n1.get())
+    nombre2 = int(n2.get())
+    print(nombre1, nombre2)
+    label4.config(text=nombre1+nombre2)
+
+
+bouton = Button(fenetre, text="+ =", padx=10, font=('arial', 30, 'bold'), command=ajouter).grid(column=0, row=2,)  #Bouton "+" : colonne 1, ligne 3
+
+
+
+
+
+fenetre.mainloop()
