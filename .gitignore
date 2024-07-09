@@ -3,3 +3,4 @@ roguelike-master/roguelike
 __pycache__
 venv
 qtenv
+.venv
