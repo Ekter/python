@@ -11,9 +11,9 @@ import clarabel
 
 
 
-def newMPC(x0: np.ndarray, xh: np.ndarray, horizon=8, tolerance: np.ndarray = np.array([0.01, 0.01, 0.1, 0.1, 0.1, 0.1])):
+def newMPC(x0: np.ndarray, xh: np.ndarray, horizon=8, t = 0.1, tolerance: np.ndarray = np.array([0.01, 0.01, 0.1, 0.1, 0.1, 0.1])):
 
-    XH = get_XH(horizon)
+    XH = get_XH(horizon, t)
 
 
     TR = np.eye(7*horizon)
@@ -24,7 +24,8 @@ def newMPC(x0: np.ndarray, xh: np.ndarray, horizon=8, tolerance: np.ndarray = np
 
     P = XH.T @ TR.T @ diag @ TR @ XH
 
-    q = np.ones((6+horizon * 2+1))*1000
+    # q = np.ones((6+horizon * 2+1))
+    q = np.linspace(0, 1, 6+horizon * 2+1)
 
     # crop = np.zeros(())
     # crop[0:6,0:6] = np.eye(6)
@@ -46,8 +47,7 @@ def newMPC(x0: np.ndarray, xh: np.ndarray, horizon=8, tolerance: np.ndarray = np
     col.info("Solution found!")
     return u
 
-def get_XH(horizon):
-    t = 0.1
+def get_XH(horizon, t=0.1):
     A = np.array(
         [
             [0, 1,       0,      0,     0, 0],
