@@ -3,7 +3,7 @@ import sys
 import os
 import threading
 import time
-from PySide6.QtWidgets import QApplication
+# from PySide6.QtWidgets import QApplication
 
 # import viewer
 
