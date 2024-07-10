@@ -1,7 +1,7 @@
 import numpy as np
 print("importing qpsolvers...")
 import qpsolvers
-print("Available solvers:",qpsolvers.available_solvers)
+print("Available solvers:", qpsolvers.available_solvers)
 print("ok")
 import col
 from tqdm import tqdm
