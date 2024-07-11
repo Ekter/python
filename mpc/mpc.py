@@ -83,3 +83,7 @@ def get_XH(horizon, t=0.1):
     return XH
 
 # newMPC(np.array([0.1,0,0,0,0,0]), np.array([0,0,0,0,0,0]))
+
+
+# def monoMPC(x0: np.ndarray, xh: np.ndarray, horizon=8, t = 0.1, tolerance: np.ndarray = np.array([0.01, 0.01, 0.1, 0.1, 0.1, 0.1])):
+
