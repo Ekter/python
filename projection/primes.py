@@ -3,9 +3,10 @@ import math
 from numba import jit
 import matplotlib.pyplot as plt
 import numpy as np
+from typing import Callable
 
 
-@jit(nopython=True, nogil=True)
+# @jit(nopython=True, nogil=True)
 def premier(n:int)-> bool:
     if n==2 : return True
     if n % 2 == 0 or n <= 1: return False
@@ -17,7 +18,10 @@ def premier(n:int)-> bool:
         m += 2
     return n > 1
 
-@jit(nopython=True, nogil=True)
+print(premier(2**500))
+input()
+
+# @jit(nopython=True, nogil=True)
 def premier_list(n:int, lprimes : np.ndarray[int], count : int) -> bool:
     r = math.sqrt(n)
     for i in range(count):
@@ -28,7 +32,7 @@ def premier_list(n:int, lprimes : np.ndarray[int], count : int) -> bool:
     return n>1
 
 @jit(nopython=True, nogil=True)
-def list_primes(size : int = 1000, method = premier) -> np.ndarray[int]:
+def list_primes(size : int = 100, method = premier) -> np.ndarray[int]:
     size2 = 2**size
     l = np.zeros(int(size2/math.log(2) + 10), dtype = np.uint64)
     count = 1
@@ -39,8 +43,8 @@ def list_primes(size : int = 1000, method = premier) -> np.ndarray[int]:
             count+=1
     return l
 
-@jit(nopython=True, nogil=True)
-def list_primes_2(size : int = 1000, method = premier_list) -> np.ndarray[int]:
+# @jit(nopython=True, nogil=True)
+def list_primes_2(size : int = 100, method = premier_list) -> np.ndarray[int]:
     size2 = 2**size
     l = np.zeros(int(size2/math.log(2) + 10), dtype = np.uint64)
     count = 1
@@ -56,7 +60,8 @@ def plot_cylindrical_coords(l : np.ndarray[int]) -> None:
     plt.plot([i*math.cos(i) for i in l], [i*math.sin(i) for i in l], '.')
     plt.show()
 
-number_it = 25
+number_it = 10
+print("starting")
 t: float = time()
 l1=list_primes(number_it, premier)
 print(time()-t)

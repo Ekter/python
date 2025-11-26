@@ -1,14 +1,14 @@
 from pynput.keyboard import Key, Controller
 from time import sleep
 keyboard = Controller()
-# while True:
-#     # keyboard.release("d")
-#     sleep(2)
-#     keyboard.release("d")
-#     keyboard.press("q")
-#     sleep(2)
-#     keyboard.release("q")
-#     keyboard.press("d")
+while True:
+    # keyboard.release("d")
+    sleep(2)
+    keyboard.release("d")
+    keyboard.press("a")
+    sleep(2)
+    keyboard.release("a")
+    keyboard.press("d")
 
 # while True:
 #     keyboard.press(" ")
