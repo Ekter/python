@@ -50,9 +50,9 @@ ax2.set_ylabel("Temperature (°C)")
 c = fci.Clock(1 / 100, 2)
 p = fci.ProgressBar(c)
 
-log = fci.logger.ClockedPlotLogger1D(c, [ax0], update_freq=10000)
-log2 = fci.logger.ClockedPlotLogger1D(c, [ax1], update_freq=10000)
-log3 = fci.logger.ClockedPlotLogger1D(c, [ax2], update_freq=10000)
+log = fci.logger.ClockedPlotLogger1D(c, [ax0], update_freq=math.nan)
+log2 = fci.logger.ClockedPlotLogger1D(c, [ax1], update_freq=math.nan)
+log3 = fci.logger.ClockedPlotLogger1D(c, [ax2], update_freq=math.nan)
 
 
 pid.set_order(21)
