@@ -85,5 +85,12 @@ def get_XH(horizon, t=0.1):
 # newMPC(np.array([0.1,0,0,0,0,0]), np.array([0,0,0,0,0,0]))
 
 
-# def monoMPC(x0: np.ndarray, xh: np.ndarray, horizon=8, t = 0.1, tolerance: np.ndarray = np.array([0.01, 0.01, 0.1, 0.1, 0.1, 0.1])):
+def monoMPC(x0: np.ndarray, xh: np.ndarray, horizon=14, t = 0.1, tolerance: np.ndarray = np.array([0.01, 0.01, 0.1, 0.1, 0.1, 0.1])):
+    IC_P = np.array([-0.26,0])
+    A = np.array([[1, t], [0, 1]])
+    B = np.array([[0.5*t**2], [t]])
+    I = np.eye(6)
+    I_TA = I + t*A
+
+
 
